@@ -5,6 +5,7 @@ import { userTable } from '$lib/server/database/schema.js';
 import { eq } from 'drizzle-orm';
 
 export async function GET({ locals }) {
+	// TODO: validar se o usuario tem local
 	// Isso retorna um array de resultados que correspondem à condição.
 	const result = await db.select().from(userTable).where(eq(userTable.id, locals.user?.id));
 

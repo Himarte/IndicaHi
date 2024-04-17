@@ -1,3 +1,4 @@
+// Aqui fica a conexão com o banco de dados, utilizando o Drizzle ORM
 import { drizzle } from 'drizzle-orm/node-postgres';
 import pg from 'pg';
 import * as schema from './schema';
