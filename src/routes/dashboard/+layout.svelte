@@ -1,10 +1,9 @@
 <script lang="ts">
 	import SideBar from '$lib/components/NavBar/SideBar.svelte';
 	import type { LayoutData } from './$types';
-    
-    export let data: LayoutData;
-	let userRole: string | undefined
-	 $:userRole = data.user?.role
+	export let data: LayoutData;
+
+	$: userRole = data.user?.job;
 </script>
 
 <div class="mt-5 flex gap-5 px-44">

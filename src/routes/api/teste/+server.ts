@@ -6,7 +6,6 @@ import { eq } from 'drizzle-orm';
 export const GET: RequestHandler = async ({ url }) => {
 	const id = url.searchParams.get('id');
 	const users = await db.select().from(userTable).where(eq(id, userTable.id));
-	console.log(users);
 
 	return new Response(JSON.stringify(users), {
 		headers: {

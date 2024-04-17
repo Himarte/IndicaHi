@@ -8,11 +8,9 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Separator } from '$lib/components/ui/separator';
 
-
 	export let userRole: string | undefined;
 
-	console.log(userRole);
-	
+	console.log('Dentro do componente', userRole);
 
 	// Deriva o caminho atual da URL
 	const currentPath = derived(page, ($page) => $page.url.pathname);
@@ -32,8 +30,7 @@
 	const lucrosLinks2 = [
 		{ nome: 'Pagos', href: '/dashboard/lucros/pagos' },
 		{ nome: 'Pendentes', href: '/dashboard/lucros/pendentes' }
-	];	
-
+	];
 </script>
 
 <Tabs.Root value="indicacoes" class="sticky top-[5rem] flex h-full w-96">

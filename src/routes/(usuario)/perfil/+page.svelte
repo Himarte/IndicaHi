@@ -36,6 +36,8 @@
 		const target = event.target as HTMLInputElement;
 		cpfValue = validationCpf(target.value);
 	}
+
+	// TODO: Alguns das sessoes nao estao verificando se os dados estao vazios e enviando eles vazios... precisa pegar o que esta de dwfault e enviar junto
 </script>
 
 <form action="?/editarDadosPessoais" method="post">
@@ -152,6 +154,7 @@
 	</Card.Header>
 	<form method="post" action="?/editarDadosPagamento">
 		<Card.Content class="flex w-full items-center gap-5">
+			<!-- TODO: O select nao esta sendo pego e tambem nao stata com um valor determinado -->
 			<div class="flex w-1/4 flex-col gap-2">
 				<Label for="pixType">Tipo de chave</Label>
 				<Select.Root>
