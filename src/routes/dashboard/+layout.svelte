@@ -8,5 +8,5 @@
 
 <div class="mt-5 flex gap-5 px-44">
 	<SideBar {userRole} />
-	<div class="w-full rounded-2xl bg-secondary px-5"><slot /></div>
+	<div class="w-full"><slot /></div>
 </div>

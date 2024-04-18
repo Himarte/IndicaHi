@@ -167,7 +167,7 @@
 		</DropdownMenu.Root>
 	</div>
 
-	<div class="rounded-md border">
+	<div class="rounded-md border border-secondary">
 		<Table.Root {...$tableAttrs}>
 			<Table.Header>
 				{#each $headerRows as headerRow}
