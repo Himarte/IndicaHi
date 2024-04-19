@@ -1,5 +1,5 @@
 <script>
-	import DataTable from '../../lib/components/ui/data-table/data-table.svelte';
+	import { Button } from '$lib/components/ui/button';
 </script>
 
-	<DataTable />
+<Button>TEste de rota</Button>

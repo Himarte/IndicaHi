@@ -146,7 +146,7 @@
 	const hidableCols = ['status', 'email', 'amount'];
 </script>
 
-<div>
+<div class="flex flex-col gap-5">
 	<div class="flex items-center">
 		<Input class="max-w-sm" placeholder="Filter emails..." type="text" bind:value={$filterValue} />
 		<DropdownMenu.Root>
@@ -222,7 +222,7 @@
 			</Table.Body>
 		</Table.Root>
 	</div>
-	<div class="flex items-center justify-end space-x-4 py-4">
+	<div class="flex items-center justify-end space-x-4">
 		<div class="flex-1 text-sm text-muted-foreground">
 			{Object.keys($selectedDataIds).length} of{' '}
 			{$rows.length} row(s) selected.
