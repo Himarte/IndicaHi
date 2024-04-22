@@ -12,7 +12,6 @@ pnpm-lock.yaml
 package-lock.json
 yarn.lock
 .vscode
-docker-compose.yml
 bun.lockb
 migration
 migrations
