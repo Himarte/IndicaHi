@@ -21,12 +21,7 @@ export const userTable = pgTable('user', {
 	cidade: varchar('cidade', { length: 256 }),
 	estado: varchar('estado', { length: 2 }),
 	status: boolean('status').default(true),
-	createdAt: timestamp('created_at', {
-		withTimezone: true,
-		mode: 'date'
-	})
-		.defaultNow()
-		.notNull()
+	createdAt: timestamp('created_at').notNull().defaultNow()
 });
 
 export const sessionTable = pgTable('session', {
@@ -40,7 +35,7 @@ export const sessionTable = pgTable('session', {
 	}).notNull()
 });
 
-// TODO: VErificar porque o banco nao desta criando o campo criado em created_at
+// TODO: Verificar porque o banco nao desta criando o campo criado em created_at
 export const leadsTable = pgTable('leads', {
 	id: text('id').primaryKey().notNull(), // um identificador único para cada lead
 	fullName: varchar('full_name').notNull(), // nome completo
@@ -49,15 +44,8 @@ export const leadsTable = pgTable('leads', {
 		.default('Pendente')
 		.notNull(), // status do lead como enum
 	promoCode: varchar('promo_code', { length: 15 }), // código promocional opcional
-	createdAt: timestamp('created_at')
-		.default(sql`now()`)
-		.notNull(), // data e hora em que o lead foi criado
-
-	attendedAt: timestamp('attended_at', {
-		// data e hora em que o lead foi atendido
-		withTimezone: true,
-		mode: 'date'
-	})
+	createdAt: timestamp('created_at').notNull().defaultNow(), // data de criação do lead
+	attendedAt: timestamp('attended_at').default(sql`null`)
 });
 
 export type UserInsertSchema = typeof userTable.$inferInsert;
