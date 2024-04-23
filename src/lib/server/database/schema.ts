@@ -44,7 +44,13 @@ export const leadsTable = pgTable('leads', {
 		.default('Pendente')
 		.notNull(), // status do lead como enum
 	promoCode: varchar('promo_code', { length: 15 }), // código promocional opcional
-	createdAt: timestamp('created_at').notNull().defaultNow(), // data de criação do lead
+	createdAt: timestamp('created_at', {
+		mode: 'date',
+		withTimezone: true,
+		precision: 6
+	})
+		.notNull()
+		.defaultNow(), // data de criação do lead
 	attendedAt: timestamp('attended_at').default(sql`null`)
 });
 
