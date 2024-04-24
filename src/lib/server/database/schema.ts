@@ -1,5 +1,4 @@
 import { pgTable, text, timestamp, varchar, integer, boolean } from 'drizzle-orm/pg-core';
-import { sql } from 'drizzle-orm/sql';
 
 export const userTable = pgTable('user', {
 	id: text('id').primaryKey().notNull(),
@@ -7,7 +6,9 @@ export const userTable = pgTable('user', {
 	lastName: varchar('last_name').notNull(),
 	email: varchar('email').notNull(),
 	password: varchar('password').notNull(),
-	job: varchar('job', { enum: ['Vendedor', 'Financeiro', 'Admin'] }).default('Vendedor'),
+	job: varchar('job', {
+		enum: ['Vendedor Externo', 'Vendedor Interno', 'Financeiro', 'Admin']
+	}).default('Vendedor Externo'),
 	cpf: varchar('cpf', { length: 11 }).unique(),
 	telefone: varchar('telefone', { length: 11 }),
 	promoCode: varchar('promo_code', { length: 15 }).unique(),
@@ -21,7 +22,9 @@ export const userTable = pgTable('user', {
 	cidade: varchar('cidade', { length: 256 }),
 	estado: varchar('estado', { length: 2 }),
 	status: boolean('status').default(true),
-	createdAt: timestamp('created_at').notNull().defaultNow()
+	createdAt: timestamp('created_at', { mode: 'string', precision: 6, withTimezone: true })
+		.notNull()
+		.defaultNow()
 });
 
 export const sessionTable = pgTable('session', {
@@ -37,21 +40,22 @@ export const sessionTable = pgTable('session', {
 
 // TODO: Verificar porque o banco nao desta criando o campo criado em created_at
 export const leadsTable = pgTable('leads', {
-	id: text('id').primaryKey().notNull(), // um identificador único para cada lead
-	fullName: varchar('full_name').notNull(), // nome completo
-	cpfCnpj: varchar('cpf_cnpj', { length: 14 }).unique().notNull(), // CPF ou CNPJ, dependendo do tipo de pessoa
+	id: varchar('id').primaryKey().notNull(), // um identificador único para cada lead
+	fullName: varchar('full_name'), // nome completo
+	cpfCnpj: varchar('cpf_cnpj', { length: 14 }), // CPF ou CNPJ, dependendo do tipo de pessoa
 	status: varchar('status', { enum: ['Pendente', 'Sendo Atendido', 'Finalizado', 'Sem Sucesso'] })
 		.default('Pendente')
-		.notNull(), // status do lead como enum
-	promoCode: varchar('promo_code', { length: 15 }), // código promocional opcional
-	createdAt: timestamp('created_at', {
-		mode: 'date',
-		withTimezone: true,
-		precision: 6
-	})
+		.notNull(), // status do lead
+	promoCode: varchar('promo_code', { length: 15 }), // código promocional
+	createdAt: timestamp('created_at', { mode: 'string', precision: 6, withTimezone: true })
 		.notNull()
 		.defaultNow(), // data de criação do lead
-	attendedAt: timestamp('attended_at').default(sql`null`)
+	attendedAt: timestamp('attended_at', {
+		withTimezone: true,
+		precision: 6,
+		mode: 'string'
+	}), // data de atendimento do lead
+	userIdPromoCode: text('user_id_promocode').references(() => userTable.id) // ID do usuário que possui o promoCode usado
 });
 
 export type UserInsertSchema = typeof userTable.$inferInsert;

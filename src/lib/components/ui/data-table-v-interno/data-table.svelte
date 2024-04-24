@@ -18,45 +18,105 @@
 	import DataTableCheckbox from './data-table-checkbox.svelte';
 	import type { LeadsSchema } from '$lib/server/database/schema';
 
-	type LeadsSchema = {
-		id: string;
-		amount: number;
-		status: 'pending' | 'processing' | 'success' | 'failed';
-		email: string;
-	};
-
-	const data: Payment[] = [
-		{ id: 'm5gr84i9', amount: 316, status: 'success', email: 'ken99@yahoo.com' },
-		{ id: 'j7dh93f2', amount: 245, status: 'pending', email: 'alice22@gmail.com' },
-		{ id: 'g3re62k8', amount: 532, status: 'success', email: 'bob33@hotmail.com' },
-		{ id: 'h8yu74t1', amount: 178, status: 'failed', email: 'eve44@gmail.com' },
-		{ id: 'b6rt35p7', amount: 420, status: 'success', email: 'charlie55@yahoo.com' },
-		{ id: 'f9dn48m2', amount: 633, status: 'pending', email: 'david66@hotmail.com' },
-		{ id: 't3hf69z5', amount: 198, status: 'success', email: 'frank77@gmail.com' },
-		{ id: 'p5rg84i3', amount: 312, status: 'failed', email: 'george88@yahoo.com' },
-		{ id: 'r2ud95g7', amount: 578, status: 'success', email: 'hannah99@hotmail.com' },
-		{ id: 'l7db63j4', amount: 214, status: 'pending', email: 'irene11@gmail.com' },
-		{ id: 'e2fn48p9', amount: 721, status: 'success', email: 'joe22@yahoo.com' },
-		{ id: 'k3re87j2', amount: 159, status: 'failed', email: 'kate33@hotmail.com' },
-		{ id: 'a5ty84n6', amount: 487, status: 'success', email: 'laura44@gmail.com' },
-		{ id: 'm9gf28t3', amount: 273, status: 'pending', email: 'mike55@yahoo.com' },
-		{ id: 'n3hu74b5', amount: 369, status: 'success', email: 'natalie66@hotmail.com' },
-		{ id: 'w6yt35k1', amount: 144, status: 'failed', email: 'oliver77@gmail.com' },
-		{ id: 'z8er48l7', amount: 598, status: 'success', email: 'peter88@yahoo.com' },
-		{ id: 'q7pw92h4', amount: 231, status: 'pending', email: 'quinn99@hotmail.com' },
-		{ id: 's4nt85r9', amount: 659, status: 'success', email: 'rachel11@gmail.com' },
-		{ id: 'u9fv37c2', amount: 187, status: 'failed', email: 'steve22@yahoo.com' }
+	const data: LeadsSchema[] = [
+		{
+			id: 'm5gr84i9',
+			fullName: 'John Doe',
+			cpfCnpj: '98327649234867',
+			status: 'Pendente',
+			promoCode: 'uidksfghi'
+		},
+		{
+			id: 'k8fj3n7s',
+			fullName: 'Jane Smith',
+			cpfCnpj: '234234234234234',
+			status: 'Finalizado',
+			promoCode: 'oqwekdujz'
+		},
+		{
+			id: 'a7gd9f2e',
+			fullName: 'Michael Johnson',
+			cpfCnpj: '345436546756765',
+			status: 'Sendo Atendido',
+			promoCode: 'hjdfkjsldf'
+		},
+		{
+			id: 'p3mnbv45',
+			fullName: 'Emily Brown',
+			cpfCnpj: '111111111111',
+			status: 'Pendente',
+			promoCode: 'qwejlkjasd'
+		},
+		{
+			id: 't9sdfg62',
+			fullName: 'David Martinez',
+			cpfCnpj: '99999999999',
+			status: 'Sendo Atendido',
+			promoCode: 'oiuwehrklj'
+		},
+		{
+			id: 'w2dfnsh8',
+			fullName: 'Maria Garcia',
+			cpfCnpj: '435453454',
+			status: 'Finalizado',
+			promoCode: 'xcmnvbzweo'
+		},
+		{
+			id: 'o8dfg723',
+			fullName: 'Chris Wilson',
+			cpfCnpj: '2143435667',
+			status: 'Sendo Atendido',
+			promoCode: 'klsdfhjwer'
+		},
+		{
+			id: 'q4mjf76s',
+			fullName: 'Sarah Taylor',
+			cpfCnpj: '264567876843',
+			status: 'Pendente',
+			promoCode: 'weirutyasd'
+		},
+		{
+			id: 'z6dfnk38',
+			fullName: 'Daniel Anderson',
+			cpfCnpj: '1231234',
+			status: 'Finalizado',
+			promoCode: 'poiuzxnvcv'
+		},
+		{
+			id: 'i1sdfg92',
+			fullName: 'Laura Rodriguez',
+			cpfCnpj: '56763453',
+			status: 'Sendo Atendido',
+			promoCode: 'lkjashdfkj'
+		},
+		{
+			id: 'r5dfgh78',
+			fullName: 'James Lee',
+			cpfCnpj: '234234523523',
+			status: 'Pendente',
+			promoCode: 'uioqwejklh'
+		},
+		{
+			id: 'f0sd8fh3',
+			fullName: 'Emma Harris',
+			cpfCnpj: '45834523423',
+			status: 'Sendo Atendido',
+			promoCode: 'mnxbvzuiwe'
+		}
 	];
+
+	// O createTable é uma função que cria a table e coloca funcionalidades e interaçoes
 	const table = createTable(readable(data), {
 		page: addPagination(),
-		sort: addSortBy({ disableMultiSort: true }),
+		sort: addSortBy(),
 		filter: addTableFilter({
-			fn: ({ filterValue, value }) => value.includes(filterValue)
+			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
 		}),
 		hide: addHiddenColumns(),
 		select: addSelectedRows()
 	});
 
+	// Colunas da tabela, aqui voce pode add mais colunas ou remover
 	const columns = table.createColumns([
 		table.column({
 			accessor: 'id',
@@ -81,8 +141,27 @@
 			}
 		}),
 		table.column({
-			accessor: 'status',
-			header: 'Status',
+			accessor: 'fullName',
+			header: 'Nome Completo',
+			plugins: {
+				sort: {
+					disable: true
+				}
+			}
+		}),
+		table.column({
+			accessor: 'cpfCnpj',
+			header: 'CPF/CNPJ',
+			plugins: {
+				sort: {
+					disable: true
+				}
+			}
+		}),
+		table.column({
+			accessor: 'promoCode',
+			header: 'Promo Code',
+
 			plugins: {
 				sort: {
 					disable: true
@@ -93,22 +172,11 @@
 			}
 		}),
 		table.column({
-			accessor: 'email',
-			header: 'Email'
-		}),
-		table.column({
-			accessor: 'amount',
-			header: 'Amount',
-			cell: ({ value }) => {
-				const formatted = new Intl.NumberFormat('en-US', {
-					style: 'currency',
-					currency: 'USD'
-				}).format(value);
-				return formatted;
-			},
+			accessor: 'status',
+			header: 'Status',
 			plugins: {
 				sort: {
-					disable: true
+					disable: false
 				},
 				filter: {
 					exclude: true
@@ -120,11 +188,6 @@
 			header: '',
 			cell: ({ value }) => {
 				return createRender(DataTableActions, { id: value });
-			},
-			plugins: {
-				sort: {
-					disable: true
-				}
 			}
 		})
 	]);
@@ -144,12 +207,12 @@
 		.filter(([, hide]) => !hide)
 		.map(([id]) => id);
 
-	const hidableCols = ['status', 'email', 'amount'];
+	const hidableCols = ['fullName', 'cpfCnpj', 'promoCode', 'status'];
 </script>
 
 <div class="flex flex-col gap-5">
 	<div class="flex items-center">
-		<Input class="max-w-sm" placeholder="Filter emails..." type="text" bind:value={$filterValue} />
+		<Input class="max-w-sm" placeholder="Pesquisar..." type="text" bind:value={$filterValue} />
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger asChild let:builder>
 				<Button variant="outline" class="ml-auto" builders={[builder]}>
@@ -177,14 +240,10 @@
 							{#each headerRow.cells as cell (cell.id)}
 								<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()} let:props>
 									<Table.Head {...attrs} class="[&:has([role=checkbox])]:pl-3">
-										{#if cell.id === 'amount'}
-											<div class="text-right">
-												<Render of={cell.render()} />
-											</div>
-										{:else if cell.id === 'email'}
+										{#if cell.id === 'status'}
 											<Button variant="ghost" on:click={props.sort.toggle}>
 												<Render of={cell.render()} />
-												<ArrowUpDown class={'ml-2 h-4 w-4'} />
+												<ArrowUpDown class={'ml-2  h-4 w-4 '} />
 											</Button>
 										{:else}
 											<Render of={cell.render()} />
@@ -203,14 +262,16 @@
 							{#each row.cells as cell (cell.id)}
 								<Subscribe attrs={cell.attrs()} let:attrs>
 									<Table.Cell {...attrs}>
-										{#if cell.id === 'amount'}
-											<div class="text-right font-medium">
+										<!-- Para estilizar linhas especificas voce vincula ao nome da dado do Database -->
+										{#if cell.id === 'status'}
+											<!-- Esse erro tem a ver com a tipagem do cell.value nao mexer -->
+											{#if cell.value === 'Sendo Atendido'}
+												<div class="text-yellow-600">
+													<Render of={cell.render()} />
+												</div>
+											{:else}
 												<Render of={cell.render()} />
-											</div>
-										{:else if cell.id === 'status'}
-											<div class="capitalize">
-												<Render of={cell.render()} />
-											</div>
+											{/if}
 										{:else}
 											<Render of={cell.render()} />
 										{/if}
@@ -225,20 +286,20 @@
 	</div>
 	<div class="flex items-center justify-end space-x-4">
 		<div class="flex-1 text-sm text-muted-foreground">
-			{Object.keys($selectedDataIds).length} of{' '}
-			{$rows.length} row(s) selected.
+			{Object.keys($selectedDataIds).length} de{' '}
+			{$rows.length} Colunas selecionadas.
 		</div>
 		<Button
 			variant="outline"
 			size="sm"
 			on:click={() => ($pageIndex = $pageIndex - 1)}
-			disabled={!$hasPreviousPage}>Previous</Button
+			disabled={!$hasPreviousPage}>Anterior</Button
 		>
 		<Button
 			variant="outline"
 			size="sm"
 			disabled={!$hasNextPage}
-			on:click={() => ($pageIndex = $pageIndex + 1)}>Next</Button
+			on:click={() => ($pageIndex = $pageIndex + 1)}>Proximo</Button
 		>
 	</div>
 </div>

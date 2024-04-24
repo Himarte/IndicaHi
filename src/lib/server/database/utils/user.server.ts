@@ -38,3 +38,12 @@ export const cpfIsUsed = async (cpf: string) => {
 
 	return queryResult.length > 0;
 };
+
+export const getUserIdByPromoCode = async (promoCode: string) => {
+	const result = await db
+		.select({ id: userTable.id })
+		.from(userTable)
+		.where(eq(userTable.promoCode, promoCode));
+
+	return result.length > 0 ? result[0].id : null;
+};

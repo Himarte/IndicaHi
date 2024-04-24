@@ -55,7 +55,8 @@ export const actions: Actions = {
 			}
 		}
 		console.log('chegou aqui');
-
+		// TODO: Esta bem lento, verificar se tem como melhorar
+		// TODO: Esta lento ao criar um novo user o carregamento do perfil
 		try {
 			await db
 				.update(userTable)

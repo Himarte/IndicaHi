@@ -1,8 +1,13 @@
 <script lang="ts">
-	import DataTable from '../../../../lib/components/ui/data-table-v-interno/data-table.svelte';
-	import type { PageData } from './$types';
+	import DataTable from '$lib/components/ui/data-table-v-externo/data-table.svelte';
+	import type { PageServerData } from './$types';
 
-	export let data: PageData;
+	export let data: PageServerData;
+	const leads = data.leads;
 </script>
 
-<DataTable />
+{#await data.leads}
+	<p>Carregando...</p>
+{:then leads}
+	<DataTable {leads} />
+{/await}

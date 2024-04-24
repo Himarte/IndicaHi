@@ -3,6 +3,8 @@ import { CHAVE_API_SITE } from '$env/static/private';
 import { generateId } from 'lucia';
 import { db } from '$lib/server/database/db.server';
 import { leadsTable } from '$lib/server/database/schema';
+import { getUserIdByPromoCode } from '$lib/server/database/utils/user.server';
+import { eq } from 'drizzle-orm';
 
 export const POST: RequestHandler = async ({ url, request }) => {
 	// Verifica se a chave da API é válida
@@ -18,15 +20,61 @@ export const POST: RequestHandler = async ({ url, request }) => {
 	if (!fullName || !cpfCnpj) {
 		return new Response('Parâmetros inválidos', { status: 400 });
 	}
-	const newLead = await db.insert(leadsTable).values({
+
+	// Verifica se o promoCode vazio ou inválido
+	if (!promoCode) {
+		await db.insert(leadsTable).values({
+			id,
+			fullName,
+			cpfCnpj,
+			promoCode
+		});
+		return new Response('Lead criado com sucesso sem promocode', { status: 201 });
+	}
+
+	const userIdPromoCode = await getUserIdByPromoCode(promoCode);
+	if (!userIdPromoCode) {
+		return new Response('Código promocional inválido', { status: 400 });
+	}
+	await db.insert(leadsTable).values({
 		id,
 		fullName,
 		cpfCnpj,
-		promoCode
+		promoCode,
+		userIdPromoCode
 	});
 
-	if (!newLead) {
-		return new Response('Erro ao criar lead', { status: 500 });
+	return new Response('Lead criado com sucesso com promocode', { status: 201 });
+};
+
+export const GET: RequestHandler = async ({ request, locals }) => {
+	// Verifica se a chave da API é válida
+	console.log('Na API de indicacoes');
+
+	if (request.headers.get('API-KEY') !== CHAVE_API_SITE) {
+		return new Response('Chave de API inválida', { status: 401 });
 	}
-	return new Response('Lead criado com sucesso', { status: 201 });
+	if (!locals.user) {
+		return new Response('Usuário não autenticado', { status: 401 });
+	}
+
+	const leads = await db
+		.select({
+			id: leadsTable.id,
+			fullName: leadsTable.fullName,
+			status: leadsTable.status,
+			promoCode: leadsTable.promoCode
+		})
+		.from(leadsTable)
+		.where(eq(leadsTable.userIdPromoCode, locals.user.id));
+
+	if (!leads) {
+		return new Response('Nenhum lead encontrado', { status: 404 });
+	}
+
+	return new Response(JSON.stringify(leads), {
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	});
 };
