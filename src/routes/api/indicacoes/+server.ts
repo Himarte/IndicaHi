@@ -68,10 +68,6 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 		.from(leadsTable)
 		.where(eq(leadsTable.userIdPromoCode, locals.user.id));
 
-	if (!leads) {
-		return new Response('Nenhum lead encontrado', { status: 404 });
-	}
-
 	return new Response(JSON.stringify(leads), {
 		headers: {
 			'Content-Type': 'application/json'
