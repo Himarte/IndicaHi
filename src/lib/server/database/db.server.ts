@@ -6,7 +6,7 @@ import { DB_HOST, DB_PASSWORD, DB_USER, DB_NAME } from '$env/static/private';
 
 export const client = new pg.Client({
 	host: DB_HOST,
-	port: 5432,
+	port: 3333,
 	user: DB_USER,
 	password: DB_PASSWORD,
 	database: DB_NAME
