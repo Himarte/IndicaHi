@@ -6,8 +6,10 @@
 	const leads = data.leads;
 </script>
 
-{#await data.leads}
+{#await leads}
 	<p>Carregando...</p>
 {:then leads}
 	<DataTable {leads} />
+{:catch error}
+	<p>{error.message}</p>
 {/await}
