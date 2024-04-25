@@ -9,7 +9,10 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		}
 	})
 		.then((res) => res.json())
-		.catch(() => []);
+		.catch((err) => {
+			console.error(err);
+			return [];
+		});
 
 	return {
 		leads
