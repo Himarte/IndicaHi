@@ -17,7 +17,7 @@
 
 <h1 class="px-72 py-7 text-3xl font-medium">Dados da sua conta</h1>
 <Separator />
-<div class="flex px-72 py-5">
+<div class="flex h-full w-full px-72 py-5">
 	<ScrollArea class="h-72 w-72">
 		<div class="flex flex-col pr-7">
 			{#each link as link}
@@ -27,7 +27,7 @@
 			{/each}
 		</div>
 	</ScrollArea>
-	<div class="flex flex-col gap-5">
+	<div class="flex h-full w-full flex-col gap-5">
 		<slot><!-- optional fallback --></slot>
 	</div>
 </div>

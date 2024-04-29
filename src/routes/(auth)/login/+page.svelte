@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { PageData, ActionData } from './$types';
 	import UserLoginForm from '$lib/components/FormAuth/LoginUser/UserLoginForm.svelte';
-	import Paraqueda from '$lib/img/paraqueda.png';
+	import Paraqueda from '$lib/img/paraqueda.webp';
 	import { Separator } from '$lib/components/ui/separator';
-	import Rocket from '$lib/img/melhor.png';
+	import Rocket from '$lib/img/melhor.webp';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
 	import { fade, fly } from 'svelte/transition';

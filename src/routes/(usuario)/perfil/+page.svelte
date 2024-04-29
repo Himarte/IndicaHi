@@ -1,47 +1,32 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import type { UserInsertSchema } from '$lib/server/database/schema';
 	export let data: PageData;
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Button } from '$lib/components/ui/button';
-	import { onMount } from 'svelte';
 	import * as Select from '$lib/components/ui/select';
 	import { validationCpf } from '$lib/components/FormAuth/CreateUser/validation/functionsUteis';
+	import { Circle3 } from 'svelte-loading-spinners';
 
-	let userProfile: UserInsertSchema | null;
-	let carregando: boolean = false; // Adiciona uma variável de estado para o carregamento
-
-	onMount(async () => {
-		carregando = true; // Inicia o carregamento
-		const response = await fetch('/api/perfil', {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		});
-		if (response.ok) {
-			userProfile = await response.json();
-		} else {
-			console.error('Erro ao buscar dados do usuário');
-		}
-		carregando = false; // Finaliza o carregamento
-	});
 	let cpfValue: string = '';
-
-	validationCpf(cpfValue);
-
 	function digitandoCpf(event: InputEvent) {
 		const target = event.target as HTMLInputElement;
 		cpfValue = validationCpf(target.value);
 	}
 
+	const pixTypes = [
+		{ value: 'CPF', label: 'CPF' },
+		{ value: 'CNPJ', label: 'CNPJ' },
+		{ value: 'Email', label: 'Email' },
+		{ value: 'Celular', label: 'Celular' }
+	];
+
 	// TODO: Alguns das sessoes nao estao verificando se os dados estao vazios e enviando eles vazios... precisa pegar o que esta de dwfault e enviar junto
 </script>
 
-<form action="?/editarDadosPessoais" method="post">
-	<Card.Root class=" w-full  ">
+<form action="?/editarDadosPessoais" method="post" class="relative">
+	<Card.Root class="w-full ">
 		<Card.Header>
 			<Card.Title>Dados pessoas</Card.Title>
 			<Card.Description>Aqui vai suas informações basicas.</Card.Description>
@@ -82,109 +67,129 @@
 	</Card.Root>
 </form>
 
-<Card.Root class="w-full  ">
-	<Card.Header>
-		<Card.Title>Localizaçao</Card.Title>
-		<Card.Description>Aqui vai suas informações de localizaçao.</Card.Description>
-	</Card.Header>
+{#await data.dadosPerfilUser}
+	<div class="flex h-full w-full items-center justify-center">
+		<Circle3
+			size="70"
+			ballBottomLeft="#F97316"
+			ballBottomRight="#FAFAFA"
+			ballTopLeft="#FAFAFA"
+			ballTopRight="#F97316"
+		/>
+	</div>
+{:then userProfile}
 	<form action="?/editarLocalizacao" method="post">
-		<Card.Content class="flex w-full flex-col">
-			<div class="flex w-full gap-5">
-				<div class="flex w-1/3 flex-col gap-2">
-					<Label for="cep">CEP</Label>
-					<Input
-						id="cep"
-						name="cep"
-						placeholder={userProfile?.cep || 'Não informado'}
-						minlength={8}
-						maxlength={8}
-					/>
+		<Card.Root class="w-full ">
+			<Card.Header>
+				<Card.Title>Localizaçao</Card.Title>
+				<Card.Description>Aqui vai suas informações de localizaçao.</Card.Description>
+			</Card.Header>
+			<Card.Content class="flex w-full flex-col">
+				<div class="flex w-full gap-5">
+					<div class="flex w-1/3 flex-col gap-2">
+						<Label for="cep">CEP</Label>
+						<Input
+							id="cep"
+							name="cep"
+							placeholder={userProfile?.cep || 'Não informado'}
+							minlength={8}
+							maxlength={8}
+						/>
+					</div>
+					<div class="flex w-1/3 flex-col gap-2">
+						<Label for="rua">Rua</Label>
+						<Input id="rua" name="rua" placeholder={userProfile?.rua || 'Não informado'} />
+					</div>
+					<div class="flex w-1/12 flex-col gap-2">
+						<Label for="numeroCasa">Numero</Label>
+						<Input
+							id="numeroCasa"
+							name="numeroCasa"
+							placeholder={userProfile?.numeroCasa?.toString() || 'ex: 123'}
+						/>
+					</div>
+					<div class="flex w-1/5 flex-col gap-2">
+						<Label for="complemento">Complemento</Label>
+						<Input
+							id="complemento"
+							name="complemento"
+							placeholder={userProfile?.complemento || 'ex: Apt 313'}
+						/>
+					</div>
 				</div>
-				<div class="flex w-1/3 flex-col gap-2">
-					<Label for="rua">Rua</Label>
-					<Input id="rua" name="rua" placeholder={userProfile?.rua || 'Não informado'} />
+				<div class="mt-5 flex w-full gap-5">
+					<div class="flex w-1/2 flex-col gap-2">
+						<Label for="bairro">Bairro</Label>
+						<Input id="bairro" name="bairro" placeholder={userProfile?.bairro || 'Não informado'} />
+					</div>
+					<div class="flex w-1/2 flex-col gap-2">
+						<Label for="cidade">Cidade</Label>
+						<Input id="cidade" name="cidade" placeholder={userProfile?.cidade || 'Não informado'} />
+					</div>
+					<div class="flex w-1/12 flex-col gap-2">
+						<Label for="estado">Estado</Label>
+						<Input
+							id="estado"
+							name="estado"
+							placeholder={userProfile?.estado || 'ex: RS'}
+							minlength={2}
+							maxlength={2}
+						/>
+					</div>
 				</div>
-				<div class="flex w-1/12 flex-col gap-2">
-					<Label for="numeroCasa">Numero</Label>
-					<Input
-						id="numeroCasa"
-						name="numeroCasa"
-						placeholder={userProfile?.numeroCasa?.toString() || 'ex: 123'}
-					/>
-				</div>
-				<div class="flex w-1/5 flex-col gap-2">
-					<Label for="complemento">Complemento</Label>
-					<Input
-						id="complemento"
-						name="complemento"
-						placeholder={userProfile?.complemento || 'ex: Apt 313'}
-					/>
-				</div>
-			</div>
-			<div class="mt-5 flex w-full gap-5">
-				<div class="flex w-1/2 flex-col gap-2">
-					<Label for="bairro">Bairro</Label>
-					<Input id="bairro" name="bairro" placeholder={userProfile?.bairro || 'Não informado'} />
-				</div>
-				<div class="flex w-1/2 flex-col gap-2">
-					<Label for="cidade">Cidade</Label>
-					<Input id="cidade" name="cidade" placeholder={userProfile?.cidade || 'Não informado'} />
-				</div>
-				<div class="flex w-1/12 flex-col gap-2">
-					<Label for="estado">Estado</Label>
-					<Input
-						id="estado"
-						name="estado"
-						placeholder={userProfile?.estado || 'ex: RS'}
-						minlength={2}
-						maxlength={2}
-					/>
-				</div>
-			</div>
-		</Card.Content>
-		<Card.Footer class="flex items-center justify-end">
-			<Button class="h-7" type="submit" formaction="?/editarLocalizacao">Salvar</Button>
-		</Card.Footer>
+			</Card.Content>
+			<Card.Footer class="flex items-center justify-end">
+				<Button class="h-7" type="submit" formaction="?/editarLocalizacao">Salvar</Button>
+			</Card.Footer>
+		</Card.Root>
 	</form>
-</Card.Root>
-<Card.Root class=" w-full  ">
-	<Card.Header>
-		<Card.Title>Dados para pagamentos</Card.Title>
-		<Card.Description>Aqui vai suas informações de pagamento.</Card.Description>
-	</Card.Header>
 	<form method="post" action="?/editarDadosPagamento">
-		<Card.Content class="flex w-full items-center gap-5">
-			<!-- TODO: O select nao esta sendo pego e tambem nao stata com um valor determinado -->
-			<div class="flex w-1/4 flex-col gap-2">
-				<Label for="pixType">Tipo de chave</Label>
-				<Select.Root>
-					<Select.Trigger class="w-[180px]" name="pixType" value="Teste">
-						<Select.Value placeholder={userProfile?.pixType || 'Não informado'} id="pixType" />
-					</Select.Trigger>
-					<Select.Content>
-						<Select.Item value="CPF">CPF</Select.Item>
-						<Select.Item value="CNPJ">CNPJ</Select.Item>
-						<Select.Item value="Email">Email</Select.Item>
-						<Select.Item value="Celular">Celular</Select.Item>
-						<Select.Item value="Chave aleatoria">Chave aleatoria</Select.Item>
-					</Select.Content>
-				</Select.Root>
-			</div>
-			<div class="flex w-1/3 flex-col gap-2">
-				<Label for="pixCode">Chave Pix</Label>
-				<Input id="pixCode" name="pixCode" placeholder={userProfile?.pixCode || 'Não informado'} />
-			</div>
-			<div class="flex w-1/3 flex-col gap-2">
-				<Label for="promoCode">Seu Codigo</Label>
-				<Input
-					id="promoCode"
-					name="promoCode"
-					placeholder={userProfile?.promoCode || 'Não informado'}
-				/>
-			</div>
-		</Card.Content>
-		<Card.Footer class="flex items-center justify-end ">
-			<Button class="h-7" type="submit" formaction="?/editarDadosPagamento">Salvar</Button>
-		</Card.Footer>
+		<Card.Root class=" w-full  ">
+			<Card.Header>
+				<Card.Title>Dados para pagamentos</Card.Title>
+				<Card.Description>Aqui vai suas informações de pagamento.</Card.Description>
+			</Card.Header>
+			<Card.Content class="flex w-full items-center gap-5">
+				<!-- TODO: O select nao esta sendo pego e tambem nao stata com um valor determinado -->
+				<div class="flex w-1/4 flex-col gap-2">
+					<Label for="pixType">Tipo de chave</Label>
+					<Select.Root>
+						<Select.Trigger class="w-[180px]">
+							<Select.Value placeholder={userProfile?.pixType || 'Não informado'} />
+						</Select.Trigger>
+						<Select.Content>
+							<Select.Group>
+								{#each pixTypes as pixType}
+									<Select.Item value={pixType.value} label={pixType.label} />
+								{/each}
+							</Select.Group>
+						</Select.Content>
+						<Select.Input name="pixType" />
+					</Select.Root>
+				</div>
+				<div class="flex w-1/3 flex-col gap-2">
+					<Label for="pixCode">Chave Pix</Label>
+					<Input
+						id="pixCode"
+						name="pixCode"
+						placeholder={userProfile?.pixCode || 'Não informado'}
+						value={userProfile?.pixCode}
+					/>
+				</div>
+				<div class="flex w-1/3 flex-col gap-2">
+					<Label for="promoCode">Seu Codigo</Label>
+
+					<Input
+						id="promoCode"
+						name="promoCode"
+						placeholder={userProfile?.promoCode || 'Não informado'}
+						value={userProfile?.promoCode}
+					/>
+				</div>
+			</Card.Content>
+			<Card.Footer class="flex items-center justify-end ">
+				<Button class="h-7" type="submit" formaction="?/editarDadosPagamento">Salvar</Button>
+			</Card.Footer>
+		</Card.Root>
 	</form>
-</Card.Root>
+{/await}

@@ -1,10 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { emailIsUsed, cpfIsUsed } from '$lib/server/database/utils/user.server';
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/database/db.server';
 import { userTable } from '$lib/server/database/schema';
 import { fail } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
+
+export const load: PageServerLoad = async ({ fetch }) => {
+	const dadosPerfilUser = fetch('/api/perfil', {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	}).then((res) => res.json());
+
+	return {
+		dadosPerfilUser
+	};
+};
 
 export const actions: Actions = {
 	editarDadosPessoais: async ({ request, locals }) => {
@@ -120,6 +133,7 @@ export const actions: Actions = {
 		const dados = await request.formData();
 
 		const pixType: any = dados.get('pixType') || '';
+
 		const pixCode: any = dados.get('pixCode') || '';
 		const promoCode: any = dados.get('promoCode') || '';
 

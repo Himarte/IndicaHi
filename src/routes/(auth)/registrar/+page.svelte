@@ -29,6 +29,7 @@
 			toast.error(`Erro desconhecido`, {
 				duration: 3500
 			});
+			goto('/');
 		}
 	}
 </script>
