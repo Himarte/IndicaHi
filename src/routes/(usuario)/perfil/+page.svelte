@@ -22,6 +22,7 @@
 		{ value: 'Celular', label: 'Celular' }
 	];
 
+	const userProfile = data.dadosPerfilUser;
 	// TODO: Alguns das sessoes nao estao verificando se os dados estao vazios e enviando eles vazios... precisa pegar o que esta de dwfault e enviar junto
 </script>
 
@@ -56,8 +57,13 @@
 					/>
 				</div>
 				<div class="flex w-1/2 flex-col gap-2">
-					<Label for="email">Email</Label>
-					<Input id="email" name="email" type="email" placeholder={data.user?.email} />
+					<Label for="promoCode">Codigo promocional</Label>
+					<Input
+						id="promoCode"
+						name="promoCode"
+						placeholder={data.user?.promoCode || 'Não informado'}
+						value={data.user?.promoCode}
+					/>
 				</div>
 			</div>
 		</Card.Content>
@@ -140,55 +146,6 @@
 			</Card.Content>
 			<Card.Footer class="flex items-center justify-end">
 				<Button class="h-7" type="submit" formaction="?/editarLocalizacao">Salvar</Button>
-			</Card.Footer>
-		</Card.Root>
-	</form>
-	<form method="post" action="?/editarDadosPagamento">
-		<Card.Root class=" w-full  ">
-			<Card.Header>
-				<Card.Title>Dados para pagamentos</Card.Title>
-				<Card.Description>Aqui vai suas informações de pagamento.</Card.Description>
-			</Card.Header>
-			<Card.Content class="flex w-full items-center gap-5">
-				<!-- TODO: O select nao esta sendo pego e tambem nao stata com um valor determinado -->
-				<div class="flex w-1/4 flex-col gap-2">
-					<Label for="pixType">Tipo de chave</Label>
-					<Select.Root>
-						<Select.Trigger class="w-[180px]">
-							<Select.Value placeholder={userProfile?.pixType || 'Não informado'} />
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Group>
-								{#each pixTypes as pixType}
-									<Select.Item value={pixType.value} label={pixType.label} />
-								{/each}
-							</Select.Group>
-						</Select.Content>
-						<Select.Input name="pixType" />
-					</Select.Root>
-				</div>
-				<div class="flex w-1/3 flex-col gap-2">
-					<Label for="pixCode">Chave Pix</Label>
-					<Input
-						id="pixCode"
-						name="pixCode"
-						placeholder={userProfile?.pixCode || 'Não informado'}
-						value={userProfile?.pixCode}
-					/>
-				</div>
-				<div class="flex w-1/3 flex-col gap-2">
-					<Label for="promoCode">Seu Codigo</Label>
-
-					<Input
-						id="promoCode"
-						name="promoCode"
-						placeholder={userProfile?.promoCode || 'Não informado'}
-						value={userProfile?.promoCode}
-					/>
-				</div>
-			</Card.Content>
-			<Card.Footer class="flex items-center justify-end ">
-				<Button class="h-7" type="submit" formaction="?/editarDadosPagamento">Salvar</Button>
 			</Card.Footer>
 		</Card.Root>
 	</form>

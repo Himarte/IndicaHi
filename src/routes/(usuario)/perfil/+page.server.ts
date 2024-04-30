@@ -33,18 +33,7 @@ export const actions: Actions = {
 		const name: any = dados.get('name') || locals.user?.name;
 		const lastName: any = dados.get('lastName') || locals.user?.lastName;
 		let cpf: any = dados.get('cpf') || locals.user?.cpf;
-		const email: any = dados.get('email') || locals.user?.email;
-
-		// Verificar se o email ja esta cadastrado
-		if (email !== locals.user?.email) {
-			const emailUsed = await emailIsUsed(email);
-			if (emailUsed) {
-				return fail(400, {
-					status: 400,
-					message: 'Email ja cadastrado'
-				});
-			}
-		}
+		const promoCode: any = dados.get('promoCode') || locals.user?.promoCode;
 
 		function limparCPF(cpf: string): string {
 			return cpf.replace(/\.|-|\s/g, '');
@@ -67,21 +56,17 @@ export const actions: Actions = {
 				});
 			}
 		}
-		console.log('chegou aqui');
 		// TODO: Esta bem lento, verificar se tem como melhorar
 		// TODO: Esta lento ao criar um novo user o carregamento do perfil
-		try {
-			await db
-				.update(userTable)
-				.set({ name, lastName, cpf, email })
-				.where(eq(userTable.id, locals.user?.id || ''));
-		} catch (e) {
-			console.log(e);
-			return fail(500, {
-				status: 500,
-				message: 'Erro ao atualizar os dados'
-			});
-		}
+		await db
+			.update(userTable)
+			.set({ name, lastName, cpf, promoCode })
+			.where(eq(userTable.id, locals.user?.id || ''));
+
+		return {
+			status: 200,
+			message: 'Dados atualizados com sucesso'
+		};
 	},
 
 	editarLocalizacao: async ({ request, locals }) => {
@@ -118,43 +103,6 @@ export const actions: Actions = {
 		return {
 			status: 200,
 			message: 'Localização atualizada com sucesso'
-		};
-	},
-
-	// TODO: promoCode nao ta pegando la do form
-	editarDadosPagamento: async ({ request, locals }) => {
-		if (!locals) {
-			return {
-				status: 401,
-				message: 'Nao autorizado'
-			};
-		}
-
-		const dados = await request.formData();
-
-		const pixType: any = dados.get('pixType') || '';
-
-		const pixCode: any = dados.get('pixCode') || '';
-		const promoCode: any = dados.get('promoCode') || '';
-
-		console.log(pixType, pixCode, promoCode);
-
-		try {
-			await db
-				.update(userTable)
-				.set({ pixType, pixCode, promoCode })
-				.where(eq(userTable.id, locals.user?.id || ''));
-		} catch (e) {
-			console.log(e);
-			return fail(500, {
-				status: 500,
-				message: 'Erro ao atualizar os dados'
-			});
-		}
-
-		return {
-			status: 200,
-			message: 'Dados de pagamento atualizados com sucesso'
 		};
 	}
 };
