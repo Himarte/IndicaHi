@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { emailIsUsed, cpfIsUsed } from '$lib/server/database/utils/user.server';
+import { cpfIsUsed } from '$lib/server/database/utils/user.server';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/database/db.server';
 import { userTable } from '$lib/server/database/schema';

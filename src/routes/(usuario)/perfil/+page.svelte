@@ -5,7 +5,6 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Button } from '$lib/components/ui/button';
-	import * as Select from '$lib/components/ui/select';
 	import { validationCpf } from '$lib/components/FormAuth/CreateUser/validation/functionsUteis';
 	import { Circle3 } from 'svelte-loading-spinners';
 
@@ -15,15 +14,7 @@
 		cpfValue = validationCpf(target.value);
 	}
 
-	const pixTypes = [
-		{ value: 'CPF', label: 'CPF' },
-		{ value: 'CNPJ', label: 'CNPJ' },
-		{ value: 'Email', label: 'Email' },
-		{ value: 'Celular', label: 'Celular' }
-	];
-
 	const userProfile = data.dadosPerfilUser;
-	// TODO: Alguns das sessoes nao estao verificando se os dados estao vazios e enviando eles vazios... precisa pegar o que esta de dwfault e enviar junto
 </script>
 
 <form action="?/editarDadosPessoais" method="post" class="relative">
