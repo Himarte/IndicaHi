@@ -45,7 +45,7 @@
 
 			<img
 				src={Rocket}
-				loading="eager"
+				loading="lazy"
 				alt="Imagem de um foguete decolando"
 				class="absolute bottom-0 hidden w-[99%] object-cover md:flex"
 				in:fly={{ y: 100, duration: 300 }}
@@ -56,7 +56,7 @@
 		<div class="flex w-full justify-center px-5 py-44 md:w-1/2 md:px-0 md:py-0">
 			<img
 				src={Paraqueda}
-				loading="eager"
+				loading="lazy"
 				alt="Astronauta caindo de paraquedas"
 				class="absolute -top-20 right-0 z-[1] w-64 rotate-0 opacity-15 md:-top-28 md:right-6 md:w-80 md:rotate-6 md:opacity-85"
 				in:fade={{ duration: 500 }}
