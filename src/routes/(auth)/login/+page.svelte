@@ -42,7 +42,6 @@
 				Bem Vindo! <br />
 				Vamos nessa jornada <br /> Juntos com a HIMARTE
 			</p>
-
 			<img
 				src={Rocket}
 				loading="lazy"
