@@ -1,4 +1,10 @@
-import { CHAVE_API_BLIP, CHAVE_API_VOALLE, URL_VOALLE } from '$env/static/private';
+import {
+	CHAVE_API_BLIP,
+	CLIENT_ID_VOALLE,
+	CLIENT_SECRET_VOALLE,
+	SYNDATA_API_VOALLE,
+	URL_VOALLE
+} from '$env/static/private';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ request }) => {
@@ -10,34 +16,46 @@ export const GET: RequestHandler = async ({ request }) => {
 		return new Response('Parâmetros inválidos', { status: 400 });
 	}
 
-	console.log(cpfCnpj);
+	console.log('CPF/CNPJ:', cpfCnpj);
 
-	const clienteVoalle = await fetch(
+	// Faz a requisição para para pegar o access token
+	const autentificacaoVoalle = await fetch(`${URL_VOALLE}:45700/connect/token`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded'
+		},
+		body: new URLSearchParams({
+			grant_type: 'client_credentials',
+			scope: 'syngw',
+			client_id: CLIENT_ID_VOALLE,
+			client_secret: CLIENT_SECRET_VOALLE,
+			syndata: SYNDATA_API_VOALLE
+		})
+	}).then((res) => res.json());
+
+	const accessToken = autentificacaoVoalle.access_token;
+
+	const response = await fetch(
 		`${URL_VOALLE}:45715/external/integrations/thirdparty/people/txid/${cpfCnpj}`,
 		{
 			method: 'GET',
 			headers: {
-				Authorization: `Bearer ${CHAVE_API_VOALLE}`
+				Authorization: `Bearer ${accessToken}`
 			}
 		}
 	);
 
-	console.log(clienteVoalle);
-
-	// valida se o cliente retornou algo ou deu erro
-	if (!clienteVoalle.ok) {
-		return new Response('Erro ao buscar cliente', { status: 500 });
+	if (!response.ok) {
+		console.error(`HTTP error status: ${response.status}`);
+		const errorText = await response.text();
+		return new Response(errorText, { status: response.status });
 	}
 
-	return new Response(
-		JSON.stringify({
-			clienteVoalle
-		}),
-		{
-			status: 200,
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		}
-	);
+	const dadosClienteVoalle = await response.json();
+	console.log('Response dadosClienteVoalle:', dadosClienteVoalle);
+
+	return new Response(JSON.stringify(dadosClienteVoalle), {
+		status: 200,
+		headers: { 'Content-Type': 'application/json' }
+	});
 };
