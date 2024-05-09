@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PageData, ActionData } from './$types';
+	import type { ActionData } from './$types';
 	import UserLoginForm from '$lib/components/FormAuth/LoginUser/UserLoginForm.svelte';
 	import Paraqueda from '$lib/img/paraqueda.webp';
 	import { Separator } from '$lib/components/ui/separator';

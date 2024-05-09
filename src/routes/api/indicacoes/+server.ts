@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { CHAVE_API_SITE } from '$env/static/private';
+import { SITE_CHAVE_API } from '$env/static/private';
 import { generateId } from 'lucia';
 import { db } from '$lib/server/database/db.server';
 import { leadsTable } from '$lib/server/database/schema';
@@ -8,7 +8,7 @@ import { eq } from 'drizzle-orm';
 
 export const POST: RequestHandler = async ({ url, request }) => {
 	// Verifica se a chave da API é válida
-	if (request.headers.get('API-KEY') !== CHAVE_API_SITE) {
+	if (request.headers.get('API-KEY') !== SITE_CHAVE_API) {
 		return new Response('Chave de API inválida', { status: 401 });
 	}
 	const id = generateId(10);
@@ -51,7 +51,7 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 	// Verifica se a chave da API é válida
 	console.log('Na API de indicacoes');
 
-	if (request.headers.get('API-KEY') !== CHAVE_API_SITE) {
+	if (request.headers.get('API-KEY') !== SITE_CHAVE_API) {
 		return new Response('Chave de API inválida', { status: 401 });
 	}
 	if (!locals.user) {

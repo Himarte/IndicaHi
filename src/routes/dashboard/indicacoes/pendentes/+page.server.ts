@@ -1,11 +1,11 @@
 import type { PageServerLoad } from './$types';
-import { CHAVE_API_SITE } from '$env/static/private';
+import { SITE_CHAVE_API } from '$env/static/private';
 
 export const load: PageServerLoad = async ({ fetch }) => {
 	const leads = fetch('/api/indicacoes', {
 		method: 'GET',
 		headers: {
-			'API-KEY': CHAVE_API_SITE,
+			'API-KEY': SITE_CHAVE_API,
 			'Content-Type': 'application/json'
 		}
 	})
