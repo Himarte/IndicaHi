@@ -6,7 +6,11 @@ export default {
 	out: './migration',
 	driver: 'pg', // 'pg' | 'mysql2' | 'better-sqlite' | 'libsql' | 'turso'
 	dbCredentials: {
-		connectionString: process.env.DB_URL!
+		host: process.env.DB_HOST!,
+		user: process.env.DB_USER,
+		password: process.env.DB_PASSWORD,
+		database: process.env.DB_NAME!,
+		port: 3333
 	},
 	// Print all statements
 	verbose: true,

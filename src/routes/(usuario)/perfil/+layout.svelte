@@ -1,4 +1,4 @@
-<script lang="ts">
+<script src="ts">
 	import SideBarUser from '$lib/components/NavBar/SideBarUser.svelte';
 	import { Separator } from '$lib/components/ui/separator';
 </script>
