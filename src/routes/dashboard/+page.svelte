@@ -2,4 +2,4 @@
 	import { Button } from '$lib/components/ui/button';
 </script>
 
-<Button>Rota do dashboard</Button>
+<Button>TEste de rota</Button>
