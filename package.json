@@ -11,11 +11,11 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"studio": "drizzle-kit studio ",
-		"generate": "drizzle-kit generate:pg",
-		"migrate": "drizzle-kit push:pg",
+		"generate": "drizzle-kit generate",
+		"migrate": "drizzle-kit push",
 		"db:drop": "drizzle-kit drop",
 		"db:up": "drizzle-kit up",
-		"db:introspect": "drizzle-kit introspect:pg"
+		"db:introspect": "drizzle-kit introspect"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.2.0",
