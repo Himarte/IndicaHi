@@ -30,7 +30,7 @@
 			<Button variant="ghost" href="/dashboard/indicacoes/pendentes">Dashboard</Button>
 		{/if}
 	</nav>
-
+	<!-- Teste -->
 	<nav class="flex w-1/3 items-center justify-end gap-24">
 		{#if isLoggedIn}
 			{#if !userData.promoCode}
