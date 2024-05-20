@@ -1,25 +1,27 @@
 import { db } from '$lib/server/database/db.server';
-
 import { userTable } from '$lib/server/database/schema.js';
-
 import { eq } from 'drizzle-orm';
 
 export async function GET({ locals }) {
 	// TODO: validar se o usuario tem local
-	// Isso retorna um array de resultados que correspondem à condição.
-	const result = await db.select().from(userTable).where(eq(userTable.id, locals.user?.id));
 
-	// Tenta obter o primeiro elemento do array de resultados. Se o array estiver vazio, atribui 'null' a 'user'.
-	const user = result[0] || null;
+	if (!locals.user) {
+		return new Response('Nao autorizado', {
+			status: 401
+		});
+	}
 
-	// Converte o objeto 'user' (ou 'null') em uma string JSON.
-	// Isso é necessário porque a resposta HTTP deve ser uma string ou um buffer.
-	const jsonResult = JSON.stringify(user);
+	// Pego os dados do usuario logado
+	const dadosUser = await db
+		.select()
+		.from(userTable)
+		.where(eq(userTable.id, locals.user?.id || ''));
 
-	// Retorna uma nova resposta HTTP com o 'jsonResult' como corpo.
-	// Por padrão, o SvelteKit trata isso como 'text/html'. Você poderia especificar o cabeçalho 'Content-Type' como 'application/json'
-	// para deixar explícito que o corpo da resposta é um JSON, facilitando a interpretação correta pelo cliente.
-	return new Response(jsonResult, {
+	// Peguei os dados do usuario, baseado no id do usuario logado, e converto para JSON
+	// Se não encontrar o usuario, retorna null
+	const user = JSON.stringify(dadosUser[0] || null);
+
+	return new Response(user, {
 		headers: {
 			'Content-Type': 'application/json'
 		}

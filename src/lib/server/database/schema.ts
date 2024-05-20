@@ -2,10 +2,11 @@ import { pgTable, text, timestamp, varchar, integer, boolean } from 'drizzle-orm
 
 export const userTable = pgTable('user', {
 	id: text('id').primaryKey().notNull(),
+	provider: varchar('provider_id'),
+	provider_user_id: varchar('provider_user_id'),
+	avatarUrl: varchar('avatar_url'),
 	name: varchar('name').notNull(),
-	lastName: varchar('last_name').notNull(),
 	email: varchar('email').notNull(),
-	password: varchar('password').notNull(),
 	job: varchar('job', {
 		enum: ['Vendedor Externo', 'Vendedor Interno', 'Financeiro', 'Admin']
 	}).default('Vendedor Externo'),

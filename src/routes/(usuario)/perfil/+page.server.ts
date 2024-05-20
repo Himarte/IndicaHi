@@ -29,9 +29,7 @@ export const actions: Actions = {
 		}
 
 		const dados = await request.formData();
-
 		const name: any = dados.get('name') || locals.user?.name;
-		const lastName: any = dados.get('lastName') || locals.user?.lastName;
 		let cpf: any = dados.get('cpf') || locals.user?.cpf;
 		const promoCode: any = dados.get('promoCode') || locals.user?.promoCode;
 
@@ -60,7 +58,7 @@ export const actions: Actions = {
 		// TODO: Esta lento ao criar um novo user o carregamento do perfil
 		await db
 			.update(userTable)
-			.set({ name, lastName, cpf, promoCode })
+			.set({ name, cpf, promoCode })
 			.where(eq(userTable.id, locals.user?.id || ''));
 
 		return {

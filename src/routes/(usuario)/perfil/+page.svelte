@@ -5,7 +5,8 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Button } from '$lib/components/ui/button';
-	import { validationCpf } from '$lib/components/FormAuth/CreateUser/validation/functionsUteis';
+	import { validationCpf } from '$lib/server/authUtils.server';
+
 	import { Circle3 } from 'svelte-loading-spinners';
 
 	let cpfValue: string = '';
@@ -13,8 +14,10 @@
 		const target = event.target as HTMLInputElement;
 		cpfValue = validationCpf(target.value);
 	}
-
+	// converte para json
 	const userProfile = data.dadosPerfilUser;
+
+	// $: console.log(userProfile);
 </script>
 
 <form action="?/editarDadosPessoais" method="post" class="relative">
@@ -30,22 +33,22 @@
 					<Input id="name" name="name" placeholder={data.user?.name} />
 				</div>
 				<div class="flex w-1/2 flex-col gap-2">
-					<Label for="lastName">Sobrenome</Label>
-					<Input id="lastName" name="lastName" placeholder={data.user?.lastName} />
-				</div>
-			</div>
-			<div class="flex w-full items-center gap-5">
-				<div class="flex w-1/2 flex-col gap-2">
 					<Label for="cpf">CPF</Label>
 					<Input
 						id="cpf"
 						name="cpf"
-						placeholder={data.user?.cpf}
+						placeholder={data.user?.cpf || 'ex: 123.456.789-10'}
 						bind:value={cpfValue}
 						on:input={digitandoCpf}
 						minlength={14}
 						maxlength={14}
 					/>
+				</div>
+			</div>
+			<div class="flex w-full items-center gap-5">
+				<div class="flex w-1/2 flex-col gap-2">
+					<Label for="email">Email</Label>
+					<Input id="email" name="email" value={data.user?.email} />
 				</div>
 				<div class="flex w-1/2 flex-col gap-2">
 					<Label for="promoCode">Codigo promocional</Label>
