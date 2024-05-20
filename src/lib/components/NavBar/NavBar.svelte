@@ -33,6 +33,7 @@
 	<!-- Teste -->
 	<nav class="flex w-1/3 items-center justify-end gap-24">
 		{#if isLoggedIn}
+			<!-- A logica esta invertida para facilitar o desenvolvimento -->
 			{#if !userData.promoCode}
 				<p class="hidden gap-2 text-orange-500 lg:flex">
 					Seu Codigo: <span class="text-white"> {userData.promoCode}</span>

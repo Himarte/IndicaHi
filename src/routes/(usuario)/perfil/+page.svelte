@@ -5,7 +5,7 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Button } from '$lib/components/ui/button';
-	import { validationCpf } from '$lib/server/authUtils.server';
+	import { validationCpf } from '$lib/uteis/authValidationsUteis';
 
 	import { Circle3 } from 'svelte-loading-spinners';
 

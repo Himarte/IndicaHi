@@ -5,7 +5,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/database/db.server';
 import { eq } from 'drizzle-orm';
 import { emailIsUsed } from '$lib/server/database/utils/user.server';
-import { emailRegex } from '$lib/server/authUtils.server';
+import { emailRegex } from '$lib/uteis/authValidationsUteis';
 
 export const load: PageServerLoad = async ({ fetch }) => {
 	const dadosPerfilUser = fetch('/api/perfil', {
