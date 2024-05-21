@@ -48,7 +48,7 @@
   "dependencies": {
     "@lucia-auth/adapter-drizzle": "^1.0.7",
     "arctic": "^1.8.0",
-    "bits-ui": "^0.21.8",
+    "bits-ui": "^0.21.9",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.30.10",

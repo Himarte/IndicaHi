@@ -18,10 +18,11 @@
 	import DataTableCheckbox from './data-table-checkbox.svelte';
 	import type { LeadsSchema } from '$lib/server/database/schema';
 	//  export let leads e uma promessa que vai ser resolvida typa do jeito certo e nao da erro
-	export let leads: Promise<LeadsSchema[]>;
+	export let leads: LeadsSchema[];
+	let leadsFinalizados = leads.filter((lead) => lead.status === 'Finalizado');
 
 	// O createTable é uma função que cria a table e coloca funcionalidades e interaçoes
-	const table = createTable(readable(leads), {
+	const table = createTable(readable(leadsFinalizados), {
 		page: addPagination(),
 		sort: addSortBy({ initialSortKeys: [{ id: 'status', order: 'desc' }] }),
 		filter: addTableFilter({
@@ -119,11 +120,11 @@
 </script>
 
 <div class="flex flex-col gap-5">
-	<div class="flex items-center">
+	<div class="flex items-center justify-end gap-5">
 		<Input class="max-w-sm" placeholder="Pesquisar..." type="text" bind:value={$filterValue} />
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger asChild let:builder>
-				<Button variant="outline" class="ml-auto" builders={[builder]}>
+				<Button variant="outline" builders={[builder]}>
 					Colunas <ChevronDown class="ml-2 h-4 w-4" />
 				</Button>
 			</DropdownMenu.Trigger>
@@ -170,16 +171,9 @@
 							{#each row.cells as cell (cell.id)}
 								<Subscribe attrs={cell.attrs()} let:attrs>
 									<Table.Cell {...attrs}>
-										<!-- Para estilizar linhas especificas voce vincula ao nome da dado do Database -->
+										<!-- Para estilizar cedula especificas voce vincula ao nome da dado do Database -->
 										{#if cell.id === 'status'}
-											<!-- Esse erro tem a ver com a tipagem do cell.value nao mexer -->
-											{#if cell.value === 'Sendo Atendido'}
-												<div class="text-yellow-600">
-													<Render of={cell.render()} />
-												</div>
-											{:else}
-												<Render of={cell.render()} />
-											{/if}
+											<Render of={cell.render()} />
 										{:else}
 											<Render of={cell.render()} />
 										{/if}

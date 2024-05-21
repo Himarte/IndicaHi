@@ -1,12 +1,13 @@
 <script lang="ts">
 	import SideBar from '$lib/components/NavBar/SideBar.svelte';
+	import NovaSide from '$lib/components/Novo/NovoSide.svelte';
 	import type { LayoutData } from './$types';
 	export let data: LayoutData;
 
 	$: userRole = data.user?.job;
 </script>
 
-<div class="mt-5 flex gap-5 px-44">
-	<SideBar {userRole} />
-	<div class="h-full w-full"><slot /></div>
-</div>
+<main class="flex h-full w-full flex-col pl-14 pr-6 pt-5">
+	<NovaSide />
+	<slot />
+</main>
