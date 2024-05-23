@@ -18,16 +18,14 @@
 </script>
 
 <ModeWatcher defaultMode={'dark'} />
-<header
-	class="sticky top-0 z-30 flex h-14 w-full items-center border-b border-border bg-background px-44 backdrop-blur supports-[backdrop-filter]:bg-background/80"
->
+<header class="sticky top-0 z-30 flex h-14 w-full items-center border-b bg-background px-44">
 	<nav class="flex w-2/3 items-center gap-5 rounded-xl">
 		<a href="/"> <img src={LogoHimarte} alt="Logo Himarte" class=" w-36 py-5 pr-5" /></a>
 
 		<Button variant="ghost" href="/">Home</Button>
 		<Button variant="ghost" href="/teste">Teste</Button>
 		{#if isLoggedIn}
-			<Button variant="ghost" href="/dashboard/indicacoes/pendentes">Dashboard</Button>
+			<Button variant="ghost" href="/dashboard">Dashboard</Button>
 		{/if}
 	</nav>
 	<!-- Teste -->

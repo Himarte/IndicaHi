@@ -16,7 +16,7 @@
 </script>
 
 <header
-	class="sticky top-0 z-30 flex h-10 w-full items-center gap-4 border-b px-4 pt-3 sm:static sm:h-auto sm:border-0 sm:pl-24 sm:pr-6"
+	class="z-2 static top-0 flex h-14 w-full items-center gap-4 border-b border-secondary pl-24 pr-10"
 >
 	<Sheet.Root>
 		<Sheet.Trigger asChild let:builder>
@@ -32,7 +32,7 @@
 				<Button variant="ghost" href="/">Home</Button>
 				<Button variant="ghost" href="/teste">Teste</Button>
 				{#if isLoggedIn}
-					<Button variant="ghost" href="/dashboard/indicacoes/pendentes">Dashboard</Button>
+					<Button variant="ghost" href="/dashboard">Dashboard</Button>
 				{/if}
 			</nav>
 		</Sheet.Content>
@@ -44,7 +44,7 @@
 		{/if}
 		<Button variant="ghost" href="/">Home</Button>
 		{#if isLoggedIn}
-			<Button variant="ghost" href="/dashboard/indicacoes/pendentes">Dashboard</Button>
+			<Button variant="ghost" href="/dashboard">Dashboard</Button>
 		{/if}
 	</nav>
 	<!--Pesquisa -->
@@ -55,7 +55,7 @@
 			</p>
 			<Popover.Root>
 				<Popover.Trigger
-					><Avatar.Root class="h-8 w-8">
+					><Avatar.Root class="h-10 w-10">
 						<Avatar.Image src={userData.avatarUrl} alt="Avatar do Usuario" />
 						<Avatar.Fallback>HM</Avatar.Fallback>
 					</Avatar.Root></Popover.Trigger

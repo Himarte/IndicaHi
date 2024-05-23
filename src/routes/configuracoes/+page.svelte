@@ -21,7 +21,7 @@
 </script>
 
 <form action="?/editarDadosPessoais" method="post" class="relative">
-	<Card.Root class="w-full ">
+	<Card.Root class="h-full w-full">
 		<Card.Header>
 			<Card.Title>Dados pessoas</Card.Title>
 			<Card.Description>Aqui vai suas informações basicas.</Card.Description>

@@ -48,16 +48,19 @@
 		<Tooltip.Root>
 			<Tooltip.Trigger asChild let:builder>
 				<a
-					href="##"
-					class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+					href="/configuracoes"
+					class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8 {$page
+						.url.pathname === '/configuracoes'
+						? 'bg-accent'
+						: ''} {$page.url.pathname === '/configuracoes/privacidade' ? 'bg-accent' : ''}"
 					use:builder.action
 					{...builder}
 				>
 					<Settings class="h-5 w-5" />
-					<span class="sr-only">Settings</span>
+					<span class="sr-only">Configurações</span>
 				</a>
 			</Tooltip.Trigger>
-			<Tooltip.Content side="right">Settings</Tooltip.Content>
+			<Tooltip.Content side="right">Configurações</Tooltip.Content>
 		</Tooltip.Root>
 	</nav>
 </aside>

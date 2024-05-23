@@ -1,23 +1,18 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
-	import { derived } from 'svelte/store';
 	import Button from '../ui/button/button.svelte';
 
 	let links = [
 		{
 			name: 'Perfil',
-			href: '/perfil'
+			href: '/configuracoes'
 		},
 		{
-			name: 'Configuraçoes',
-			href: '/perfil/configuracoes'
+			name: 'Privacidade',
+			href: '/configuracoes/privacidade'
 		}
 	];
-
-	let currentPath = derived(page, ($page) => $page.url.pathname);
-
-	$: currentPath = currentPath;
 </script>
 
 <ScrollArea class=" flex max-h-min w-72  ">
@@ -28,8 +23,8 @@
 			<Button
 				variant="ghost"
 				{href}
-				class="justify-start text-sm {$currentPath === href
-					? 'bg-background text-accent-foreground'
+				class="justify-start text-sm {$page.url.pathname === href
+					? 'bg-secondary text-accent-foreground'
 					: ''}"
 			>
 				{name}
