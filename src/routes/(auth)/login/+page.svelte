@@ -38,10 +38,11 @@
 				<div class="flex flex-col space-y-2 text-center">
 					<h1 class="text-2xl font-semibold tracking-tight">Acesse sua conta</h1>
 				</div>
-				<div class="flex gap-5">
+				<div class="flex flex-col items-center gap-5">
 					<!-- <Button href="/login/github" class="mt-3 flex w-1/2">Discord</Button> -->
-					<Skeleton class="mt-3 flex w-1/2">Discord</Skeleton>
-					<Button href="/login/google" class="mt-3 flex w-1/2">Google</Button>
+					<Button href="/login/google" class="flex w-1/2">Google</Button>
+					<Skeleton class=" flex h-10 w-1/2 ">Discord</Skeleton>
+					<Skeleton class=" flex h-10 w-1/2 ">Discord</Skeleton>
 				</div>
 			</div>
 		</div>
