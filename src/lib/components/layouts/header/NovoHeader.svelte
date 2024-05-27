@@ -6,7 +6,7 @@
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as Popover from '$lib/components/ui/popover';
 	import type { userDataFromCookies } from '$lib/server/lucia.server';
-	import AvatarOpcoes from '../NavBar/AvatarOpcoes.svelte';
+	import AvatarOpcoes from './AvatarOpcoes.svelte';
 
 	// Pops
 	export let userData: userDataFromCookies;

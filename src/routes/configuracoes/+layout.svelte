@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SideBarUser from '$lib/components/NavBar/SideBarUser.svelte';
+	import SideBarUser from '$lib/components/layouts/SideBarUser.svelte';
 </script>
 
 <dir class="flex h-full w-full pl-10">

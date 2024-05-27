@@ -1,6 +1,5 @@
 <script lang="ts">
-	import SideBar from '$lib/components/NavBar/SideBar.svelte';
-	import NovaSide from '$lib/components/Novo/NovoSide.svelte';
+	import NovaSide from '$lib/components/layouts/NovoSide.svelte';
 	import type { LayoutData } from './$types';
 	export let data: LayoutData;
 
