@@ -69,9 +69,9 @@ export const POST: RequestHandler = async ({ request }) => {
 				{ status: 200 }
 			);
 		} else if (unlockResults[0].return === false) {
-			return new Response('Não possui contrato bloqueado', { status: 400 });
+			return new Response('Você não possui contrato bloqueado', { status: 400 });
 		} else {
-			return new Response('Não possui contrato bloqueado', { status: 500 });
+			return new Response('Você não possui contrato bloqueado', { status: 500 });
 		}
 	} else {
 		// Caso haja apenas um contrato, faz a requisição de desbloqueio para ele
@@ -95,9 +95,9 @@ export const POST: RequestHandler = async ({ request }) => {
 				{ status: 200 }
 			);
 		} else if (unlockContrato.return === false) {
-			return new Response('Não possui contrato bloqueado', { status: 400 });
+			return new Response('Você não possui contrato bloqueado', { status: 400 });
 		} else {
-			return new Response('Não possui contrato bloqueado', { status: 500 });
+			return new Response('Você não possui contrato bloqueado', { status: 500 });
 		}
 	}
 };
