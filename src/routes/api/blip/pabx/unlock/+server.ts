@@ -1,7 +1,6 @@
 import { BLIP_CHAVE_API, VOALLE_URL, TOKEN_PABX } from '$env/static/private';
 import type { RequestHandler } from './$types';
 
-// Handler para a requisição POST
 export const POST: RequestHandler = async ({ request }) => {
 	// Verifica se a chave da API é válida
 	if (request.headers.get('API-KEY-BLIP') !== BLIP_CHAVE_API) {
@@ -17,7 +16,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		return new Response('Parâmetros inválidos', { status: 400 });
 	}
 
-	console.log('CPF/CNPJ:', cpfCnpj, 'Celular:', celularCliente);
+	// console.log('CPF/CNPJ:', cpfCnpj, 'Celular:', celularCliente);
 
 	// Faz a requisição para obter o access token
 	const autentificacao = await fetch(`${VOALLE_URL}/pbx/pbx/events/new/CLIENT_VALIDATE`, {
@@ -40,6 +39,8 @@ export const POST: RequestHandler = async ({ request }) => {
 	// Obtém a lista de IDs de contratos do cliente
 	const contractsIds = autentificacao.clients[0].contracts_id;
 
+	// console.log('Contratos ID:', contractsIds);
+
 	// Verifica se há mais de um contrato
 	if (contractsIds.length > 1) {
 		// Array para armazenar os resultados das requisições UNBLOCK_CONTRACT
@@ -56,7 +57,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					})
 				}).then((res) => res.json());
 
-				console.log('Unlock Contratos ID:', contractId, 'Resposta:', unlockContrato);
+				// console.log('Unlock Contratos ID:', contractId, 'Resposta:', unlockContrato);
 				return unlockContrato;
 			})
 		);
@@ -68,9 +69,9 @@ export const POST: RequestHandler = async ({ request }) => {
 				{ status: 200 }
 			);
 		} else if (unlockResults[0].return === false) {
-			return new Response(unlockResults[0].message, { status: 400 });
+			return new Response('Não possui contrato bloqueado', { status: 400 });
 		} else {
-			return new Response('Erro ao desbloquear contrato', { status: 500 });
+			return new Response('Não possui contrato bloqueado', { status: 500 });
 		}
 	} else {
 		// Caso haja apenas um contrato, faz a requisição de desbloqueio para ele
@@ -94,9 +95,9 @@ export const POST: RequestHandler = async ({ request }) => {
 				{ status: 200 }
 			);
 		} else if (unlockContrato.return === false) {
-			return new Response(unlockContrato.message, { status: 400 });
+			return new Response('Não possui contrato bloqueado', { status: 400 });
 		} else {
-			return new Response('Erro ao desbloquear contrato', { status: 500 });
+			return new Response('Não possui contrato bloqueado', { status: 500 });
 		}
 	}
 };

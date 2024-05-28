@@ -16,7 +16,7 @@ export const GET: RequestHandler = async ({ request }) => {
 		return new Response('Parâmetros inválidos', { status: 400 });
 	}
 
-	console.log('CPF/CNPJ:', cpfCnpj);
+	// console.log('CPF/CNPJ:', cpfCnpj);
 
 	// Faz a requisição para para pegar o access token
 	const autentificacaoVoalle = await fetch(`${VOALLE_URL}:45700/connect/token`, {
@@ -52,7 +52,7 @@ export const GET: RequestHandler = async ({ request }) => {
 	}
 
 	const dadosClienteVoalle = await response.json();
-	console.log('Response dadosClienteVoalle:', dadosClienteVoalle);
+	// console.log('Response dadosClienteVoalle:', dadosClienteVoalle);
 
 	return new Response(JSON.stringify(dadosClienteVoalle), {
 		status: 200,
