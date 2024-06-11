@@ -1,24 +1,22 @@
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
 import { Lucia } from 'lucia';
 import { dev } from '$app/environment';
-import { GitHub, Google, Discord } from 'arctic';
+import {  Google, Discord } from 'arctic';
 import { db } from './database/db.server';
 import { sessionTable, userTable } from './database/schema';
 import {
-	GITHUB_CLIENT_ID,
-	GITHUB_CLIENT_SECRET,
+
 	GOOGLE_CLIENT_ID,
 	GOOGLE_CLIENT_SECRET,
 	GOOGLE_CLIENT_REDIRECT_URL,
 	DISCORD_CLIENT_ID,
 	DISCORD_CLIENT_SECRET,
-	DISCORD_REDIRECT_URL
+	DISCORD_CLIENT_REDIRECT_URL
 } from '$env/static/private';
 
 const dbAdapter = new DrizzlePostgreSQLAdapter(db, sessionTable, userTable);
 
-// CLiente do github
-export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET);
+
 // Cliente do google
 export const google = new Google(
 	GOOGLE_CLIENT_ID,
@@ -26,7 +24,7 @@ export const google = new Google(
 	GOOGLE_CLIENT_REDIRECT_URL
 );
 // Cliente do discord
-export const discord = new Discord(DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, DISCORD_REDIRECT_URL);
+export const discord = new Discord(DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, DISCORD_CLIENT_REDIRECT_URL);
 
 export const lucia = new Lucia(dbAdapter, {
 	sessionCookie: {
