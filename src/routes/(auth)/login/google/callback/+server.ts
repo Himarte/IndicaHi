@@ -48,7 +48,6 @@ export const GET: RequestHandler = async (event) => {
 
 		// Resposta do google ja em json (verificar o type)
 		const googleUser = (await googleUserResponse.json()) as GoogleUser;
-		console.log('Google User', googleUser);
 
 		if (!googleUser.email) {
 			return new Response('No primary email address', {
@@ -64,7 +63,7 @@ export const GET: RequestHandler = async (event) => {
 
 		// Check if the user already exists
 		const existingEmail = await emailIsUsed(googleUser.email);
-		console.log('Existing User', existingEmail);
+
 
 		if (existingEmail) {
 			// pegar o id do usuario, e criar um cookie de sessao
