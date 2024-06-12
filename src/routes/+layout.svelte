@@ -6,28 +6,31 @@
 	import NovoHeader from '$lib/components/layouts/header/NovoHeader.svelte';
 	import NovoSide from '$lib/components/layouts/NovoSide.svelte';
 	import { ModeWatcher } from 'mode-watcher';
+	import PrimeiroLogin from '$lib/components/Dialogs/PrimeiroLogin.svelte';
 
 	export let data: LayoutData;
 	export let isLoggedIn = data.isUserLoggedIn;
 	export let userData = data.user;
-	// This is a special layout file that will be used for all routes.
+
 	$: isLoggedIn = data.isUserLoggedIn as boolean;
 	$: userData = data.user as userDataFromCookies;
+
 </script>
 
 <Toaster richColors closeButton />
 <ModeWatcher defaultMode={'dark'} />
 
-<!-- <NavBar {isLoggedIn} {userData} /> -->
 <NovoHeader {isLoggedIn} {userData} />
+
 {#if isLoggedIn}
-	<!-- Se estiver logado carrega esse -->
+	{#if userData.job === 'Vendador Externo' || !userData.cpf || !userData.telefone || !userData.cep || !userData.rua || !userData.numeroCasa || !userData.bairro || !userData.cidade || !userData.estado}
+		<PrimeiroLogin {userData} />
+	{/if}
 	<main class="flex h-full w-full pl-[3.5rem]">
 		<NovoSide />
-		<slot><!-- optional fallback --></slot>
+		<slot/>
 	</main>
 {:else}
-	<!-- Senao estiver logado carrega esse -->
 	<main class="flex h-full w-full">
 		<slot><!-- optional fallback --></slot>
 	</main>

@@ -23,3 +23,4 @@ export function validationCelular(v: string): string {
 	v = v.replace(/(\d)(\d{4})$/, '$1-$2'); //Coloca hífen antes dos últimos 4 dígitos
 	return v;
 }
+
