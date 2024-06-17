@@ -9,12 +9,14 @@
 	import PrimeiroLogin from '$lib/components/Dialogs/PrimeiroLogin.svelte';
 
 	export let data: LayoutData;
+
+	console.log(data);
+
 	export let isLoggedIn = data.isUserLoggedIn;
 	export let userData = data.user;
 
 	$: isLoggedIn = data.isUserLoggedIn as boolean;
 	$: userData = data.user as userDataFromCookies;
-
 </script>
 
 <Toaster richColors closeButton />
@@ -23,12 +25,12 @@
 <NovoHeader {isLoggedIn} {userData} />
 
 {#if isLoggedIn}
-	{#if userData.job === 'Vendador Externo' || !userData.cpf || !userData.telefone || !userData.cep || !userData.rua || !userData.numeroCasa || !userData.bairro || !userData.cidade || !userData.estado}
+	{#if userData.job === 'Vendador Externo' || !userData.cpf || !userData.telefone || !userData.pixCode || !userData.pixType}
 		<PrimeiroLogin {userData} />
 	{/if}
 	<main class="flex h-full w-full pl-[3.5rem]">
 		<NovoSide />
-		<slot/>
+		<slot />
 	</main>
 {:else}
 	<main class="flex h-full w-full">

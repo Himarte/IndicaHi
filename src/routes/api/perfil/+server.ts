@@ -3,8 +3,6 @@ import { userTable } from '$lib/server/database/schema.js';
 import { eq } from 'drizzle-orm';
 
 export async function GET({ locals }) {
-	// TODO: validar se o usuario tem local
-
 	if (!locals.user) {
 		return new Response('Nao autorizado', {
 			status: 401

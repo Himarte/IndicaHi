@@ -41,7 +41,7 @@
 				<div class="flex flex-col items-center gap-5">
 					<!-- <Button href="/login/github" class="mt-3 flex w-1/2">Discord</Button> -->
 					<Button href="/login/google" class="flex w-1/2">Google</Button>
-					<Button href="login/discord" class=" flex h-10 w-1/2 ">Discord</Button>
+					<Button href="login/discord" class=" flex  w-1/2 ">Discord</Button>
 					<Skeleton class=" flex h-10 w-1/2 ">Discord</Skeleton>
 				</div>
 			</div>
