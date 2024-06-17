@@ -39,6 +39,7 @@ export const cpfIsUsed = async (cpf: string) => {
 	return queryResult.length > 0;
 };
 
+// Pegar o ID do usuario pelo codigo promocional
 export const getUserIdByPromoCode = async (promoCode: string) => {
 	const result = await db
 		.select({ id: userTable.id })
@@ -46,4 +47,16 @@ export const getUserIdByPromoCode = async (promoCode: string) => {
 		.where(eq(userTable.promoCode, promoCode));
 
 	return result.length > 0 ? result[0].id : null;
+};
+
+// Verificar se o codigo promocional ja esta cadastrado
+export const promoCodeIsUsed = async (promoCode: string) => {
+	const queryResult = await db
+		.select({
+			promoCode: userTable.promoCode
+		})
+		.from(userTable)
+		.where(eq(userTable.promoCode, promoCode));
+
+	return queryResult.length > 0;
 };
