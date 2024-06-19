@@ -6,7 +6,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	const promoCode = dados.get('promoCode') as string;
 
 	const promoCodeUsed = await promoCodeIsUsed(promoCode);
-	console.log(promoCodeUsed);
+	console.log('Código promocional usado?', promoCodeUsed);
 
 	if (promoCodeUsed) {
 		return new Response(
