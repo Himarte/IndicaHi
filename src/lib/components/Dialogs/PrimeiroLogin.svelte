@@ -44,6 +44,7 @@
 	const submitDadosCadastro = async (event: Event) => {
 		event.preventDefault();
 		const formData = new FormData(event.target as HTMLFormElement);
+		formData.append('userId', userData.id); // Adiciona o userData.id ao formData
 
 		try {
 			const response = await fetch('/api/perfil/cadastroPrimeiroLogin', {
@@ -63,7 +64,7 @@
 	on:submit={submitDadosCadastro}
 	class="absolute z-20 flex h-full w-full items-center justify-center bg-primary-foreground/90"
 >
-	<Card.Root class="flex flex-col px-5">
+	<Card.Root class="flex w-1/3 flex-col px-5">
 		<Card.Header class="text-center">
 			<Card.Title class="text-2xl">Bem vindo!</Card.Title>
 			<Card.Description class="text-md">
@@ -89,6 +90,11 @@
 				</div>
 			</div>
 			<div class="flex w-full flex-col gap-5">
+				<div class="flex items-center justify-between gap-2">
+					<Separator class="flex w-1/3" />
+					<p class="flex text-sm">Dados financeiros</p>
+					<Separator class="flex w-1/3" />
+				</div>
 				<div class="flex w-full gap-5">
 					<div class="flex w-full flex-col gap-1.5">
 						<Select.Root portal={null}>
@@ -114,9 +120,9 @@
 					</div>
 				</div>
 			</div>
-			<div class=" flex w-full items-center justify-between gap-2">
+			<div class="items mt-5 flex w-full items-center justify-between gap-2">
 				<Separator class="flex w-1/3" />
-				<p class="flex text-sm">Código Promocional</p>
+				<p>Código Promocional</p>
 				<Separator class="flex w-1/3" />
 			</div>
 			<p class="text-xs text-gray-400">

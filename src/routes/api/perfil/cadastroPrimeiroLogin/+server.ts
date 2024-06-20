@@ -1,6 +1,8 @@
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request }) => {
+	// TODO: Precisa autenticar um codigo para chamada de API
+
 	try {
 		const formData = await request.formData();
 		const cpf = formData.get('cpf');
@@ -8,10 +10,11 @@ export const POST: RequestHandler = async ({ request }) => {
 		const pixType = formData.get('pixType');
 		const pixKey = formData.get('pixKey');
 		const promoCode = formData.get('promoCode');
-		console.log('Dados recebidos:', { cpf, celular, pixType, pixKey, promoCode });
+		const userId = formData.get('userId');
+		console.log('Dados recebidos:', formData);
 
 		// Validação básica dos dados recebidos
-		if (!cpf || !celular || !pixType || !pixKey || !promoCode) {
+		if (!cpf || !celular || !pixType || !pixKey || !promoCode || !userId) {
 			return new Response(JSON.stringify({ message: 'Todos os campos são obrigatórios.' }), {
 				status: 400
 			});
