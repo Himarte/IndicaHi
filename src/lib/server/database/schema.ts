@@ -13,7 +13,7 @@ export const userTable = pgTable('user', {
 	cpf: varchar('cpf', { length: 11 }).unique(),
 	telefone: varchar('telefone', { length: 11 }),
 	promoCode: varchar('promo_code', { length: 15 }).unique(),
-	pixType: varchar('pix_type', { enum: ['CPF', 'CNPJ', 'Email', 'Telefone', 'Chave Aleatória'] }),
+	pixType: varchar('pix_type', { enum: ['cpf', 'cnpj', 'email', 'telefone'] }),
 	pixCode: text('pix_code').unique(),
 	cep: varchar('cep', { length: 8 }),
 	rua: varchar('rua', { length: 256 }),

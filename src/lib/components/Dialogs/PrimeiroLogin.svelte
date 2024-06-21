@@ -5,22 +5,26 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
+	import { applyMask } from '$lib/uteis/masks';
 
 	export let userData: userDataFromCookies;
 
-	const fruits = [
+	const pixTypes = [
 		{ value: 'cpf', label: 'CPF' },
 		{ value: 'cnpj', label: 'CNPJ' },
 		{ value: 'email', label: 'E-mail' },
-		{ value: 'Celular', label: 'Celular' }
+		{ value: 'celular', label: 'Celular' }
 	];
 
 	let promoCode = '';
-	let promoCodeMessage = '';
 	let promoCodeValid = false;
+	let cpf = '';
+	let celular = '';
 
-	const checkPromoCode = async () => {
+	const handlePromoCodeSubmission = async (event: Event) => {
+		event.preventDefault();
+
 		const formData = new FormData();
 		formData.append('promoCode', promoCode);
 
@@ -30,60 +34,88 @@
 				body: formData
 			});
 
-			if (response.ok) {
-				const result = await response.json();
-				promoCodeMessage = result.message;
+			if (response.status === 200) {
+				toast.success('Código promocional válido');
 				promoCodeValid = true;
 			} else {
-				const result = await response.json();
-				promoCodeMessage = result.message;
+				toast.warning('Código promocional inválido');
 				promoCodeValid = false;
 			}
 		} catch (error) {
 			console.error('Error:', error);
-			promoCodeMessage = 'Erro ao verificar o código promocional';
+			toast.error('Erro ao verificar código promocional');
 			promoCodeValid = false;
 		}
 	};
 
-	const handleSubmit = async (event: Event) => {
+	const submitDadosCadastro = async (event: Event) => {
 		event.preventDefault();
-		await checkPromoCode();
+		const formData = new FormData(event.target as HTMLFormElement);
+		formData.append('userId', userData.id);
+
+		try {
+			const response = await fetch('/api/perfil/cadastroPrimeiroLogin', {
+				method: 'POST',
+				body: formData
+			});
+			const result = await response.json();
+
+			if (response.status === 200) {
+				location.reload();
+				toast.success(result.message);
+			} else {
+				toast.warning(result.message);
+			}
+		} catch (error) {
+			toast.error('Erro ao cadastrar dados');
+		}
 	};
 </script>
 
-<div class="absolute z-20 flex h-full w-full items-center justify-center bg-primary-foreground/90">
-	<Card.Root class="flex h-[60%] w-1/3 flex-col">
+<form
+	on:submit={submitDadosCadastro}
+	class="absolute z-20 flex h-full w-full items-center justify-center bg-primary-foreground/90"
+>
+	<Card.Root class="flex w-1/3 flex-col px-5">
 		<Card.Header class="text-center">
 			<Card.Title class="text-2xl">Bem vindo!</Card.Title>
-			<Card.Description class="text-md">
-				Prencha algumas informacoes para podermos continuar
-			</Card.Description>
+			<Card.Description class="text-md"
+				>Prencha algumas informações para podermos continuar</Card.Description
+			>
 		</Card.Header>
-		<Card.Content class="flex h-full w-full flex-col gap-5 ">
-			<div class="flex w-full flex-col gap-2">
+		<Card.Content class="flex h-full w-full flex-col gap-5">
+			<div class="flex w-full flex-col gap-5">
 				<div class="flex items-center justify-between">
-					<Separator class="flex w-1/3" />
+					<Separator class="flex w-1/3 gap-2" />
 					<p>Dados pessoais</p>
 					<Separator class="flex w-1/3" />
 				</div>
 				<div class="flex w-full gap-5">
 					<div class="flex w-full flex-col gap-1.5">
-						<Input type="text" id="cpf" placeholder="CPF" />
-						<p class="text-sm text-muted-foreground">Ex. 123.456.789-10</p>
+						<Input
+							type="text"
+							name="cpf"
+							placeholder="CPF"
+							maxlength={14}
+							bind:value={cpf}
+							on:input={(e) => (cpf = applyMask(cpf, 'cpf'))}
+						/>
+						<p class="text-xs text-muted-foreground">Ex. 123.456.789-10</p>
 					</div>
 					<div class="flex w-full flex-col gap-1.5">
-						<Input type="text" id="celular" placeholder="Celular" />
-						<p class="text-sm text-muted-foreground">Ex. (DD) 99999-9999</p>
+						<Input
+							type="text"
+							name="celular"
+							placeholder="Celular"
+							maxlength={15}
+							bind:value={celular}
+							on:input={(e) => (celular = applyMask(celular, 'celular'))}
+						/>
+						<p class="text-xs text-muted-foreground">Ex. (DD) 99999-9999</p>
 					</div>
 				</div>
 			</div>
-			<div class="flex w-full flex-col gap-2">
-				<div class="flex items-center justify-between">
-					<Separator class="flex w-1/3" />
-					<p>Dados de Pagamento</p>
-					<Separator class="flex w-1/3" />
-				</div>
+			<div class="flex w-full flex-col gap-5">
 				<div class="flex w-full gap-5">
 					<div class="flex w-full flex-col gap-1.5">
 						<Select.Root portal={null}>
@@ -92,7 +124,7 @@
 							</Select.Trigger>
 							<Select.Content>
 								<Select.Group>
-									{#each fruits as pixType}
+									{#each pixTypes as pixType}
 										<Select.Item value={pixType.value} label={pixType.label}>
 											{pixType.label}
 										</Select.Item>
@@ -101,52 +133,39 @@
 							</Select.Content>
 							<Select.Input name="pixType" />
 						</Select.Root>
-						<p class="text-sm text-muted-foreground">Ex. CPF</p>
+						<p class="text-xs text-muted-foreground">Ex. CPF</p>
 					</div>
 					<div class="flex w-full flex-col gap-1.5">
-						<Input type="text" id="pix-key" placeholder="Chave PIX" />
-						<p class="text-sm text-muted-foreground">Ex. 123.456.789-10</p>
+						<Input type="text" name="pixCode" placeholder="Chave PIX" />
+						<p class="text-xs text-muted-foreground">Ex. 123.456.789-10</p>
 					</div>
 				</div>
 			</div>
-			<div class="items mt-10 flex w-full items-center justify-between">
-				<Separator class="flex w-1/3" />
-				<p>Codigo Promocional</p>
-				<Separator class="flex w-1/3" />
+			<div class="items mt-5 flex w-full items-center justify-between">
+				<p class="w-1/3 whitespace-nowrap">Código Promocional</p>
+				<Separator class="flex w-2/3" />
 			</div>
-			<form on:submit={handleSubmit} class="flex h-full w-full flex-col gap-5">
-				<p class="text-sm text-gray-400">
-					Cadastre aqui seu codigo promossional e comece a lucrar com as suas indicaçoes!
-				</p>
-				<div class="flex w-full flex-col gap-2">
-					<div class="flex w-[63%] gap-2">
-						<Input
-							type="text"
-							bind:value={promoCode}
-							name="promoCode"
-							required
-							maxlength={15}
-							minlength={3}
-							placeholder="Seu Codigo Promocional"
-						/>
-						<Button variant="secondary" type="submit">Verificar</Button>
-					</div>
-					{#if promoCodeMessage}
-						<p
-							class="text-sm"
-							class:text-green-500={promoCodeValid}
-							class:text-destructive={!promoCodeValid}
-						>
-							{promoCodeMessage}
-						</p>
-					{:else}
-						<p class="text-sm text-gray-400"></p>
-					{/if}
+
+			<p class="text-xs text-gray-400">
+				Cadastre aqui seu código promocional e comece a lucrar com as suas indicações!
+			</p>
+			<div class="flex w-full flex-col gap-2">
+				<div class="flex w-[63%] gap-2">
+					<Input
+						type="text"
+						bind:value={promoCode}
+						name="promoCode"
+						required
+						maxlength={15}
+						minlength={3}
+						placeholder="Seu Código Promocional"
+					/>
+					<Button variant="secondary" on:click={handlePromoCodeSubmission}>Verificar</Button>
 				</div>
-			</form>
+			</div>
 		</Card.Content>
-		<Card.Footer class="flex   w-full justify-end">
-			<Button variant="secondary">Continuar</Button>
+		<Card.Footer class="flex w-full justify-end">
+			<Button type="submit" variant="secondary" disabled={!promoCodeValid}>Continuar</Button>
 		</Card.Footer>
 	</Card.Root>
-</div>
+</form>
