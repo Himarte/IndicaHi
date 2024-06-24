@@ -30,7 +30,7 @@
 	{/if}
 	<main class="flex h-full w-full pl-[3.5rem]">
 		<NovoSide />
-		<slot />
+		<slot {userData} />
 	</main>
 {:else}
 	<main class="flex h-full w-full">

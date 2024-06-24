@@ -1,23 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { cpfIsUsed } from '$lib/server/database/utils/user.server';
-import type { Actions, PageServerLoad } from './$types';
+import type { Actions } from './$types';
 import { db } from '$lib/server/database/db.server';
 import { userTable } from '$lib/server/database/schema';
 import { fail } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
-
-export const load: PageServerLoad = async ({ fetch }) => {
-	const dadosPerfilUser = fetch('/api/perfil', {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json'
-		}
-	}).then((res) => res.json());
-
-	return {
-		dadosPerfilUser
-	};
-};
 
 export const actions: Actions = {
 	editarDadosPessoais: async ({ request, locals }) => {
@@ -54,8 +41,7 @@ export const actions: Actions = {
 				});
 			}
 		}
-		// TODO: Esta bem lento, verificar se tem como melhorar
-		// TODO: Esta lento ao criar um novo user o carregamento do perfil
+
 		await db
 			.update(userTable)
 			.set({ name, cpf, promoCode })
