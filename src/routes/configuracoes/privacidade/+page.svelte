@@ -14,10 +14,10 @@
 	const userProfile: userDataFromCookies | null = data.user;
 
 	const pixTypes = [
-		{ value: 'CPF', label: 'CPF' },
-		{ value: 'CNPJ', label: 'CNPJ' },
-		{ value: 'Email', label: 'Email' },
-		{ value: 'Celular', label: 'Celular' }
+		{ value: 'cpf', label: 'CPF' },
+		{ value: 'cnpj', label: 'CNPJ' },
+		{ value: 'email', label: 'Email' },
+		{ value: 'celular', label: 'Celular' }
 	];
 	export let form: ActionData;
 

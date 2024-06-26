@@ -60,3 +60,15 @@ export const promoCodeIsUsed = async (promoCode: string) => {
 
 	return queryResult.length > 0;
 };
+
+// Verifica se a Chave PIX ja esta cadastrada
+export const pixCodeIsUsed = async (pixCode: string) => {
+	const queryResult = await db
+		.select({
+			pixCode: userTable.pixCode
+		})
+		.from(userTable)
+		.where(eq(userTable.pixCode, pixCode));
+
+	return queryResult.length > 0;
+};

@@ -10,7 +10,7 @@
 
 	export let data: LayoutData;
 
-	//console.log(data);
+	// console.log(data);
 
 	export let isLoggedIn = data.isUserLoggedIn;
 	export let userData = data.user;

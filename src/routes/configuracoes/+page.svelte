@@ -7,7 +7,6 @@
 	import { Button } from '$lib/components/ui/button';
 	import { validationCpf } from '$lib/uteis/authValidationsUteis';
 	import type { userDataFromCookies } from '$lib/server/lucia.server';
-	import { Circle3 } from 'svelte-loading-spinners';
 
 	let cpfValue: string = '';
 	function digitandoCpf(event: InputEvent) {
@@ -46,7 +45,7 @@
 			<div class="flex w-full items-center gap-5">
 				<div class="flex w-1/2 flex-col gap-2">
 					<Label for="email">Email</Label>
-					<Input id="email" name="email" value={data.user?.email} />
+					<Input id="email" name="email" disabled value={data.user?.email} />
 				</div>
 				<div class="flex w-1/2 flex-col gap-2">
 					<Label for="promoCode">Codigo promocional</Label>

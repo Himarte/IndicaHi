@@ -1,0 +1,20 @@
+export type userDataFromCookies = {
+	id: string;
+	name: string;
+	avatarUrl: string;
+	email: string;
+	job: string;
+	cpf: string;
+	telefone: string;
+	promoCode: string;
+	pixType: string;
+	pixCode: string;
+	cep: string;
+	rua: string;
+	numeroCasa: number;
+	complemento: string;
+	bairro: string;
+	cidade: string;
+	estado: string;
+	status: boolean;
+};
