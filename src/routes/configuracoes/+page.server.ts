@@ -16,9 +16,10 @@ export const actions: Actions = {
 		}
 
 		const dados = await request.formData();
-		const name: any = dados.get('name') || locals.user?.name;
 		let cpf: any = dados.get('cpf') || locals.user?.cpf;
 		const promoCode: any = dados.get('promoCode') || locals.user?.promoCode;
+
+		console.log(`Dados da edição de dados pessoais: ${cpf}, ${promoCode}`);
 
 		function limparCPF(cpf: string): string {
 			return cpf.replace(/\.|-|\s/g, '');
@@ -41,10 +42,32 @@ export const actions: Actions = {
 				});
 			}
 		}
+		if (promoCode.length > 15) {
+			return fail(400, {
+				status: 400,
+				message: 'Código promocional inválido: máximo de 15 caracteres'
+			});
+		}
+
+		if (promoCode !== locals.user?.promoCode) {
+			const promoCodeUsed = await db
+				.select({
+					promoCode: userTable.promoCode
+				})
+				.from(userTable)
+				.where(eq(userTable.promoCode, promoCode));
+
+			if (promoCodeUsed.length > 0) {
+				return fail(400, {
+					status: 400,
+					message: 'Código promocional já cadastrado'
+				});
+			}
+		}
 
 		await db
 			.update(userTable)
-			.set({ name, cpf, promoCode })
+			.set({ cpf, promoCode })
 			.where(eq(userTable.id, locals.user?.id || ''));
 
 		return {

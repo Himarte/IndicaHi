@@ -7,27 +7,46 @@
 	import { Button } from '$lib/components/ui/button';
 	import { validationCpf } from '$lib/uteis/authValidationsUteis';
 	import type { userDataFromCookies } from '$lib/server/lucia.server';
+	import { toast } from 'svelte-sonner';
+	import { enhance } from '$app/forms';
 
 	let cpfValue: string = '';
 	function digitandoCpf(event: InputEvent) {
 		const target = event.target as HTMLInputElement;
 		cpfValue = validationCpf(target.value);
 	}
-	// converte para json
+
 	const userProfile: userDataFromCookies | null = data.user;
+
+	console.log('Resposta do backend', data);
 </script>
 
-<form action="?/editarDadosPessoais" method="post" class="relative">
+<Toaster />
+
+<form
+	method="post"
+	class="relative"
+	use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+		return async ({ result, update }) => {
+			if (result.type === 'failure') {
+				toast.error(result.data.message);
+			} else {
+				toast.success(result.data.message);
+			}
+			await update();
+		};
+	}}
+>
 	<Card.Root class="h-full w-full">
 		<Card.Header>
-			<Card.Title>Dados pessoas</Card.Title>
-			<Card.Description>Aqui vai suas informações basicas.</Card.Description>
+			<Card.Title>Dados pessoais</Card.Title>
+			<Card.Description>Aqui vão suas informações básicas.</Card.Description>
 		</Card.Header>
 		<Card.Content class="flex w-full flex-col items-center gap-5">
 			<div class="flex w-full items-center gap-5">
 				<div class="flex w-1/2 flex-col gap-2">
-					<Label for="name">Name</Label>
-					<Input id="name" name="name" placeholder={data.user?.name} />
+					<Label for="name">Nome</Label>
+					<Input id="name" name="name" disabled placeholder={data.user?.name} />
 				</div>
 				<div class="flex w-1/2 flex-col gap-2">
 					<Label for="cpf">CPF</Label>
@@ -48,7 +67,7 @@
 					<Input id="email" name="email" disabled value={data.user?.email} />
 				</div>
 				<div class="flex w-1/2 flex-col gap-2">
-					<Label for="promoCode">Codigo promocional</Label>
+					<Label for="promoCode">Código promocional</Label>
 					<Input
 						id="promoCode"
 						name="promoCode"
@@ -58,17 +77,30 @@
 				</div>
 			</div>
 		</Card.Content>
-		<Card.Footer class="flex items-center justify-end ">
+		<Card.Footer class="flex items-center justify-end">
 			<Button class="h-7" type="submit" formaction="?/editarDadosPessoais">Salvar</Button>
 		</Card.Footer>
 	</Card.Root>
 </form>
 
-<form action="?/editarLocalizacao" method="post">
-	<Card.Root class="w-full ">
+<form
+	method="post"
+	use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+		return async ({ result, update }) => {
+			if (result.type === 'failure') {
+				toast.error(result.data.message);
+			} else {
+				toast.success(result.data.message);
+			}
+			await update();
+		};
+	}}
+	action="?/editarLocalizacao"
+>
+	<Card.Root class="w-full">
 		<Card.Header>
-			<Card.Title>Localizaçao</Card.Title>
-			<Card.Description>Aqui vai suas informações de localizaçao.</Card.Description>
+			<Card.Title>Localização</Card.Title>
+			<Card.Description>Aqui vão suas informações de localização.</Card.Description>
 		</Card.Header>
 		<Card.Content class="flex w-full flex-col">
 			<div class="flex w-full gap-5">
@@ -87,7 +119,7 @@
 					<Input id="rua" name="rua" placeholder={userProfile?.rua || 'Não informado'} />
 				</div>
 				<div class="flex w-1/12 flex-col gap-2">
-					<Label for="numeroCasa">Numero</Label>
+					<Label for="numeroCasa">Número</Label>
 					<Input
 						id="numeroCasa"
 						name="numeroCasa"
