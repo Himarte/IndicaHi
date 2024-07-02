@@ -9,6 +9,7 @@
 	import type { userDataFromCookies } from '$lib/server/lucia.server';
 	import { toast } from 'svelte-sonner';
 	import { enhance } from '$app/forms';
+	import { message } from 'sveltekit-superforms';
 
 	let cpfValue: string = '';
 	function digitandoCpf(event: InputEvent) {
@@ -18,19 +19,19 @@
 
 	const userProfile: userDataFromCookies | null = data.user;
 
-	console.log('Resposta do backend', data);
+	// console.log('Resposta do backend', data);
 </script>
-
-<Toaster />
 
 <form
 	method="post"
 	class="relative"
-	use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+	use:enhance={() => {
 		return async ({ result, update }) => {
 			if (result.type === 'failure') {
+				// @ts-ignore
 				toast.error(result.data.message);
 			} else {
+				// @ts-ignore
 				toast.success(result.data.message);
 			}
 			await update();
@@ -64,7 +65,7 @@
 			<div class="flex w-full items-center gap-5">
 				<div class="flex w-1/2 flex-col gap-2">
 					<Label for="email">Email</Label>
-					<Input id="email" name="email" disabled value={data.user?.email} />
+					<Input id="email" name="email" disabled placeholder={data.user?.email} />
 				</div>
 				<div class="flex w-1/2 flex-col gap-2">
 					<Label for="promoCode">Código promocional</Label>
@@ -85,11 +86,13 @@
 
 <form
 	method="post"
-	use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+	use:enhance={() => {
 		return async ({ result, update }) => {
 			if (result.type === 'failure') {
+				// @ts-ignore
 				toast.error(result.data.message);
 			} else {
+				// @ts-ignore
 				toast.success(result.data.message);
 			}
 			await update();

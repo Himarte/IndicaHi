@@ -86,13 +86,13 @@ export const actions: Actions = {
 
 		const dados = await request.formData();
 
-		const cep: any = dados.get('cep') || '';
-		const rua: any = dados.get('rua') || '';
-		const bairro: any = dados.get('bairro') || '';
-		const numeroCasa: any = dados.get('numeroCasa') || '';
-		const complemento: any = dados.get('complemento') || '';
-		const cidade: any = dados.get('cidade') || '';
-		const estado: any = dados.get('estado') || '';
+		const cep: any = dados.get('cep') || locals.user?.cep;
+		const rua: any = dados.get('rua') || locals.user?.rua;
+		const bairro: any = dados.get('bairro') || locals.user?.bairro;
+		const numeroCasa: any = dados.get('numeroCasa') || locals.user?.numeroCasa;
+		const complemento: any = dados.get('complemento') || locals.user?.complemento;
+		const cidade: any = dados.get('cidade') || locals.user?.cidade;
+		const estado: any = dados.get('estado') || locals.user?.estado;
 
 		try {
 			await db
