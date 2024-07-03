@@ -29,7 +29,7 @@
 		<PrimeiroLogin {userData} />
 	{/if}
 	<main class="flex h-full w-full pl-[3.5rem]">
-		<NovoSide />
+		<NovoSide {userData} />
 		<slot {userData} />
 	</main>
 {:else}

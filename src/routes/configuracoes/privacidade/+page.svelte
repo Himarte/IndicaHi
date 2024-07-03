@@ -4,7 +4,6 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Button } from '$lib/components/ui/button';
 	import * as Select from '$lib/components/ui/select';
-	import { Circle3 } from 'svelte-loading-spinners';
 	import type { ActionData, PageData } from './$types';
 	import { toast } from 'svelte-sonner';
 	import { enhance } from '$app/forms';
@@ -41,36 +40,6 @@
 		}
 	}
 </script>
-
-<form
-	action="?/trocaEmail"
-	method="post"
-	use:enhance={() => {
-		return async ({ update }) => {
-			update();
-		};
-	}}
->
-	<Card.Root class="w-full ">
-		<Card.Header>
-			<Card.Title>Troca de Email</Card.Title>
-			<Card.Description>Você pode trocar o seu e-mail</Card.Description>
-		</Card.Header>
-		<Card.Content class="flex w-full items-center gap-5">
-			<div class="flex w-1/2 flex-col gap-2">
-				<Label for="oldEmail">Email Atual</Label>
-				<Input id="oldEmail" disabled name="oldEmail" type="email" placeholder={data.user?.email} />
-			</div>
-			<div class="flex w-1/2 flex-col gap-2">
-				<Label for="newEmail">Novo e-mail</Label>
-				<Input id="newEmail" name="newEmail" type="email" placeholder={'Digite o novo e-mail...'} />
-			</div>
-		</Card.Content>
-		<Card.Footer class="flex items-center justify-end ">
-			<Button class="h-7" type="submit" formaction="?/trocaEmail">Salvar</Button>
-		</Card.Footer>
-	</Card.Root>
-</form>
 
 <form
 	method="post"

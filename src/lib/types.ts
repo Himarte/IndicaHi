@@ -1,4 +1,4 @@
-export type userDataFromCookies = {
+export type userDataFromLayout = {
 	id: string;
 	name: string;
 	avatarUrl: string;

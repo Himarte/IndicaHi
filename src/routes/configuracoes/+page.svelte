@@ -9,7 +9,6 @@
 	import type { userDataFromCookies } from '$lib/server/lucia.server';
 	import { toast } from 'svelte-sonner';
 	import { enhance } from '$app/forms';
-	import { message } from 'sveltekit-superforms';
 
 	let cpfValue: string = '';
 	function digitandoCpf(event: InputEvent) {
@@ -46,7 +45,7 @@
 		<Card.Content class="flex w-full flex-col items-center gap-5">
 			<div class="flex w-full items-center gap-5">
 				<div class="flex w-1/2 flex-col gap-2">
-					<Label for="name">Nome</Label>
+					<Label for="name">Nome Completo</Label>
 					<Input id="name" name="name" disabled placeholder={data.user?.name} />
 				</div>
 				<div class="flex w-1/2 flex-col gap-2">
@@ -54,6 +53,7 @@
 					<Input
 						id="cpf"
 						name="cpf"
+						class="placeholder:text-white"
 						placeholder={data.user?.cpf || 'ex: 123.456.789-10'}
 						bind:value={cpfValue}
 						on:input={digitandoCpf}
@@ -152,6 +152,7 @@
 					<Input
 						id="estado"
 						name="estado"
+						type="text"
 						placeholder={userProfile?.estado || 'ex: RS'}
 						minlength={2}
 						maxlength={2}
