@@ -24,7 +24,7 @@
 
 <NovoHeader {isLoggedIn} {userData} />
 
-{#if isLoggedIn}
+{#if isLoggedIn && userData}
 	{#if userData.job === 'Vendador Externo' || !userData.cpf || !userData.telefone || !userData.pixCode || !userData.pixType}
 		<PrimeiroLogin {userData} />
 	{/if}

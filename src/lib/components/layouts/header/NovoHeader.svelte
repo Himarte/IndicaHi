@@ -12,7 +12,7 @@
 	export let userData: userDataFromCookies;
 	export let isLoggedIn: boolean;
 	$: isLoggedIn;
-	$: userRole = userData.job;
+	$: userRole = userData ? userData.job : null;
 </script>
 
 <header
@@ -44,13 +44,19 @@
 	<!-- Desktop Menu -->
 	<nav class="hidden w-2/3 items-center gap-5 md:flex">
 		{#if !isLoggedIn}
+			<!-- Mostra se nao estiver logado -->
 			<a href="/">
 				<img src={LogoHimarte} alt="Logo Himarte" class="w-36 py-5 pr-5" />
 			</a>
 		{/if}
-		<Button variant="ghost" href="/">Home</Button>
+		<!-- Mostra quando esta e nao esta logado -->
+
+		<!-- Mostra se nao estiver logado -->
 		{#if isLoggedIn}
-			<Button variant="ghost" href="/dashboard">Dashboard</Button>
+			<Button variant="ghost" href="/">Home</Button>
+			{#if userRole === 'Vendedor Externo'}
+				<Button variant="ghost" href="/dashboard">Dashboard</Button>
+			{/if}
 		{/if}
 	</nav>
 
