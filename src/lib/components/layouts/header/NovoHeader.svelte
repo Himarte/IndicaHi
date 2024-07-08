@@ -12,7 +12,7 @@
 	export let userData: userDataFromCookies;
 	export let isLoggedIn: boolean;
 	$: isLoggedIn;
-	$: userRole = userData.job;
+	$: userRole = userData ? userData.job : null;
 </script>
 
 <header
@@ -56,7 +56,7 @@
 
 	<!-- User Actions -->
 	<nav class="flex w-1/3 items-center justify-end gap-24">
-		{#if isLoggedIn}
+		{#if isLoggedIn && userData}
 			{#if userRole === 'Vendedor Externo'}
 				<p class="hidden gap-2 text-orange-500 lg:flex">
 					Seu Codigo: <span class="text-white">{userData.promoCode}</span>
