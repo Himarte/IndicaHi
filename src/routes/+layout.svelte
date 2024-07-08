@@ -10,7 +10,7 @@
 
 	export let data: LayoutData;
 
-	//console.log(data);
+	// console.log(data);
 
 	export let isLoggedIn = data.isUserLoggedIn;
 	export let userData = data.user;
@@ -29,8 +29,8 @@
 		<PrimeiroLogin {userData} />
 	{/if}
 	<main class="flex h-full w-full pl-[3.5rem]">
-		<NovoSide />
-		<slot />
+		<NovoSide {userData} />
+		<slot {userData} />
 	</main>
 {:else}
 	<main class="flex h-full w-full">

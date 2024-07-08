@@ -1,23 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { cpfIsUsed } from '$lib/server/database/utils/user.server';
-import type { Actions, PageServerLoad } from './$types';
+import type { Actions } from './$types';
 import { db } from '$lib/server/database/db.server';
 import { userTable } from '$lib/server/database/schema';
 import { fail } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
-
-export const load: PageServerLoad = async ({ fetch }) => {
-	const dadosPerfilUser = fetch('/api/perfil', {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json'
-		}
-	}).then((res) => res.json());
-
-	return {
-		dadosPerfilUser
-	};
-};
 
 export const actions: Actions = {
 	editarDadosPessoais: async ({ request, locals }) => {
@@ -29,9 +16,10 @@ export const actions: Actions = {
 		}
 
 		const dados = await request.formData();
-		const name: any = dados.get('name') || locals.user?.name;
 		let cpf: any = dados.get('cpf') || locals.user?.cpf;
 		const promoCode: any = dados.get('promoCode') || locals.user?.promoCode;
+
+		console.log(`Dados da edição de dados pessoais: ${cpf}, ${promoCode}`);
 
 		function limparCPF(cpf: string): string {
 			return cpf.replace(/\.|-|\s/g, '');
@@ -54,11 +42,32 @@ export const actions: Actions = {
 				});
 			}
 		}
-		// TODO: Esta bem lento, verificar se tem como melhorar
-		// TODO: Esta lento ao criar um novo user o carregamento do perfil
+		if (promoCode.length > 15) {
+			return fail(400, {
+				status: 400,
+				message: 'Código promocional inválido: máximo de 15 caracteres'
+			});
+		}
+
+		if (promoCode !== locals.user?.promoCode) {
+			const promoCodeUsed = await db
+				.select({
+					promoCode: userTable.promoCode
+				})
+				.from(userTable)
+				.where(eq(userTable.promoCode, promoCode));
+
+			if (promoCodeUsed.length > 0) {
+				return fail(400, {
+					status: 400,
+					message: 'Código promocional já cadastrado'
+				});
+			}
+		}
+
 		await db
 			.update(userTable)
-			.set({ name, cpf, promoCode })
+			.set({ cpf, promoCode })
 			.where(eq(userTable.id, locals.user?.id || ''));
 
 		return {
@@ -77,13 +86,13 @@ export const actions: Actions = {
 
 		const dados = await request.formData();
 
-		const cep: any = dados.get('cep') || '';
-		const rua: any = dados.get('rua') || '';
-		const bairro: any = dados.get('bairro') || '';
-		const numeroCasa: any = dados.get('numeroCasa') || '';
-		const complemento: any = dados.get('complemento') || '';
-		const cidade: any = dados.get('cidade') || '';
-		const estado: any = dados.get('estado') || '';
+		const cep: any = dados.get('cep') || locals.user?.cep;
+		const rua: any = dados.get('rua') || locals.user?.rua;
+		const bairro: any = dados.get('bairro') || locals.user?.bairro;
+		const numeroCasa: any = dados.get('numeroCasa') || locals.user?.numeroCasa;
+		const complemento: any = dados.get('complemento') || locals.user?.complemento;
+		const cidade: any = dados.get('cidade') || locals.user?.cidade;
+		const estado: any = dados.get('estado') || locals.user?.estado;
 
 		try {
 			await db

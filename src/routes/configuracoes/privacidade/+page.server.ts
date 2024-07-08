@@ -1,24 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { userTable } from '$lib/server/database/schema';
 import { fail } from '@sveltejs/kit';
-import type { Actions, PageServerLoad } from './$types';
+import type { Actions } from './$types';
 import { db } from '$lib/server/database/db.server';
 import { eq } from 'drizzle-orm';
 import { emailIsUsed } from '$lib/server/database/utils/user.server';
 import { emailRegex } from '$lib/uteis/authValidationsUteis';
-
-export const load: PageServerLoad = async ({ fetch }) => {
-	const dadosPerfilUser = fetch('/api/perfil', {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json'
-		}
-	}).then((res) => res.json());
-
-	return {
-		dadosPerfilUser
-	};
-};
 
 export const actions: Actions = {
 	editarDadosPix: async ({ request, locals }) => {

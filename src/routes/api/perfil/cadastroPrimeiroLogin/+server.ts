@@ -3,9 +3,11 @@ import { db } from '$lib/server/database/db.server';
 import { userTable } from '$lib/server/database/schema';
 import { eq } from 'drizzle-orm';
 import { cleanCellPhone, cleanCPF } from '$lib/uteis/masks';
+import { cpfIsUsed, promoCodeIsUsed, pixCodeIsUsed } from '$lib/server/database/utils/user.server';
 
-const validateData = (data: { [key: string]: string }) => {
-	const { cpf, celular, pixType, pixCode, promoCode, userId } = data;
+const validateData = async (data: { [key: string]: string }) => {
+	const { cpf, celular, pixCode, promoCode, userId } = data;
+	const pixType = data.pixType as 'cpf' | 'cnpj' | 'email' | 'telefone';
 
 	if (!cpf || !celular || !pixType || !pixCode || !promoCode || !userId) {
 		throw new Error('Todos os campos são obrigatórios.');
@@ -16,9 +18,18 @@ const validateData = (data: { [key: string]: string }) => {
 
 	if (cleanedCPF.length !== 11) throw new Error('CPF inválido.');
 	if (cleanedCellPhone.length !== 11) throw new Error('Celular inválido.');
-	if (!['cpf', 'cnpj', 'email', 'celular'].includes(pixType))
+	if (!['cpf', 'cnpj', 'celular', 'email'].includes(pixType))
 		throw new Error('Tipo de chave PIX inválido.');
 	if (pixCode.length < 5) throw new Error('Chave PIX inválida.');
+
+	const isCpfUsed = await cpfIsUsed(cleanedCPF);
+	if (isCpfUsed) throw new Error('CPF já cadastrado.');
+
+	const isPixCodeUsed = await pixCodeIsUsed(pixCode);
+	if (isPixCodeUsed) throw new Error('Chave PIX já vinculada a outra conta.');
+
+	const isPromoCodeUsed = await promoCodeIsUsed(promoCode);
+	if (isPromoCodeUsed == true) throw new Error('Código promocional já cadastrado.');
 
 	return { cleanedCPF, cleanedCellPhone, pixType, pixCode, promoCode, userId };
 };
@@ -34,10 +45,11 @@ export const POST: RequestHandler = async ({ request }) => {
 			promoCode: formData.get('promoCode') as string,
 			userId: formData.get('userId') as string
 		};
+
 		console.log('Dados recebidos:', formData);
 
 		const { cleanedCPF, cleanedCellPhone, pixType, pixCode, promoCode, userId } =
-			validateData(data);
+			await validateData(data);
 
 		const result = await db
 			.update(userTable)

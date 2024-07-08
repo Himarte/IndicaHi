@@ -39,24 +39,23 @@ export const sessionTable = pgTable('session', {
 	}).notNull()
 });
 
-// TODO: Verificar porque o banco nao desta criando o campo criado em created_at
 export const leadsTable = pgTable('leads', {
-	id: varchar('id').primaryKey().notNull(), // um identificador único para cada lead
-	fullName: varchar('full_name'), // nome completo
-	cpfCnpj: varchar('cpf_cnpj', { length: 14 }), // CPF ou CNPJ, dependendo do tipo de pessoa
+	id: varchar('id').primaryKey().notNull(),
+	fullName: varchar('full_name'),
+	cpfCnpj: varchar('cpf_cnpj', { length: 14 }),
 	status: varchar('status', { enum: ['Pendente', 'Sendo Atendido', 'Finalizado', 'Sem Sucesso'] })
 		.default('Pendente')
-		.notNull(), // status do lead
-	promoCode: varchar('promo_code', { length: 15 }), // código promocional
+		.notNull(),
+	promoCode: varchar('promo_code', { length: 15 }),
 	createdAt: timestamp('created_at', { mode: 'string', precision: 6, withTimezone: true })
 		.notNull()
-		.defaultNow(), // data de criação do lead
+		.defaultNow(),
 	attendedAt: timestamp('attended_at', {
 		withTimezone: true,
 		precision: 6,
 		mode: 'string'
-	}), // data de atendimento do lead
-	userIdPromoCode: text('user_id_promocode').references(() => userTable.id) // ID do usuário que possui o promoCode usado
+	}),
+	userIdPromoCode: text('user_id_promocode').references(() => userTable.id)
 });
 
 export type UserInsertSchema = typeof userTable.$inferInsert;
