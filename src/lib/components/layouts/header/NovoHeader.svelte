@@ -44,19 +44,25 @@
 	<!-- Desktop Menu -->
 	<nav class="hidden w-2/3 items-center gap-5 md:flex">
 		{#if !isLoggedIn}
+			<!-- Mostra se nao estiver logado -->
 			<a href="/">
 				<img src={LogoHimarte} alt="Logo Himarte" class="w-36 py-5 pr-5" />
 			</a>
 		{/if}
-		<Button variant="ghost" href="/">Home</Button>
+		<!-- Mostra quando esta e nao esta logado -->
+
+		<!-- Mostra se nao estiver logado -->
 		{#if isLoggedIn}
-			<Button variant="ghost" href="/dashboard">Dashboard</Button>
+			<Button variant="ghost" href="/">Home</Button>
+			{#if userRole === 'Vendedor Externo'}
+				<Button variant="ghost" href="/dashboard">Dashboard</Button>
+			{/if}
 		{/if}
 	</nav>
 
 	<!-- User Actions -->
 	<nav class="flex w-1/3 items-center justify-end gap-24">
-		{#if isLoggedIn && userData}
+		{#if isLoggedIn}
 			{#if userRole === 'Vendedor Externo'}
 				<p class="hidden gap-2 text-orange-500 lg:flex">
 					Seu Codigo: <span class="text-white">{userData.promoCode}</span>
