@@ -8,7 +8,6 @@
 		addSelectedRows
 	} from 'svelte-headless-table/plugins';
 	import { readable } from 'svelte/store';
-	import ArrowUpDown from 'lucide-svelte/icons/arrow-up-down';
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 	import * as Table from '$lib/components/ui/table';
 	import DataTableActions from './data-table-actions.svelte';
@@ -16,99 +15,13 @@
 	import { Input } from '$lib/components/ui/input';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import DataTableCheckbox from './data-table-checkbox.svelte';
-	import type { LeadsSchema } from '$lib/server/database/schema';
+	import type { LeadsPendenteFinanceiro } from '$lib/types';
 
-	const data: LeadsSchema[] = [
-		{
-			id: 'm5gr84i9',
-			fullName: 'John Doe',
-			cpfCnpj: '98327649234867',
-			status: 'Pendente',
-			promoCode: 'uidksfghi'
-		},
-		{
-			id: 'k8fj3n7s',
-			fullName: 'Jane Smith',
-			cpfCnpj: '234234234234234',
-			status: 'Finalizado',
-			promoCode: 'oqwekdujz'
-		},
-		{
-			id: 'a7gd9f2e',
-			fullName: 'Michael Johnson',
-			cpfCnpj: '345436546756765',
-			status: 'Sendo Atendido',
-			promoCode: 'hjdfkjsldf'
-		},
-		{
-			id: 'p3mnbv45',
-			fullName: 'Emily Brown',
-			cpfCnpj: '111111111111',
-			status: 'Pendente',
-			promoCode: 'qwejlkjasd'
-		},
-		{
-			id: 't9sdfg62',
-			fullName: 'David Martinez',
-			cpfCnpj: '99999999999',
-			status: 'Sendo Atendido',
-			promoCode: 'oiuwehrklj'
-		},
-		{
-			id: 'w2dfnsh8',
-			fullName: 'Maria Garcia',
-			cpfCnpj: '435453454',
-			status: 'Finalizado',
-			promoCode: 'xcmnvbzweo'
-		},
-		{
-			id: 'o8dfg723',
-			fullName: 'Chris Wilson',
-			cpfCnpj: '2143435667',
-			status: 'Sendo Atendido',
-			promoCode: 'klsdfhjwer'
-		},
-		{
-			id: 'q4mjf76s',
-			fullName: 'Sarah Taylor',
-			cpfCnpj: '264567876843',
-			status: 'Pendente',
-			promoCode: 'weirutyasd'
-		},
-		{
-			id: 'z6dfnk38',
-			fullName: 'Daniel Anderson',
-			cpfCnpj: '1231234',
-			status: 'Finalizado',
-			promoCode: 'poiuzxnvcv'
-		},
-		{
-			id: 'i1sdfg92',
-			fullName: 'Laura Rodriguez',
-			cpfCnpj: '56763453',
-			status: 'Sendo Atendido',
-			promoCode: 'lkjashdfkj'
-		},
-		{
-			id: 'r5dfgh78',
-			fullName: 'James Lee',
-			cpfCnpj: '234234523523',
-			status: 'Pendente',
-			promoCode: 'uioqwejklh'
-		},
-		{
-			id: 'f0sd8fh3',
-			fullName: 'Emma Harris',
-			cpfCnpj: '45834523423',
-			status: 'Sendo Atendido',
-			promoCode: 'mnxbvzuiwe'
-		}
-	];
+	export let userIndicadoresLeads: LeadsPendenteFinanceiro[];
 
-	// O createTable é uma função que cria a table e coloca funcionalidades e interaçoes
-	const table = createTable(readable(data), {
+	const table = createTable(readable(userIndicadoresLeads), {
 		page: addPagination(),
-		sort: addSortBy(),
+		sort: addSortBy({ initialSortKeys: [{ id: 'dataCriado', order: 'desc' }] }),
 		filter: addTableFilter({
 			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
 		}),
@@ -143,43 +56,65 @@
 		table.column({
 			accessor: 'fullName',
 			header: 'Nome Completo',
-			plugins: {
-				sort: {
-					disable: true
-				}
-			}
-		}),
-		table.column({
-			accessor: 'cpfCnpj',
-			header: 'CPF/CNPJ',
-			plugins: {
-				sort: {
-					disable: true
-				}
-			}
-		}),
-		table.column({
-			accessor: 'promoCode',
-			header: 'Promo Code',
 
 			plugins: {
 				sort: {
 					disable: true
 				},
 				filter: {
-					exclude: true
+					exclude: false
 				}
 			}
 		}),
 		table.column({
-			accessor: 'status',
-			header: 'Status',
+			accessor: 'cpfCnpj',
+			header: 'CPF/CNPJ',
+
 			plugins: {
 				sort: {
-					disable: false
+					disable: true
 				},
 				filter: {
-					exclude: true
+					exclude: false
+				}
+			}
+		}),
+		table.column({
+			accessor: 'telefone',
+			header: 'Telefone',
+
+			plugins: {
+				sort: {
+					disable: true
+				},
+				filter: {
+					exclude: false
+				}
+			}
+		}),
+		table.column({
+			accessor: 'dataCriado',
+			header: 'Data de Criação',
+
+			plugins: {
+				sort: {
+					disable: true
+				},
+				filter: {
+					exclude: false
+				}
+			}
+		}),
+		table.column({
+			accessor: 'email',
+			header: 'Email',
+
+			plugins: {
+				sort: {
+					disable: true
+				},
+				filter: {
+					exclude: false
 				}
 			}
 		}),
@@ -207,11 +142,11 @@
 		.filter(([, hide]) => !hide)
 		.map(([id]) => id);
 
-	const hidableCols = ['fullName', 'cpfCnpj', 'promoCode', 'status'];
+	const hidableCols = ['fullName', 'cpfCnpj', 'telefone', 'email', 'dataCriado'];
 </script>
 
 <div class="flex flex-col gap-5">
-	<div class="flex items-center">
+	<div class="flex items-center pl-32">
 		<Input class="max-w-sm" placeholder="Pesquisar..." type="text" bind:value={$filterValue} />
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger asChild let:builder>
@@ -240,14 +175,7 @@
 							{#each headerRow.cells as cell (cell.id)}
 								<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()} let:props>
 									<Table.Head {...attrs} class="[&:has([role=checkbox])]:pl-3">
-										{#if cell.id === 'status'}
-											<Button variant="ghost" on:click={props.sort.toggle}>
-												<Render of={cell.render()} />
-												<ArrowUpDown class={'ml-2  h-4 w-4 '} />
-											</Button>
-										{:else}
-											<Render of={cell.render()} />
-										{/if}
+										<Render of={cell.render()} />
 									</Table.Head>
 								</Subscribe>
 							{/each}
@@ -262,19 +190,7 @@
 							{#each row.cells as cell (cell.id)}
 								<Subscribe attrs={cell.attrs()} let:attrs>
 									<Table.Cell {...attrs}>
-										<!-- Para estilizar linhas especificas voce vincula ao nome da dado do Database -->
-										{#if cell.id === 'status'}
-											<!-- Esse erro tem a ver com a tipagem do cell.value nao mexer -->
-											{#if cell.value === 'Sendo Atendido'}
-												<div class="text-yellow-600">
-													<Render of={cell.render()} />
-												</div>
-											{:else}
-												<Render of={cell.render()} />
-											{/if}
-										{:else}
-											<Render of={cell.render()} />
-										{/if}
+										<Render of={cell.render()} />
 									</Table.Cell>
 								</Subscribe>
 							{/each}

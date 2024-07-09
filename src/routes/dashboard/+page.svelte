@@ -20,7 +20,7 @@
 		/>
 	</div>
 {:then leads}
-	<Tabs.Root value="pendentes" class="relative h-full w-full">
+	<Tabs.Root value="pendentes" class="relative h-full w-full pl-[3.5rem]">
 		<Tabs.List class="absolute top-2 flex w-min gap-1 border border-secondary bg-background">
 			<Tabs.Trigger value="pendentes">Pendentes</Tabs.Trigger>
 			<Tabs.Trigger value="finalizados">Finalizados</Tabs.Trigger>

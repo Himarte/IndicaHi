@@ -18,3 +18,16 @@ export type userDataFromLayout = {
 	estado: string;
 	status: boolean;
 };
+
+export type LeadsPendenteFinanceiro = {
+	id: string;
+	fullName: string;
+	cpfCnpj: string;
+	telefone: string;
+	email: string;
+	pixType: string;
+	pixKey: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	dataAtendido: any;
+	dataCriado: string;
+};

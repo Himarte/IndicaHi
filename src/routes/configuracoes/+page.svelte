@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	export let data: PageData;
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
@@ -9,6 +8,7 @@
 	import type { userDataFromCookies } from '$lib/server/lucia.server';
 	import { toast } from 'svelte-sonner';
 	import { enhance } from '$app/forms';
+	export let data: PageData;
 
 	let cpfValue: string = '';
 	function digitandoCpf(event: InputEvent) {
@@ -16,9 +16,9 @@
 		cpfValue = validationCpf(target.value);
 	}
 
-	const userProfile: userDataFromCookies | null = data.user;
+	let userProfile = data.user as userDataFromCookies;
 
-	// console.log('Resposta do backend', data);
+	console.log('Resposta do backend', data);
 </script>
 
 <form
