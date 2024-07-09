@@ -2,8 +2,11 @@
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import { Home, LineChart, Package, ShoppingCart, UsersRound } from 'lucide-svelte';
 	import Settings from 'lucide-svelte/icons/settings';
+	import Table2 from 'lucide-svelte/icons/table-2';
 	import IconeHimarte from '$lib/img/logos/icon.webp';
+	import Banknote from 'lucide-svelte/icons/banknote';
 	import { page } from '$app/stores';
+
 	import type { userDataFromCookies } from '$lib/server/lucia.server';
 
 	export let userData: userDataFromCookies;
@@ -25,7 +28,8 @@
 			label: 'Atividades',
 			role: 'Vendedor Externo'
 		},
-		{ href: '/financeiro', icon: ShoppingCart, label: 'Financeiro', role: 'Financeiro' }
+		{ href: '/financeiro', icon: Table2, label: 'Financeiro', role: 'Financeiro' },
+		{ href: '/financeiro/pagamentos', icon: Banknote, label: 'Pagamentos', role: 'Financeiro' }
 	];
 </script>
 

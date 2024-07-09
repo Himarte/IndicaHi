@@ -33,7 +33,6 @@
 					<img src={LogoHimarte} alt="Logo Himarte" class="w-36 py-5 pr-5" />
 				</a>
 				<Button variant="ghost" href="/">Home</Button>
-				<Button variant="ghost" href="/teste">Teste</Button>
 				{#if isLoggedIn}
 					<Button variant="ghost" href="/dashboard">Dashboard</Button>
 				{/if}

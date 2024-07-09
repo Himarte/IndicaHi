@@ -21,6 +21,8 @@ export const POST: RequestHandler = async ({ url, request }) => {
 		return new Response('Parâmetros inválidos', { status: 400 });
 	}
 
+	console.log('PromoCode testeee: ', promoCode);
+
 	// Verifica se o promoCode vazio ou inválido
 	if (!promoCode) {
 		await db.insert(leadsTable).values({
