@@ -16,6 +16,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import DataTableCheckbox from './data-table-checkbox.svelte';
 	import type { LeadsPendenteFinanceiro } from '$lib/types';
+	import { formatarData } from '$lib/uteis/masks';
 
 	export let userIndicadoresLeads: LeadsPendenteFinanceiro[];
 
@@ -29,23 +30,18 @@
 		select: addSelectedRows()
 	});
 
-	// Colunas da tabela, aqui voce pode add mais colunas ou remover
+	// Definição das colunas
 	const columns = table.createColumns([
 		table.column({
 			accessor: 'id',
 			header: (_, { pluginStates }) => {
 				const { allPageRowsSelected } = pluginStates.select;
-				return createRender(DataTableCheckbox, {
-					checked: allPageRowsSelected
-				});
+				return createRender(DataTableCheckbox, { checked: allPageRowsSelected });
 			},
 			cell: ({ row }, { pluginStates }) => {
 				const { getRowState } = pluginStates.select;
 				const { isSelected } = getRowState(row);
-
-				return createRender(DataTableCheckbox, {
-					checked: isSelected
-				});
+				return createRender(DataTableCheckbox, { checked: isSelected });
 			},
 			plugins: {
 				filter: {
@@ -56,7 +52,6 @@
 		table.column({
 			accessor: 'fullName',
 			header: 'Nome Completo',
-
 			plugins: {
 				sort: {
 					disable: true
@@ -69,7 +64,6 @@
 		table.column({
 			accessor: 'cpfCnpj',
 			header: 'CPF/CNPJ',
-
 			plugins: {
 				sort: {
 					disable: true
@@ -82,7 +76,6 @@
 		table.column({
 			accessor: 'telefone',
 			header: 'Telefone',
-
 			plugins: {
 				sort: {
 					disable: true
@@ -95,7 +88,7 @@
 		table.column({
 			accessor: 'dataCriado',
 			header: 'Data de Criação',
-
+			cell: ({ value }) => formatarData(value), // Formata a data antes de exibir
 			plugins: {
 				sort: {
 					disable: true
@@ -108,7 +101,6 @@
 		table.column({
 			accessor: 'email',
 			header: 'Email',
-
 			plugins: {
 				sort: {
 					disable: true
@@ -119,10 +111,19 @@
 			}
 		}),
 		table.column({
-			accessor: ({ id }) => id,
+			accessor: ({ id, fullName, cpfCnpj, email, telefone, pixKey, pixType, dataAtendido }) => ({
+				id,
+				fullName,
+				cpfCnpj,
+				email,
+				telefone,
+				pixKey,
+				pixType,
+				dataAtendido
+			}),
 			header: '',
 			cell: ({ value }) => {
-				return createRender(DataTableActions, { id: value });
+				return createRender(DataTableActions, value);
 			}
 		})
 	]);
@@ -202,8 +203,7 @@
 	</div>
 	<div class="flex items-center justify-end space-x-4">
 		<div class="flex-1 text-sm text-muted-foreground">
-			{Object.keys($selectedDataIds).length} de{' '}
-			{$rows.length} Colunas selecionadas.
+			{Object.keys($selectedDataIds).length} de {$rows.length} Colunas selecionadas.
 		</div>
 		<Button
 			variant="outline"

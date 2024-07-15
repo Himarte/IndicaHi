@@ -52,7 +52,7 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 		dataCriado: lead.dataCriado
 	}));
 
-	console.log('User indicadores: ', userIndicadoresLeads);
+	// console.log('User indicadores: ', userIndicadoresLeads);
 
 	return new Response(JSON.stringify(userIndicadoresLeads), {
 		headers: {
