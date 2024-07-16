@@ -11,7 +11,7 @@
 	export let data: PageData;
 
 	let cpfValue: string = '';
-	function digitandoCpf(event: InputEvent) {
+	function digitandoCpf(event: Event) {
 		const target = event.target as HTMLInputElement;
 		cpfValue = validationCpf(target.value);
 	}
@@ -28,9 +28,11 @@
 		return async ({ result, update }) => {
 			if (result.type === 'failure') {
 				// @ts-ignore
+
 				toast.error(result.data.message);
 			} else {
 				// @ts-ignore
+
 				toast.success(result.data.message);
 			}
 			await update();
