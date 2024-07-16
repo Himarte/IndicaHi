@@ -5,6 +5,6 @@
 <dir class="flex h-full w-full pl-10">
 	<SideBarUser />
 	<div class="flex h-full w-full flex-col gap-5 pr-10">
-		<slot><!-- optional fallback --></slot>
+		<slot></slot>
 	</div>
 </dir>
