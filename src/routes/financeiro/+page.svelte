@@ -1,6 +1,5 @@
 <script lang="ts">
 	import DataTablePendentes from '$lib/components/ui/data-table-financeiro/data-table.svelte';
-
 	import { Circle3 } from 'svelte-loading-spinners';
 	import type { PageServerData } from './$types';
 	import * as Tabs from '$lib/components/ui/tabs';

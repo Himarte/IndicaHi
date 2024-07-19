@@ -49,7 +49,8 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 		pixType: lead.pixType,
 		pixKey: lead.pixKey,
 		dataAtendido: lead.dataAtendido,
-		dataCriado: lead.dataCriado
+		dataCriado: lead.dataCriado,
+		status: lead.status
 	}));
 
 	// console.log('User indicadores: ', userIndicadoresLeads);

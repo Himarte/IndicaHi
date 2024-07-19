@@ -30,4 +30,5 @@ export type LeadsPendenteFinanceiro = {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	dataAtendido: any;
 	dataCriado: string;
+	status: string;
 };
