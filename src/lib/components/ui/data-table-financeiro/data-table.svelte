@@ -74,8 +74,8 @@
 			}
 		}),
 		table.column({
-			accessor: 'telefone',
-			header: 'Telefone',
+			accessor: 'status',
+			header: 'Status',
 			plugins: {
 				sort: {
 					disable: true
@@ -87,7 +87,7 @@
 		}),
 		table.column({
 			accessor: 'dataCriado',
-			header: 'Data de Criação',
+			header: 'Criação',
 			cell: ({ value }) => formatarData(value), // Formata a data antes de exibir
 			plugins: {
 				sort: {
@@ -99,8 +99,9 @@
 			}
 		}),
 		table.column({
-			accessor: 'email',
-			header: 'Email',
+			accessor: 'dataAtendido',
+			header: 'Atendido',
+			cell: ({ value }) => formatarData(value), // Formata a data antes de exibir
 			plugins: {
 				sort: {
 					disable: true
@@ -110,8 +111,9 @@
 				}
 			}
 		}),
+
 		table.column({
-			accessor: ({ id, fullName, cpfCnpj, email, telefone, pixKey, pixType, dataAtendido }) => ({
+			accessor: ({
 				id,
 				fullName,
 				cpfCnpj,
@@ -119,7 +121,18 @@
 				telefone,
 				pixKey,
 				pixType,
-				dataAtendido
+				dataAtendido,
+				dataCriado
+			}) => ({
+				id,
+				fullName,
+				cpfCnpj,
+				email,
+				telefone,
+				pixKey,
+				pixType,
+				dataAtendido,
+				dataCriado
 			}),
 			header: '',
 			cell: ({ value }) => {
@@ -143,7 +156,7 @@
 		.filter(([, hide]) => !hide)
 		.map(([id]) => id);
 
-	const hidableCols = ['fullName', 'cpfCnpj', 'telefone', 'email', 'dataCriado'];
+	const hidableCols = ['fullName', 'cpfCnpj', 'telefone', 'dataAtendido', 'dataCriado'];
 </script>
 
 <div class="flex flex-col gap-5">
