@@ -12,6 +12,7 @@ export const statusEnum = pgEnum('status', [
 	'Pendente',
 	'Sendo Atendido',
 	'Finalizado',
+	'Pago',
 	'Sem Sucesso'
 ]);
 
@@ -62,6 +63,16 @@ export const leadsTable = pgTable('leads', {
 		.notNull()
 		.defaultNow(),
 	attendedAt: timestamp('attended_at', {
+		withTimezone: true,
+		precision: 6,
+		mode: 'string'
+	}),
+	finalizedAt: timestamp('finalized_at', {
+		withTimezone: true,
+		precision: 6,
+		mode: 'string'
+	}),
+	paidAt: timestamp('paid_at', {
 		withTimezone: true,
 		precision: 6,
 		mode: 'string'

@@ -20,7 +20,7 @@ type UserIndicadorLead = {
 	pixKey: string | null;
 	dataAtendido: string | null;
 	dataCriado: string;
-	status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Sem Sucesso';
+	status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Pago' | 'Sem Sucesso';
 };
 
 export const GET: RequestHandler = async ({ request, locals }) => {
