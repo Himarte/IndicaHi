@@ -29,7 +29,8 @@
 			role: 'Vendedor Externo'
 		},
 		{ href: '/financeiro', icon: Table2, label: 'Financeiro', role: 'Financeiro' },
-		{ href: '/financeiro/pagamentos', icon: Banknote, label: 'Pagamentos', role: 'Financeiro' }
+		{ href: '/financeiro/pagamentos', icon: Banknote, label: 'Pagamentos', role: 'Financeiro' },
+		{ href: '/interno', icon: Table2, label: 'Estoque', role: 'Vendedor Interno' }
 	];
 </script>
 

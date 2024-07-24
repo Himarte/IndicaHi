@@ -30,5 +30,18 @@ export type LeadsPendenteFinanceiro = {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	dataAtendido: any;
 	dataCriado: string;
-	status: string;
+	status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Pago' | 'Sem Sucesso';
+};
+
+export type LeadsPendentesVendedorInterno = {
+	id: string;
+	status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Pago' | 'Sem Sucesso';
+	fullName: string;
+	cpfCnpj: string;
+	telefone: string;
+	email: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	dataAtendido: any;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	dataCriado: any;
 };

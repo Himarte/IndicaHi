@@ -6,73 +6,102 @@ import { leadsTable } from '$lib/server/database/schema';
 import { getUserIdByPromoCode } from '$lib/server/database/utils/user.server';
 import { eq } from 'drizzle-orm';
 
+// Function to validate API key
+const validateApiKey = (request: Request): boolean => {
+	return request.headers.get('API-KEY') === SITE_CHAVE_API;
+};
+
+// Function to validate CPF/CNPJ format
+const isValidCpfCnpj = (cpfCnpj: string | null): boolean => {
+	if (!cpfCnpj) return false;
+	// Add your CPF/CNPJ validation logic here
+	// Basic example: check length (11 for CPF, 14 for CNPJ)
+	return cpfCnpj.length === 11 || cpfCnpj.length === 14;
+};
+
 export const POST: RequestHandler = async ({ url, request }) => {
-	// Verifica se a chave da API é válida
-	if (request.headers.get('API-KEY') !== SITE_CHAVE_API) {
-		return new Response('Chave de API inválida', { status: 401 });
-	}
-	const id = generateId(10);
-	const fullName = url.searchParams.get('fullName');
-	// TODO: Verificar se o CPF/CNPJ é válido e se nao esta cadastrado
-	const cpfCnpj = url.searchParams.get('cpfCnpj');
-	const promoCode = url.searchParams.get('promoCode');
-
-	if (!fullName || !cpfCnpj) {
-		return new Response('Parâmetros inválidos', { status: 400 });
+	if (!validateApiKey(request)) {
+		return new Response(JSON.stringify({ message: 'Chave de API inválida' }), { status: 401 });
 	}
 
-	console.log('PromoCode testeee: ', promoCode);
+	try {
+		const id = generateId(10);
+		const fullName = url.searchParams.get('fullName');
+		const cpfCnpj = url.searchParams.get('cpfCnpj');
+		const promoCode = url.searchParams.get('promoCode');
 
-	// Verifica se o promoCode vazio ou inválido
-	if (!promoCode) {
-		await db.insert(leadsTable).values({
+		// Validate required parameters
+		if (!fullName || !cpfCnpj) {
+			return new Response(JSON.stringify({ message: 'Parâmetros inválidos' }), { status: 400 });
+		}
+
+		// Validate CPF/CNPJ format
+		if (!isValidCpfCnpj(cpfCnpj)) {
+			return new Response(JSON.stringify({ message: 'CPF/CNPJ inválido' }), { status: 400 });
+		}
+
+		const commonValues = {
 			id,
 			fullName,
 			cpfCnpj,
-			promoCode
+			promoCode,
+			createdAt: new Date().toISOString(),
+			attendedAt: null,
+			finalizedAt: null,
+			paidAt: null
+		};
+
+		if (!promoCode) {
+			await db.insert(leadsTable).values(commonValues);
+			return new Response(JSON.stringify({ message: 'Lead criado com sucesso sem promocode' }), {
+				status: 201
+			});
+		}
+
+		const userIdPromoCode = await getUserIdByPromoCode(promoCode);
+		if (!userIdPromoCode) {
+			return new Response(JSON.stringify({ message: 'Código promocional inválido' }), {
+				status: 400
+			});
+		}
+
+		await db.insert(leadsTable).values({ ...commonValues, userIdPromoCode });
+		return new Response(JSON.stringify({ message: 'Lead criado com sucesso com promocode' }), {
+			status: 201
 		});
-		return new Response('Lead criado com sucesso sem promocode', { status: 201 });
+	} catch (error) {
+		console.error('Error creating lead:', error);
+		return new Response(JSON.stringify({ message: 'Erro interno do servidor' }), { status: 500 });
 	}
-
-	const userIdPromoCode = await getUserIdByPromoCode(promoCode);
-	if (!userIdPromoCode) {
-		return new Response('Código promocional inválido', { status: 400 });
-	}
-	await db.insert(leadsTable).values({
-		id,
-		fullName,
-		cpfCnpj,
-		promoCode,
-		userIdPromoCode
-	});
-
-	return new Response('Lead criado com sucesso com promocode', { status: 201 });
 };
 
 export const GET: RequestHandler = async ({ request, locals }) => {
-	// Verifica se a chave da API é válida
-	console.log('Na API de indicacoes');
-
-	if (request.headers.get('API-KEY') !== SITE_CHAVE_API) {
-		return new Response('Chave de API inválida', { status: 401 });
+	if (!validateApiKey(request)) {
+		return new Response(JSON.stringify({ message: 'Chave de API inválida' }), { status: 401 });
 	}
+
 	if (!locals.user) {
-		return new Response('Usuário não autenticado', { status: 401 });
+		return new Response(JSON.stringify({ message: 'Usuário não autenticado' }), { status: 401 });
 	}
 
-	const leads = await db
-		.select({
-			id: leadsTable.id,
-			fullName: leadsTable.fullName,
-			status: leadsTable.status,
-			promoCode: leadsTable.promoCode
-		})
-		.from(leadsTable)
-		.where(eq(leadsTable.userIdPromoCode, locals.user.id));
+	try {
+		const leads = await db
+			.select({
+				id: leadsTable.id,
+				fullName: leadsTable.fullName,
+				status: leadsTable.status,
+				promoCode: leadsTable.promoCode
+			})
+			.from(leadsTable)
+			.where(eq(leadsTable.userIdPromoCode, locals.user.id));
 
-	return new Response(JSON.stringify(leads), {
-		headers: {
-			'Content-Type': 'application/json'
-		}
-	});
+		return new Response(JSON.stringify(leads), {
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+	} catch (error) {
+		console.error('Error fetching leads:', error);
+		return new Response(JSON.stringify({ message: 'Erro interno do servidor' }), { status: 500 });
+	}
 };
