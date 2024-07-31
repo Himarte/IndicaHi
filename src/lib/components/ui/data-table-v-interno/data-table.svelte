@@ -20,7 +20,9 @@
 
 	export let LeadsInternos: LeadsPendentesVendedorInterno[];
 
-	const table = createTable(readable(LeadsInternos), {
+	const leadsStore = readable(LeadsInternos);
+
+	const table = createTable(leadsStore, {
 		page: addPagination(),
 		sort: addSortBy({ initialSortKeys: [{ id: 'dataCriado', order: 'desc' }] }),
 		filter: addTableFilter({
@@ -30,7 +32,6 @@
 		select: addSelectedRows()
 	});
 
-	// Definição das colunas
 	const columns = table.createColumns([
 		table.column({
 			accessor: 'id',
@@ -62,8 +63,8 @@
 			}
 		}),
 		table.column({
-			accessor: 'cpfCnpj',
-			header: 'CPF/CNPJ',
+			accessor: 'planoModelo',
+			header: 'Plano/Modelo',
 			plugins: {
 				sort: {
 					disable: true
@@ -73,6 +74,7 @@
 				}
 			}
 		}),
+
 		table.column({
 			accessor: 'status',
 			header: 'Status',
@@ -88,7 +90,7 @@
 		table.column({
 			accessor: 'dataCriado',
 			header: 'Dia do Cadastro',
-			cell: ({ value }) => formatarData(value), // Formata a data antes de exibir
+			cell: ({ value }) => formatarData(value),
 			plugins: {
 				sort: {
 					disable: true
@@ -98,14 +100,13 @@
 				}
 			}
 		}),
-
 		table.column({
-			accessor: ({ id, status, cpfCnpj, fullName, email, telefone, dataCriado }) => ({
+			accessor: ({ id, status, cpf, cnpj, fullName, telefone, dataCriado }) => ({
 				id,
 				status,
-				cpfCnpj,
+				cpf,
+				cnpj,
 				fullName,
-				email,
 				telefone,
 				dataCriado
 			}),
@@ -131,7 +132,7 @@
 		.filter(([, hide]) => !hide)
 		.map(([id]) => id);
 
-	const hidableCols = ['fullName', 'cpfCnpj', 'telefone', 'dataAtendido', 'dataCriado'];
+	const hidableCols = ['fullName', 'cpf', 'cnpj', 'telefone', 'atendidoEm', 'criadoEm'];
 </script>
 
 <div class="flex flex-col gap-5">

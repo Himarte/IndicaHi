@@ -5,10 +5,17 @@
 
 	export let id: string;
 	export let fullName: string;
-	export let email: string;
 	export let telefone: string;
-	export let cpfCnpj: string;
+	export let cpf: string;
+	export let cnpj: string;
 	export let dataCriado: string;
+
+	const separarDataHora = (dataHora: string) => {
+		const [data, hora] = dataHora.split(' - ');
+		return { data, hora };
+	};
+
+	const { data, hora } = separarDataHora(dataCriado);
 
 	console.log(id);
 </script>
@@ -21,45 +28,39 @@
 	</Sheet.Trigger>
 	<Sheet.Content side="right" class="flex h-full flex-col justify-between border-secondary">
 		<Sheet.Header>
-			<Sheet.Title>Dados do Lead</Sheet.Title>
+			<Sheet.Title class="text-orange-600">Dados do Lead</Sheet.Title>
 			<Sheet.Description>Aqui você pode visualizar e editar alguns dados do Lead.</Sheet.Description
 			>
 		</Sheet.Header>
 		<div class="flex h-full flex-col gap-2">
-			<div class="rounded-xl border border-secondary p-2">
-				<p class="font-bold">Cliente:</p>
+			<div class="rounded-xl border border-secondary p-2 px-2">
+				<p class="font-bold text-orange-600">Cliente:</p>
 				<p>{fullName}</p>
 			</div>
-			<div class="rounded-xl border border-secondary p-2">
-				<p class="font-bold">CPF:</p>
-				<p>{cpfCnpj}</p>
+			<div class="rounded-xl border border-secondary p-2 px-2">
+				<p class="font-bold text-orange-600">CPF:</p>
+				<p>{cpf}</p>
 			</div>
-			<div class="rounded-xl border border-secondary p-2">
-				<p class="font-bold">Telefone:</p>
+			<div class="rounded-xl border border-secondary p-2 px-2">
+				<p class="font-bold text-orange-600">Telefone:</p>
 				<p>{telefone}</p>
 			</div>
-			<div class="rounded-xl border border-secondary p-2">
-				<p class="font-bold">E-mail:</p>
-				<p>{email}</p>
+			<div class="rounded-xl border border-secondary p-2 px-2">
+				<p class="font-bold text-orange-600">CPF:</p>
+				<p>{cnpj}</p>
 			</div>
 
-			<div class="rounded-xl border border-secondary p-2">
-				<p class="font-bold">Chave Pix:</p>
-			</div>
-
-			<div class="flex gap-2">
-				<div class="w-1/2 rounded-xl border border-secondary p-2">
-					<p class="font-bold">Atendido:</p>
-				</div>
-				<div class="w-1/2 rounded-xl border border-secondary p-2">
-					<p class="font-bold">Criado</p>
-					<p>{dataCriado}</p>
+			<div class="flex flex-col rounded-xl border border-secondary p-2 px-2">
+				<p class="font-bold text-orange-600">Atendido</p>
+				<div>
+					<p>Dia: {data}</p>
+					<p>Hora: {hora}</p>
 				</div>
 			</div>
 		</div>
 		<Sheet.Footer>
 			<Sheet.Close asChild let:builder>
-				<Button builders={[builder]} type="submit">Save changes</Button>
+				<Button builders={[builder]}>Voltar</Button>
 			</Sheet.Close>
 		</Sheet.Footer>
 	</Sheet.Content>

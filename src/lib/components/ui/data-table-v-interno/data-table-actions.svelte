@@ -9,13 +9,14 @@
 
 	export let id: string;
 	export let fullName: string;
-	export let email: string;
 	export let telefone: string;
-	export let cpfCnpj: string;
-	export let dataCriado: string;
+	export let cpf: string;
+	export let cnpj: string;
+	export let dataCriado: any;
+	export let status: string;
 
 	// Formatar as datas antes de passá-las para os componentes
-	$: formatadoDataCriado = formatarData(dataCriado);
+	$: formatadocriadoEm = formatarData(dataCriado);
 </script>
 
 <DropdownMenu.Root>
@@ -30,8 +31,16 @@
 			<DropdownMenu.Label>Opções do Menu</DropdownMenu.Label>
 			<DropdownMenu.Separator />
 
-			<VerDados {id} {fullName} {email} {telefone} {cpfCnpj} dataCriado={formatadoDataCriado} />
-			<EditarDados {id} {fullName} {email} {telefone} {cpfCnpj} dataCriado={formatadoDataCriado} />
+			<VerDados {id} {fullName} {telefone} {cpf} {cnpj} dataCriado={formatadocriadoEm} />
+			<EditarDados
+				{id}
+				{fullName}
+				{telefone}
+				{cpf}
+				{cnpj}
+				dataCriado={formatadocriadoEm}
+				{status}
+			/>
 			<!-- <DropdownMenu.Item on:click={() => navigator.clipboard.writeText(id)}>
 				Copy payment ID
 			</DropdownMenu.Item> -->

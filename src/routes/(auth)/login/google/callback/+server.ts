@@ -64,7 +64,6 @@ export const GET: RequestHandler = async (event) => {
 		// Check if the user already exists
 		const existingEmail = await emailIsUsed(googleUser.email);
 
-
 		if (existingEmail) {
 			// pegar o id do usuario, e criar um cookie de sessao
 			const existeEmailEOauth = await db

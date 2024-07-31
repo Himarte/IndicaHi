@@ -4,7 +4,7 @@ import type { RequestHandler } from './$types';
 import { db } from '$lib/server/database/db.server';
 import { eq } from 'drizzle-orm';
 
-// Function to validate API key
+// Função para validar a chave API
 const validateApiKey = (request: Request): boolean => {
 	return request.headers.get('API-KEY') === SITE_CHAVE_API;
 };
@@ -12,12 +12,12 @@ const validateApiKey = (request: Request): boolean => {
 export const GET: RequestHandler = async ({ request, locals }) => {
 	console.log('Na API do Dashboard Vendedor Interno');
 
-	// Validate API key
+	// Validar chave API
 	if (!validateApiKey(request)) {
 		return new Response('Chave de API inválida', { status: 401 });
 	}
 
-	// Ensure user is authenticated
+	// Garantir que o usuário esteja autenticado
 	if (!locals.user) {
 		return new Response('Usuário não autenticado', { status: 401 });
 	}
@@ -27,12 +27,19 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 			id: leadsTable.id,
 			fullName: leadsTable.fullName,
 			status: leadsTable.status,
-			cpfCnpj: leadsTable.cpfCnpj,
-			dataAtendido: leadsTable.attendedAt,
-			dataCriado: leadsTable.createdAt
+			cpf: leadsTable.cpf,
+			cnpj: leadsTable.cnpj,
+			dataAtendido: leadsTable.atendidoEm,
+			dataCriado: leadsTable.atendidoEm,
+			telefone: leadsTable.telefone,
+			planoNome: leadsTable.planoNome,
+			planoModelo: leadsTable.planoModelo,
+			planoMegas: leadsTable.planoMegas
 		})
 		.from(leadsTable)
 		.where(eq(leadsTable.status, 'Pendente'));
+
+	// console.log('Leads Pendente Vendedor interno: ', LeadsInternos);
 
 	console.log('Leads Pendente Vendedor interno: ', LeadsInternos.length);
 
