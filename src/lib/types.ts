@@ -37,11 +37,16 @@ export type LeadsPendentesVendedorInterno = {
 	id: string;
 	status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Pago' | 'Sem Sucesso';
 	fullName: string;
-	cpfCnpj: string;
+	cpf: string;
+	cnpj: string;
+
 	telefone: string;
-	email: string;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	dataAtendido: any;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	dataCriado: any;
+	planoNome: string;
+	planoModelo: string;
+	planoMegas: number;
+	planoPreco: number;
 };

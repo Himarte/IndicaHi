@@ -1,5 +1,5 @@
-import { eq } from 'drizzle-orm';
-import { userTable } from '../schema';
+import { and, eq } from 'drizzle-orm';
+import { userTable, leadsTable } from '../schema';
 import { db } from '../db.server';
 
 // Verificar se o Email ja esta cadastrado
@@ -26,19 +26,31 @@ export const emailIsUsed = async (email: string) => {
 
 	return queryResult.length > 0;
 };
-
-// Verificar se o CPF ja esta cadastrado
-export const cpfIsUsed = async (cpf: string) => {
+// Verificar se o CPF já está cadastrado
+export const cpfIsUsed = async (cpf: string): Promise<boolean> => {
 	const queryResult = await db
 		.select({
-			cpf: userTable.cpf
+			cpf: leadsTable.cpf
 		})
-		.from(userTable)
-		.where(eq(userTable.cpf, cpf));
+		.from(leadsTable)
+		.where(and(eq(leadsTable.status, 'Pendente'), eq(leadsTable.cpf, cpf)));
+
+	console.log('queryResult:', queryResult);
 
 	return queryResult.length > 0;
 };
 
+// Verificar se o CNPJ já está cadastrado
+export const cnpjIsUsed = async (cnpj: string): Promise<boolean> => {
+	const queryResult = await db
+		.select({
+			cnpj: leadsTable.cnpj
+		})
+		.from(leadsTable)
+		.where(and(eq(leadsTable.status, 'Pendente'), eq(leadsTable.cnpj, cnpj)));
+
+	return queryResult.length > 0;
+};
 // Pegar o ID do usuario pelo codigo promocional
 export const getUserIdByPromoCode = async (promoCode: string) => {
 	const result = await db

@@ -15,9 +15,10 @@ export const statusEnum = pgEnum('status', [
 	'Pago',
 	'Sem Sucesso'
 ]);
+export const modeloEnum = pgEnum('modelo', ['CPF', 'CNPJ']);
 
 export const userTable = pgTable('user', {
-	id: text('id').primaryKey().notNull(),
+	id: varchar('id').primaryKey().notNull(),
 	provider: varchar('provider_id'),
 	provider_user_id: varchar('provider_user_id'),
 	avatarUrl: varchar('avatar_url'),
@@ -37,13 +38,13 @@ export const userTable = pgTable('user', {
 	cidade: varchar('cidade', { length: 256 }),
 	estado: varchar('estado', { length: 2 }),
 	status: boolean('status').default(true),
-	createdAt: timestamp('created_at', { mode: 'string', precision: 6, withTimezone: true })
+	criadoEm: timestamp('criado_em', { mode: 'string', precision: 6, withTimezone: true })
 		.notNull()
 		.defaultNow()
 });
 
 export const sessionTable = pgTable('session', {
-	id: text('id').primaryKey(),
+	id: varchar('id').primaryKey(),
 	userId: text('user_id')
 		.notNull()
 		.references(() => userTable.id),
@@ -56,23 +57,28 @@ export const sessionTable = pgTable('session', {
 export const leadsTable = pgTable('leads', {
 	id: varchar('id').primaryKey().notNull(),
 	fullName: varchar('full_name'),
-	cpfCnpj: varchar('cpf_cnpj', { length: 14 }),
+	cpf: varchar('cpf', { length: 14 }),
+	cnpj: varchar('cnpj', { length: 18 }),
 	status: statusEnum('status').default('Pendente').notNull(),
 	promoCode: varchar('promo_code', { length: 15 }),
-	createdAt: timestamp('created_at', { mode: 'string', precision: 6, withTimezone: true })
+	telefone: varchar('telefone', { length: 11 }),
+	planoNome: varchar('plano_nome', { length: 256 }),
+	planoModelo: modeloEnum('plano_modelo'),
+	planoMegas: integer('plano_megas'),
+	criadoEm: timestamp('criadoEm', { mode: 'string', precision: 6, withTimezone: true })
 		.notNull()
 		.defaultNow(),
-	attendedAt: timestamp('attended_at', {
+	atendidoEm: timestamp('atendido_em', {
 		withTimezone: true,
 		precision: 6,
 		mode: 'string'
 	}),
-	finalizedAt: timestamp('finalized_at', {
+	finalizado_em: timestamp('finalizado_em', {
 		withTimezone: true,
 		precision: 6,
 		mode: 'string'
 	}),
-	paidAt: timestamp('paid_at', {
+	pagoEm: timestamp('pago_em', {
 		withTimezone: true,
 		precision: 6,
 		mode: 'string'
