@@ -30,7 +30,7 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 			cpf: leadsTable.cpf,
 			cnpj: leadsTable.cnpj,
 			dataAtendido: leadsTable.atendidoEm,
-			dataCriado: leadsTable.atendidoEm,
+			dataCriado: leadsTable.criadoEm,
 			telefone: leadsTable.telefone,
 			planoNome: leadsTable.planoNome,
 			planoModelo: leadsTable.planoModelo,

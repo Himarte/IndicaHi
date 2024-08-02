@@ -73,7 +73,7 @@ export const leadsTable = pgTable('leads', {
 		precision: 6,
 		mode: 'string'
 	}),
-	finalizado_em: timestamp('finalizado_em', {
+	finalizadoEm: timestamp('finalizado_em', {
 		withTimezone: true,
 		precision: 6,
 		mode: 'string'
