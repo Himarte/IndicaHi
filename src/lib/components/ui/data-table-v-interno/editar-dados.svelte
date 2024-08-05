@@ -10,6 +10,7 @@
 	export let cnpj: string;
 	export let dataCriado: string;
 	export let status: string;
+	console.log(dataCriado);
 </script>
 
 <Sheet.Root>
@@ -34,14 +35,17 @@
 				<p class="font-bold text-orange-600">Cliente:</p>
 				<p>{fullName}</p>
 			</div>
-			<div class="rounded-xl border border-secondary p-2">
-				<p class="font-bold text-orange-600">CPF:</p>
-				<p>{cpf}</p>
-			</div>
-			<div class="rounded-xl border border-secondary p-2">
-				<p class="font-bold text-orange-600">CNPJ:</p>
-				<p>{cnpj}</p>
-			</div>
+			{#if cpf.length === 0}
+				<div class="rounded-xl border border-secondary p-2">
+					<p class="font-bold text-orange-600">CNPJ:</p>
+					<p>{cnpj}</p>
+				</div>
+			{:else}
+				<div class="rounded-xl border border-secondary p-2">
+					<p class="font-bold text-orange-600">CPF:</p>
+					<p>{cpf}</p>
+				</div>
+			{/if}
 			<div class="rounded-xl border border-secondary p-2">
 				<p class="font-bold text-orange-600">Telefone:</p>
 				<p>{telefone}</p>
