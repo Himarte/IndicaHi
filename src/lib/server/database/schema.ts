@@ -19,14 +19,14 @@ export const modeloEnum = pgEnum('modelo', ['CPF', 'CNPJ']);
 
 export const userTable = pgTable('user', {
 	id: varchar('id').primaryKey().notNull(),
-	provider: varchar('provider_id'),
-	provider_user_id: varchar('provider_user_id'),
-	avatarUrl: varchar('avatar_url'),
+	provider: varchar('provider_id').notNull(),
+	provider_user_id: varchar('provider_user_id').notNull(),
+	avatarUrl: varchar('avatar_url').notNull(),
 	name: varchar('name').notNull(),
 	email: varchar('email').notNull(),
-	job: jobEnum('job').default('Vendedor Externo'),
-	cpf: varchar('cpf', { length: 11 }).unique(),
-	telefone: varchar('telefone', { length: 11 }),
+	job: jobEnum('job').default('Vendedor Externo').notNull(),
+	cpf: varchar('cpf', { length: 11 }).unique().notNull(),
+	telefone: varchar('telefone', { length: 11 }).notNull(),
 	promoCode: varchar('promo_code', { length: 15 }).unique(),
 	pixType: pixTypeEnum('pix_type'),
 	pixCode: text('pix_code').unique(),
@@ -37,7 +37,7 @@ export const userTable = pgTable('user', {
 	bairro: varchar('bairro', { length: 256 }),
 	cidade: varchar('cidade', { length: 256 }),
 	estado: varchar('estado', { length: 2 }),
-	status: boolean('status').default(true),
+	status: boolean('status').default(true).notNull(),
 	criadoEm: timestamp('criado_em', { mode: 'string', precision: 6, withTimezone: true })
 		.notNull()
 		.defaultNow()
@@ -56,7 +56,7 @@ export const sessionTable = pgTable('session', {
 
 export const leadsTable = pgTable('leads', {
 	id: varchar('id').primaryKey().notNull(),
-	fullName: varchar('full_name'),
+	fullName: varchar('full_name').notNull(),
 	cpf: varchar('cpf', { length: 14 }),
 	cnpj: varchar('cnpj', { length: 18 }),
 	status: statusEnum('status').default('Pendente').notNull(),

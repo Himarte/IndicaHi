@@ -1,13 +1,13 @@
-// Aqui fica a conexão com o banco de dados, utilizando o Drizzle ORM
-import { drizzle } from 'drizzle-orm/node-postgres';
+// // Aqui fica a conexão com o banco de dados, utilizando o Drizzle ORM
+import { drizzle } from 'drizzle-orm/vercel-postgres';
 import pg from 'pg';
-import * as schema from './schema';
+import { sql } from '@vercel/postgres';
 import { DB_URL } from '$env/static/private';
+const { Pool } = pg;
 
-export const client = new pg.Client({
+const client = new Pool({
 	connectionString: DB_URL
 });
 
 await client.connect();
-
-export const db = drizzle(client, { schema });
+export const db = drizzle(sql);

@@ -18,3 +18,4 @@ migration
 migrations
 data
 drizzle
+.vercel
