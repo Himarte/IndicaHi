@@ -116,7 +116,10 @@
 		.filter(([, hide]) => !hide)
 		.map(([id]) => id);
 
-	const hidableCols = ['fullName', 'cpfCnpj', 'promoCode', 'status'];
+	const hidableCols = ['fullName', 'promoCode', 'status'];
+
+	console.log('Leads Pendentes:', leadsPendentes);
+	console.log('Plugin States:', pluginStates);
 </script>
 
 <div class="flex flex-col gap-5">

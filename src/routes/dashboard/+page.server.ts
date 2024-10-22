@@ -1,28 +1,29 @@
 import type { PageServerLoad } from './$types';
-import { SITE_CHAVE_API } from '$env/static/private';
+import { db } from '$lib/server/database/db.server';
+import { leadsTable } from '$lib/server/database/schema';
+import { eq } from 'drizzle-orm';
 
-export const load: PageServerLoad = async ({ fetch }) => {
+export const load: PageServerLoad = async ({ locals }) => {
+	const userPromoCode = locals?.user?.promoCode;
+
+	// Verifica se o usuário está autenticado e possui um promoCode
+	if (!userPromoCode) {
+		return {
+			leads: [],
+			message: 'Usuário não autenticado ou sem promoCode'
+		};
+	}
+
 	try {
-		const res = await fetch('/api/indicacoes', {
-			method: 'GET',
-			headers: {
-				'API-KEY': SITE_CHAVE_API,
-				'Content-Type': 'application/json'
-			}
-		});
+		// Consulta ao banco de dados
+		const leads = await db.select().from(leadsTable).where(eq(leadsTable.promoCode, userPromoCode));
 
-		// Verifica se a resposta é JSON
-		const contentType = res.headers.get('content-type');
-		if (contentType && contentType.includes('application/json')) {
-			const leads = await res.json();
-			return { leads };
-		} else {
-			// Lidar com resposta inesperada (não JSON)
-			console.error('A resposta não é JSON:', await res.text());
-			return { leads: [] };
-		}
+		return { leads };
 	} catch (err) {
 		console.error('Erro ao buscar leads:', err);
-		return { leads: [] };
+		return {
+			leads: [],
+			message: 'Erro interno do servidor'
+		};
 	}
 };

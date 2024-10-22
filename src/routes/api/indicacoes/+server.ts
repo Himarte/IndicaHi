@@ -1,3 +1,4 @@
+import { eq } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 import { SITE_CHAVE_API } from '$env/static/private';
 import { generateId } from 'lucia';
@@ -18,19 +19,17 @@ const validateApiKey = (request: Request): boolean => {
 const isValidCpfCnpj = async (cpf: string | null, cnpj: string | null): Promise<boolean> => {
 	if (!cpf && !cnpj) return false; // Ambos não podem ser nulos
 
-	const checks: Promise<boolean>[] = [];
-
 	if (cpf && cpf.length === 11) {
-		checks.push(cpfIsUsed(cpf));
+		const isUsed = await cpfIsUsed(cpf);
+		if (isUsed) return false; // CPF já está em uso
 	}
 
 	if (cnpj && cnpj.length === 14) {
-		checks.push(cnpjIsUsed(cnpj));
+		const isUsed = await cnpjIsUsed(cnpj);
+		if (isUsed) return false; // CNPJ já está em uso
 	}
 
-	const results = await Promise.all(checks);
-
-	return results.every((result) => result);
+	return true; // CPF/CNPJ válido (não está em uso)
 };
 
 export const POST: RequestHandler = async ({ url, request }) => {
@@ -47,7 +46,7 @@ export const POST: RequestHandler = async ({ url, request }) => {
 		const telefone = url.searchParams.get('telefone');
 		const planoNome = url.searchParams.get('planoNome');
 		const planoModelo = url.searchParams.get('planoModelo');
-		const planoMegas = url.searchParams.get('planoMegas');
+		const planoMegas = parseInt(url.searchParams.get('planoMegas') || '0', 10);
 
 		// Valida parâmetros obrigatórios
 		if (!fullName || !telefone) {
@@ -55,10 +54,11 @@ export const POST: RequestHandler = async ({ url, request }) => {
 		}
 
 		// Valida formato de CPF/CNPJ
-		if (!isValidCpfCnpj(cpf, cnpj)) {
+		if (!(await isValidCpfCnpj(cpf, cnpj))) {
 			return new Response(JSON.stringify({ message: 'CPF/CNPJ inválido' }), { status: 400 });
 		}
 
+		// Construção de commonValues
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const commonValues: any = {
 			id,
@@ -71,30 +71,48 @@ export const POST: RequestHandler = async ({ url, request }) => {
 			planoMegas,
 			criadoEm: new Date().toISOString()
 		};
-		console.log('commonValues:', commonValues);
 
-		if (!promoCode) {
-			await db.insert(leadsTable).values(commonValues);
-			return new Response(JSON.stringify({ message: 'Lead criado com sucesso sem promocode' }), {
-				status: 201
-			});
+		// Se o promoCode estiver presente e válido, adicionamos ao commonValues
+		if (promoCode) {
+			const userIdPromoCode = await getUserIdByPromoCode(promoCode);
+			console.log('userIdPromoCode:', userIdPromoCode);
+
+			if (!userIdPromoCode) {
+				return new Response(JSON.stringify({ message: 'Código promocional inválido' }), {
+					status: 400
+				});
+			}
+
+			commonValues.promoCode = promoCode;
+			commonValues.userIdPromoCode = userIdPromoCode;
 		}
 
-		const userIdPromoCode = await getUserIdByPromoCode(promoCode);
-		console.log('userIdPromoCode:', userIdPromoCode);
+		// Inserção no banco de dados
+		await db.insert(leadsTable).values(commonValues);
 
-		if (!userIdPromoCode) {
-			return new Response(JSON.stringify({ message: 'Código promocional inválido' }), {
-				status: 400
-			});
-		}
-
-		await db.insert(leadsTable).values({ ...commonValues, userIdPromoCode });
-		return new Response(JSON.stringify({ message: 'Lead criado com sucesso com promocode' }), {
+		return new Response(JSON.stringify({ message: 'Lead criado com sucesso' }), {
 			status: 201
 		});
 	} catch (error) {
 		console.error('Error creating lead:', error);
+		return new Response(JSON.stringify({ message: 'Erro interno do servidor' }), { status: 500 });
+	}
+};
+export const GET: RequestHandler = async ({ locals }) => {
+	const userPromoCode = locals?.user?.promoCode;
+
+	if (!userPromoCode) {
+		return new Response(JSON.stringify({ message: 'Usuário não autenticado ou sem promoCode' }), {
+			status: 401
+		});
+	}
+
+	try {
+		const leads = await db.select().from(leadsTable).where(eq(leadsTable.promoCode, userPromoCode));
+
+		return new Response(JSON.stringify(leads), { status: 200 });
+	} catch (error) {
+		console.error('Erro ao buscar leads:', error);
 		return new Response(JSON.stringify({ message: 'Erro interno do servidor' }), { status: 500 });
 	}
 };
