@@ -9,14 +9,18 @@
 	import PrimeiroLogin from '$lib/components/Dialogs/PrimeiroLogin.svelte';
 
 	export let data: LayoutData;
-
-	// console.log(data);
-
 	export let isLoggedIn = data.isUserLoggedIn;
 	export let userData = data.user;
 
 	$: isLoggedIn = data.isUserLoggedIn as boolean;
 	$: userData = data.user as userDataFromCookies;
+
+	$: showPrimeiroLogin =
+		userData?.job === 'Vendador Externo' ||
+		!userData?.cpf ||
+		!userData?.telefone ||
+		!userData?.pixCode ||
+		!userData?.pixType;
 </script>
 
 <Toaster richColors closeButton />
@@ -24,16 +28,19 @@
 
 <NovoHeader {isLoggedIn} {userData} />
 
-{#if isLoggedIn && userData}
-	{#if userData.job === 'Vendador Externo' || !userData.cpf || !userData.telefone || !userData.pixCode || !userData.pixType}
-		<PrimeiroLogin {userData} />
-	{/if}
-	<main class="flex h-full w-full pl-[3.5rem]">
-		<NovoSide {userData} />
+<main class="flex h-full w-full {isLoggedIn ? 'pl-[3.5rem]' : ''}">
+	{#if isLoggedIn && userData}
+		{#if userData.job === 'Admin'}
+			<NovoSide {userData} />
+			<slot {userData} />
+		{:else}
+			{#if showPrimeiroLogin}
+				<PrimeiroLogin {userData} />
+			{/if}
+			<NovoSide {userData} />
+			<slot {userData} />
+		{/if}
+	{:else}
 		<slot {userData} />
-	</main>
-{:else}
-	<main class="flex h-full w-full">
-		<slot><!-- optional fallback --></slot>
-	</main>
-{/if}
+	{/if}
+</main>
