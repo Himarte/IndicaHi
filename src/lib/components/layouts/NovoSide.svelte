@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
-	import { Home, LineChart, Package, ShoppingCart, UsersRound } from 'lucide-svelte';
+	import { Home, LineChart } from 'lucide-svelte';
 	import Settings from 'lucide-svelte/icons/settings';
 	import Table2 from 'lucide-svelte/icons/table-2';
 	import IconeHimarte from '$lib/img/logos/icon.webp';
@@ -42,7 +42,7 @@
 			<img src={IconeHimarte} alt="Himarte" class="transition-all group-hover:scale-110" />
 		</a>
 
-		{#each navItems as { href, icon: Icon, label, role }, i}
+		{#each navItems as { href, icon: Icon, label, role }}
 			{#if userRole === role}
 				<Tooltip.Root>
 					<Tooltip.Trigger asChild let:builder>
