@@ -15,6 +15,9 @@ export function maskCellPhone(value: string): string {
 		.slice(0, 15);
 }
 
+export const formatarTelefone = maskCellPhone;
+export const formatarCPF = maskCPF;
+
 export function maskCNPJ(value: string): string {
 	return value
 		.replace(/\D/g, '')

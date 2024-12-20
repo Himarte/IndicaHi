@@ -30,16 +30,11 @@
 
 <main class="flex h-full w-full {isLoggedIn ? 'pl-[3.5rem]' : ''}">
 	{#if isLoggedIn && userData}
-		{#if userData.job === 'Admin'}
-			<NovoSide {userData} />
-			<slot {userData} />
-		{:else}
-			{#if showPrimeiroLogin}
-				<PrimeiroLogin {userData} />
-			{/if}
-			<NovoSide {userData} />
-			<slot {userData} />
+		{#if showPrimeiroLogin}
+			<PrimeiroLogin {userData} />
 		{/if}
+		<NovoSide {userData} />
+		<slot {userData} />
 	{:else}
 		<slot {userData} />
 	{/if}
