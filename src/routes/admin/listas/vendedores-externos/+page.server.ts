@@ -7,11 +7,11 @@ export const load: PageServerLoad = async ({ fetch, locals }) => {
 		return {
 			vendedores: [],
 			error: 'Não autorizado'
-		} satisfies VendedoresExternosResponse;
+		};
 	}
 
 	try {
-		const response = await fetch('/api/admin/vendedores-externos', {
+		const response = await fetch('/api/admin/listar/vendedores-externos', {
 			headers: {
 				'API-KEY': SITE_CHAVE_API
 			}
@@ -28,6 +28,6 @@ export const load: PageServerLoad = async ({ fetch, locals }) => {
 		return {
 			vendedores: [],
 			error: 'Erro ao carregar dados dos vendedores'
-		} satisfies VendedoresExternosResponse;
+		};
 	}
 };

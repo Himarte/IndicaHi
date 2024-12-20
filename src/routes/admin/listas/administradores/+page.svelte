@@ -26,8 +26,7 @@
 	<div class="flex items-center justify-between">
 		<h1 class="text-2xl font-bold">Administradores</h1>
 		<div class="flex gap-2">
-			<Input placeholder="Buscar por nome..." bind:value={searchTerm} class="w-64" />
-			<Button variant="outline">Adicionar Administrador</Button>
+			<Input placeholder="Buscar por nome..." bind:value={searchTerm} class="w-96" />
 		</div>
 	</div>
 

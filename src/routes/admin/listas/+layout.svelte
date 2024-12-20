@@ -5,9 +5,8 @@
 
 <div class="flex h-full w-full">
 	<div class="flex min-w-60 flex-col items-center gap-2 py-2">
-		<h1 class="text-2xl font-bold">Listas</h1>
-		<h4 class="text-sm text-gray-500">Selecione uma lista para visualizar</h4>
-		<Separator class="w-full" />
+		<h1 class="text-2xl font-bold">Listar</h1>
+		<h4 class="pb-2 text-sm text-gray-500">Selecione uma lista para visualizar</h4>
 		<div class="flex flex-col gap-2">
 			<Button variant="outline" href="/admin/listas/vendedores-internos" class="w-full "
 				>Vendedores Internos</Button

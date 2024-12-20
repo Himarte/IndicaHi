@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ fetch, locals }) => {
 	}
 
 	try {
-		const response = await fetch('/api/admin/vendedores-internos', {
+		const response = await fetch('/api/admin/listar/vendedores-internos', {
 			headers: {
 				'API-KEY': SITE_CHAVE_API
 			}

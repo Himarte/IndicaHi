@@ -1,9 +1,9 @@
 import { SITE_CHAVE_API } from '$env/static/private';
 import { userTable } from '$lib/server/database/schema';
-import type { RequestHandler } from './$types';
 import { db } from '$lib/server/database/db.server';
 import { eq, desc, and, like, sql } from 'drizzle-orm';
-import type { VendedoresExternosResponse } from '../../../admin/listas/vendedores-externos/types';
+import type { VendedoresExternosResponse } from '../../../../admin/listas/vendedores-externos/types';
+import type { RequestHandler } from '@sveltejs/kit';
 
 const validateApiKey = (request: Request): boolean => {
 	return request.headers.get('API-KEY') === SITE_CHAVE_API;

@@ -11,7 +11,7 @@ export const load = (async ({ fetch, locals }) => {
 	}
 
 	try {
-		const response = await fetch('/api/admin/administradores', {
+		const response = await fetch('/api/admin/listar/administradores', {
 			headers: {
 				'API-KEY': SITE_CHAVE_API
 			}

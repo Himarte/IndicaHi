@@ -46,8 +46,7 @@
 	<div class="flex items-center justify-between">
 		<h1 class="text-2xl font-bold">Vendedores Externos</h1>
 		<div class="flex gap-2">
-			<Input placeholder="Buscar por nome..." bind:value={searchTerm} class="w-64" />
-			<Button variant="outline">Adicionar Vendedor</Button>
+			<Input placeholder="Buscar por nome..." bind:value={searchTerm} class="w-96" />
 		</div>
 	</div>
 

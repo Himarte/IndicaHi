@@ -3,7 +3,7 @@ import { userTable } from '$lib/server/database/schema';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/server/database/db.server';
 import { eq } from 'drizzle-orm';
-import type { PageData } from '../../../admin/listas/financeiro/types';
+import type { PageData } from '../../../../admin/listas/financeiro/types';
 
 const validateApiKey = (request: Request): boolean => {
 	return request.headers.get('API-KEY') === SITE_CHAVE_API;
