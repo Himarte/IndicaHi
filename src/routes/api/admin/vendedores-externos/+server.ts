@@ -86,7 +86,13 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 		return new Response(
 			JSON.stringify({
 				error: 'Erro interno do servidor',
-				vendedores: []
+				vendedores: [],
+				pagination: {
+					currentPage: 1,
+					totalPages: 0,
+					totalItems: 0,
+					itemsPerPage: 10
+				}
 			} satisfies VendedoresExternosResponse),
 			{
 				status: 500,
