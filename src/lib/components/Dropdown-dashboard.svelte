@@ -2,11 +2,20 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Badge } from './ui/badge';
+	import type { LeadsSchema } from '$lib/server/database/schema';
+
+	export let lead: LeadsSchema;
+	console.log(lead);
 </script>
 
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger asChild let:builder>
-		<Button variant="outline" builders={[builder]}>Mudar Status</Button>
+		<Button
+			variant="outline"
+			size="sm"
+			class="bg-zinc-900 text-xs hover:bg-zinc-950"
+			builders={[builder]}>Mudar Status</Button
+		>
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content class="w-44 border-[0.02rem] border-border">
 		<DropdownMenu.Label>Status</DropdownMenu.Label>

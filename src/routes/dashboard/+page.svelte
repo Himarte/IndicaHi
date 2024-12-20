@@ -20,14 +20,14 @@
 		/>
 	</div>
 {:then leads}
-	<Tabs.Root value="pendentes" class="relative h-full w-full pl-[3.5rem]">
+	<Tabs.Root value="pendentes" class="relative h-full w-full px-[3.5rem]">
 		<Tabs.List class="absolute top-2 flex w-min gap-1 border border-secondary bg-background">
 			<Tabs.Trigger value="pendentes">Pendentes</Tabs.Trigger>
 			<Tabs.Trigger value="finalizados">Finalizados</Tabs.Trigger>
 			<Tabs.Trigger value="sendo atendido">Sendo Atendido</Tabs.Trigger>
 			<Tabs.Trigger value="cancelados">Cancelados</Tabs.Trigger>
 		</Tabs.List>
-		<Tabs.Content value="pendentes"><DataTablePendentes {leads} /></Tabs.Content>
+		<Tabs.Content class="pt-10" value="pendentes"><DataTablePendentes {leads} /></Tabs.Content>
 		<Tabs.Content value="finalizados"><DataTableFinalizados {leads} /></Tabs.Content>
 		<Tabs.Content value="sendo atendido"><DataTableSendoAtendido {leads} /></Tabs.Content>
 		<Tabs.Content value="cancelados"><DataTableCancelados {leads} /></Tabs.Content>
