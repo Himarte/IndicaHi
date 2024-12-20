@@ -1,5 +1,5 @@
 <script lang="ts">
-	import DataTablePendentes from '$lib/components/ui/data-table-v-externo/table-pendentes.svelte';
+	import DataTablePendentes from '$lib/components/tables/tabel-pendentes2.svelte';
 	import DataTableFinalizados from '$lib/components/ui/data-table-v-externo/table-finalizados.svelte';
 	import DataTableSendoAtendido from '$lib/components/ui/data-table-v-externo/table-sendo-atendido.svelte';
 	import DataTableCancelados from '$lib/components/ui/data-table-v-externo/table-cancelados.svelte';
