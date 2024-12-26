@@ -6,9 +6,17 @@ export type Administrador = Pick<
 	'id' | 'name' | 'email' | 'telefone' | 'cpf' | 'criadoEm'
 >;
 
-export interface AdminResponse {
+export interface Pagination {
+	currentPage: number;
+	totalPages: number;
+	totalItems: number;
+	itemsPerPage: number;
+}
+
+export interface AdministradoresResponse {
 	administradores: Administrador[];
+	pagination: Pagination;
 	error?: string | null;
 }
 
-export interface PageData extends AdminResponse {}
+export interface PageData extends AdministradoresResponse {}

@@ -59,7 +59,7 @@
 			<p>Nenhum vendedor externo encontrado</p>
 		</div>
 	{:else if data.vendedores.length > 0}
-		<div class="flex flex-col gap-4">
+		<div class="flex h-full flex-col justify-between">
 			<div class="rounded-md border border-border">
 				<Table.Root>
 					<Table.Header>

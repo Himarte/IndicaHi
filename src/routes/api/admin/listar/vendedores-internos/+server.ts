@@ -2,7 +2,7 @@ import { SITE_CHAVE_API } from '$env/static/private';
 import { userTable } from '$lib/server/database/schema';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/server/database/db.server';
-import { eq } from 'drizzle-orm';
+import { eq, and, like, desc, sql } from 'drizzle-orm';
 import type { VendedoresResponse } from '../../../../admin/listas/vendedores-internos/types';
 
 const validateApiKey = (request: Request): boolean => {
@@ -25,6 +25,23 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
+		const url = new URL(request.url);
+		const page = parseInt(url.searchParams.get('page') || '1');
+		const limit = parseInt(url.searchParams.get('limit') || '10');
+		const search = url.searchParams.get('search') || '';
+
+		const offset = (page - 1) * limit;
+
+		const totalCount = await db
+			.select({ count: sql<number>`count(*)` })
+			.from(userTable)
+			.where(
+				and(
+					eq(userTable.job, 'Vendedor Interno'),
+					search ? like(userTable.name, `%${search}%`) : undefined
+				)
+			);
+
 		const vendedoresInternos = await db
 			.select({
 				id: userTable.id,
@@ -35,10 +52,26 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 				criadoEm: userTable.criadoEm
 			})
 			.from(userTable)
-			.where(eq(userTable.job, 'Vendedor Interno'));
+			.where(
+				and(
+					eq(userTable.job, 'Vendedor Interno'),
+					search ? like(userTable.name, `%${search}%`) : undefined
+				)
+			)
+			.orderBy(desc(userTable.criadoEm))
+			.limit(limit)
+			.offset(offset);
+
+		const totalPages = Math.ceil(totalCount[0].count / limit);
 
 		const response: VendedoresResponse = {
 			vendedores: vendedoresInternos,
+			pagination: {
+				currentPage: page,
+				totalPages,
+				totalItems: totalCount[0].count,
+				itemsPerPage: limit
+			},
 			error: null
 		};
 
@@ -50,8 +83,14 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 		return new Response(
 			JSON.stringify({
 				error: 'Erro interno do servidor',
-				vendedores: []
-			} satisfies VendedoresResponse),
+				vendedores: [],
+				pagination: {
+					currentPage: 1,
+					totalPages: 0,
+					totalItems: 0,
+					itemsPerPage: 10
+				}
+			}),
 			{
 				status: 500,
 				headers: { 'Content-Type': 'application/json' }

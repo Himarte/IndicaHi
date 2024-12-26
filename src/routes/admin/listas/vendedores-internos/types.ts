@@ -6,7 +6,17 @@ export type VendedorInterno = Pick<
 	'id' | 'name' | 'email' | 'telefone' | 'cpf' | 'criadoEm'
 >;
 
+export interface Pagination {
+	currentPage: number;
+	totalPages: number;
+	totalItems: number;
+	itemsPerPage: number;
+}
+
 export interface VendedoresResponse {
 	vendedores: VendedorInterno[];
+	pagination: Pagination;
 	error?: string | null;
 }
+
+export interface PageData extends VendedoresResponse {}

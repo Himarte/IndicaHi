@@ -7,18 +7,19 @@
 	import * as Popover from '$lib/components/ui/popover';
 	import type { userDataFromCookies } from '$lib/server/lucia.server';
 	import AvatarOpcoes from './AvatarOpcoes.svelte';
+	import { page } from '$app/stores';
 
-	// Props
 	export let userData: userDataFromCookies;
 	export let isLoggedIn: boolean;
-	$: isLoggedIn;
-	$: userRole = userData ? userData.job : null;
+
+	$: userRole = userData?.job;
+	$: isVendedorExterno = userRole === 'Vendedor Externo';
 </script>
 
 <header
 	class="z-2 static top-0 flex h-14 w-full items-center justify-between gap-4 border-b border-secondary px-3 md:pl-24 md:pr-10"
 >
-	<!-- Mobile Menu -->
+	<!-- Menu Mobile -->
 	<Sheet.Root>
 		<Sheet.Trigger asChild let:builder>
 			<Button builders={[builder]} size="icon" variant="outline" class="sm:hidden">
@@ -32,37 +33,53 @@
 				<a href="/">
 					<img src={LogoHimarte} alt="Logo Himarte" class="w-36 py-5 pr-5" />
 				</a>
-				<Button variant="ghost" href="/">Home</Button>
-				{#if isLoggedIn}
-					<Button variant="ghost" href="/dashboard">Dashboard</Button>
+				<Button
+					variant="ghost"
+					href="/"
+					class={$page.url.pathname === '/' ? 'bg-secondary text-accent-foreground' : ''}
+					>Home</Button
+				>
+				{#if isLoggedIn && isVendedorExterno}
+					<Button
+						variant="ghost"
+						href="/dashboard"
+						class={$page.url.pathname === '/dashboard' ? 'bg-secondary text-accent-foreground' : ''}
+						>Dashboard</Button
+					>
 				{/if}
 			</nav>
 		</Sheet.Content>
 	</Sheet.Root>
 
-	<!-- Desktop Menu -->
+	<!-- Menu Desktop -->
 	<nav class="hidden w-2/3 items-center gap-5 md:flex">
 		{#if !isLoggedIn}
-			<!-- Mostra se nao estiver logado -->
 			<a href="/">
 				<img src={LogoHimarte} alt="Logo Himarte" class="w-36 py-5 pr-5" />
 			</a>
 		{/if}
-		<!-- Mostra quando esta e nao esta logado -->
 
-		<!-- Mostra se nao estiver logado -->
 		{#if isLoggedIn}
-			<Button variant="ghost" href="/">Home</Button>
-			{#if userRole === 'Vendedor Externo'}
-				<Button variant="ghost" href="/dashboard">Dashboard</Button>
+			<Button
+				variant="ghost"
+				href="/"
+				class={$page.url.pathname === '/' ? 'bg-secondary text-accent-foreground' : ''}>Home</Button
+			>
+			{#if isVendedorExterno}
+				<Button
+					variant="ghost"
+					href="/dashboard"
+					class={$page.url.pathname === '/dashboard' ? 'bg-secondary text-accent-foreground' : ''}
+					>Dashboard</Button
+				>
 			{/if}
 		{/if}
 	</nav>
 
-	<!-- User Actions -->
+	<!-- Ações do Usuário -->
 	<nav class="flex w-1/3 items-center justify-end gap-24">
 		{#if isLoggedIn}
-			{#if userRole === 'Vendedor Externo'}
+			{#if isVendedorExterno}
 				<p class="hidden gap-2 text-orange-500 lg:flex">
 					Seu Codigo: <span class="text-white">{userData.promoCode}</span>
 				</p>
