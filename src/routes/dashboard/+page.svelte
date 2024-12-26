@@ -1,8 +1,8 @@
 <script lang="ts">
-	import DataTablePendentes from '$lib/components/tables/TablePendentes-externo.svelte';
-	import DataTableAtendimento from '$lib/components/tables/TableAtendimento-externo.svelte';
-	import DataTableFinalizados from '$lib/components/tables/TableFinalizado-externo.svelte';
-	import DataTableCancelados from '$lib/components/tables/TableCancelado-externo.svelte';
+	import DataTablePendentes from '$lib/components/tables_externo/TablePendentes-externo.svelte';
+	import DataTableAtendimento from '$lib/components/tables_externo/TableAtendimento-externo.svelte';
+	import DataTableFinalizados from '$lib/components/tables_externo/TableFinalizado-externo.svelte';
+	import DataTableCancelados from '$lib/components/tables_externo/TableCancelado-externo.svelte';
 	import type { PageServerData } from './$types';
 	import { Circle3 } from 'svelte-loading-spinners';
 	import * as Tabs from '$lib/components/ui/tabs';

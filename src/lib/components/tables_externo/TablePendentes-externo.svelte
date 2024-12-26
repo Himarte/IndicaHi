@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Badge } from '../ui/badge';
 	import Separator from '../ui/separator/separator.svelte';
-	import DropdownDashboard from '$lib/components/Dropdown-dashboard.svelte';
 	import type { LeadsSchema } from '$lib/server/database/schema';
 	import { formatarData } from '$lib/uteis/masks';
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
@@ -12,7 +11,7 @@
 	// Configuração da paginação
 	let currentPage = 1;
 	let itemsPerPage = 8;
-	$: leadsPendentes = leads.filter((lead) => lead.status === 'Finalizado');
+	$: leadsPendentes = leads.filter((lead) => lead.status === 'Pendente');
 
 	// Calcula o número total de páginas
 	$: totalPages = Math.ceil(leadsPendentes.length / itemsPerPage);
@@ -48,7 +47,7 @@
 
 <div class="flex w-full flex-wrap gap-10 pt-4">
 	{#each paginatedLeads as lead}
-		<div class="relative flex w-[45%] items-center gap-6 rounded-lg bg-zinc-800 p-4 text-white">
+		<div class="relative flex w-[40%] items-center gap-6 rounded-lg bg-zinc-800 p-4 text-white">
 			<Badge class="absolute -top-3 right-2 w-20 bg-red-600 text-white hover:bg-red-600">
 				Pendente
 			</Badge>
@@ -68,7 +67,6 @@
 					PromoCode: <span class="font-semibold">{lead.promoCode}</span>
 				</h2>
 			</div>
-			<DropdownDashboard {lead} />
 		</div>
 	{/each}
 </div>
