@@ -6,19 +6,19 @@
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 
-	export let leads: LeadsSchema[];
+	export let leadsInternos: LeadsSchema[];
 
 	// Configuração da paginação
 	let currentPage = 1;
 	let itemsPerPage = 8;
-
-	$: leadsCancelados = leads.filter((lead) => lead.status === 'Sem Sucesso');
+	// Filtra apenas os leads com status Pendente
+	$: leadsAtendimento = leadsInternos.filter((lead) => lead.status === 'Sendo Atendido');
 
 	// Calcula o número total de páginas
-	$: totalPages = Math.ceil(leadsCancelados.length / itemsPerPage);
+	$: totalPages = Math.ceil(leadsAtendimento.length / itemsPerPage);
 
 	// Obtém os leads da página atual
-	$: paginatedLeads = leadsCancelados.slice(
+	$: paginatedLeads = leadsPendentes.slice(
 		(currentPage - 1) * itemsPerPage,
 		currentPage * itemsPerPage
 	);
@@ -49,8 +49,8 @@
 <div class="flex w-full flex-wrap gap-10 pt-4">
 	{#each paginatedLeads as lead}
 		<div class="relative flex w-[40%] items-center gap-6 rounded-lg bg-zinc-800 p-4 text-white">
-			<Badge class="absolute -top-3 right-2 w-20 bg-gray-500 text-white hover:bg-gray-500">
-				Cancelado
+			<Badge class="absolute -top-3 right-2 w-24 bg-blue-600 text-white hover:bg-blue-600">
+				Atendimento
 			</Badge>
 
 			<div class="flex flex-col gap-2 pl-4">

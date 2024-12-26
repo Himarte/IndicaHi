@@ -11,13 +11,13 @@
 	// Configuração da paginação
 	let currentPage = 1;
 	let itemsPerPage = 8;
-	$: leadsPendentes = leads.filter((lead) => lead.status === 'Finalizado');
+	$: leadsFinalizados = leads.filter((lead) => lead.status === 'Finalizado');
 
 	// Calcula o número total de páginas
-	$: totalPages = Math.ceil(leadsPendentes.length / itemsPerPage);
+	$: totalPages = Math.ceil(leadsFinalizados.length / itemsPerPage);
 
 	// Obtém os leads da página atual
-	$: paginatedLeads = leadsPendentes.slice(
+	$: paginatedLeads = leadsFinalizados.slice(
 		(currentPage - 1) * itemsPerPage,
 		currentPage * itemsPerPage
 	);
@@ -48,8 +48,8 @@
 <div class="flex w-full flex-wrap gap-10 pt-4">
 	{#each paginatedLeads as lead}
 		<div class="relative flex w-[40%] items-center gap-6 rounded-lg bg-zinc-800 p-4 text-white">
-			<Badge class="absolute -top-3 right-2 w-20 bg-red-600 text-white hover:bg-red-600">
-				Pendente
+			<Badge class="absolute -top-3 right-2 w-20 bg-green-600 text-white hover:bg-green-600">
+				Finalizado
 			</Badge>
 
 			<div class="flex flex-col gap-2 pl-4">

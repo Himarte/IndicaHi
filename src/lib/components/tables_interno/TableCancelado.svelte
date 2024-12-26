@@ -6,13 +6,13 @@
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 
-	export let leads: LeadsSchema[];
+	export let leadsInternos: LeadsSchema[];
 
 	// Configuração da paginação
 	let currentPage = 1;
 	let itemsPerPage = 8;
 
-	$: leadsCancelados = leads.filter((lead) => lead.status === 'Sem Sucesso');
+	$: leadsCancelados = leadsInternos.filter((lead) => lead.status === 'Sem Sucesso');
 
 	// Calcula o número total de páginas
 	$: totalPages = Math.ceil(leadsCancelados.length / itemsPerPage);
