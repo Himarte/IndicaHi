@@ -1,28 +1,28 @@
 <script lang="ts">
-	import DataTablePendentes from '$lib/components/ui/data-table-financeiro/data-table.svelte';
-	import { Circle3 } from 'svelte-loading-spinners';
-	import type { PageServerData } from './$types';
+	import DataTableAguardandoPagamento from '$lib/components/tables_financeiro/TablePendentes.svelte';
+	import DataTablePagos from '$lib/components/tables_financeiro/TablePagos.svelte';
+	import type { PageData } from './$types';
 	import * as Tabs from '$lib/components/ui/tabs';
-	export let data: PageServerData;
+
+	export let data: PageData;
 </script>
 
-{#await data.userIndicadoresLeads}
-	<div class="flex h-[80vh] w-full items-center justify-center">
-		<Circle3
-			size="70"
-			ballBottomLeft="#F97316"
-			ballBottomRight="#FAFAFA"
-			ballTopLeft="#FAFAFA"
-			ballTopRight="#F97316"
-		/>
+{#if data.leads.aguardandoPagamento.length === 0}
+	<div class="flex w-full justify-center p-8 text-lg text-red-500">
+		Nenhum lead aguardando pagamento encontrado
 	</div>
-{:then userIndicadoresLeads}
-	<Tabs.Root value="pendentes" class="relative h-full w-full px-3 md:px-10">
+{:else}
+	<Tabs.Root value="aguardandoPagamento" class="relative h-full w-full px-3 md:px-10">
 		<Tabs.List class="absolute top-2 flex w-min gap-1 border border-secondary bg-background">
-			<Tabs.Trigger value="pendentes">Pendentes</Tabs.Trigger>
+			<Tabs.Trigger value="aguardandoPagamento">Aguardando Pagamento</Tabs.Trigger>
+			<Tabs.Trigger value="pagos">Pagos</Tabs.Trigger>
 		</Tabs.List>
-		<Tabs.Content value="pendentes"><DataTablePendentes {userIndicadoresLeads} /></Tabs.Content>
+
+		<Tabs.Content class="pt-10" value="aguardandoPagamento">
+			<DataTableAguardandoPagamento leads={data.leads.aguardandoPagamento} />
+		</Tabs.Content>
+		<Tabs.Content class="pt-10" value="pagos">
+			<DataTablePagos leads={data.leads.pagos} />
+		</Tabs.Content>
 	</Tabs.Root>
-{:catch error}
-	<p>{error.message}</p>
-{/await}
+{/if}
