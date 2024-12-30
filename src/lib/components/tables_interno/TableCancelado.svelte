@@ -7,16 +7,16 @@
 	import Button from '../ui/button/button.svelte';
 	import Dropdown from '$lib/components/Dropdown-dashboard.svelte';
 
-	export let leadsInternos: LeadsSchema[];
+	export let leads: LeadsSchema[];
 
-	console.log('Dados recebidos:', leadsInternos);
-	console.log('Exemplo de lead:', leadsInternos[0]);
+	console.log('Dados recebidos:', leads);
+	console.log('Exemplo de lead:', leads[0]);
 
 	// Configuração da paginação
 	let currentPage = 1;
 	let itemsPerPage = 8;
 
-	$: leadsCancelados = leadsInternos.filter((lead) => lead.status === 'Sem Sucesso');
+	$: leadsCancelados = leads.filter((lead) => lead.status === 'Sem Sucesso');
 
 	// Calcula o número total de páginas
 	$: totalPages = Math.ceil(leadsCancelados.length / itemsPerPage);

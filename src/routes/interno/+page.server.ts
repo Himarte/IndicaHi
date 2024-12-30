@@ -2,23 +2,40 @@ import type { PageServerLoad } from './$types';
 import { SITE_CHAVE_API } from '$env/static/private';
 
 export const load: PageServerLoad = async ({ fetch }) => {
-	// Fetch Leads finalizados
-	const LeadsInternos = fetch('/api/indicacoes/interno', {
-		method: 'GET',
-		headers: {
-			'API-KEY': SITE_CHAVE_API,
-			'Content-Type': 'application/json'
-		}
-	})
-		.then((res) => res.json())
-		.catch((err) => {
-			console.log('Erro ao buscar leads finalizados: ', err);
+	const fetchLeadsByStatus = async (status: string) => {
+		try {
+			const response = await fetch(`/api/indicacoes/interno/${status}`, {
+				method: 'GET',
+				headers: {
+					'API-KEY': SITE_CHAVE_API,
+					'Content-Type': 'application/json'
+				}
+			});
 
-			console.error(err);
+			if (!response.ok) {
+				throw new Error(`Erro ao buscar leads ${status}`);
+			}
+
+			return await response.json();
+		} catch (err) {
+			console.error(`Erro ao buscar leads ${status}:`, err);
 			return [];
-		});
+		}
+	};
+
+	const [pendentes, emAtendimento, finalizados, cancelados] = await Promise.all([
+		fetchLeadsByStatus('pendentes'),
+		fetchLeadsByStatus('atendimento'),
+		fetchLeadsByStatus('finalizados'),
+		fetchLeadsByStatus('cancelados')
+	]);
 
 	return {
-		LeadsInternos
+		leads: {
+			pendentes,
+			emAtendimento,
+			finalizados,
+			cancelados
+		}
 	};
 };
