@@ -26,7 +26,7 @@
 <Toaster richColors closeButton />
 <ModeWatcher defaultMode={'dark'} />
 
-<NovoHeader {isLoggedIn} {userData} />
+<!-- <NovoHeader {isLoggedIn} {userData} /> -->
 
 <main class="flex h-full w-full {isLoggedIn ? 'pl-[3.5rem]' : ''}">
 	{#if isLoggedIn && userData}

@@ -14,27 +14,27 @@
 		{data.message}
 	</div>
 {:else}
-	<Tabs.Root value="pendentes" class="relative h-full w-full px-[3.5rem]">
-		<Tabs.List class="absolute top-2 flex w-min gap-1 border border-secondary bg-background">
+	<Tabs.Root value="pendentes" class="relative flex h-full w-full justify-center pt-5 ">
+		<Tabs.List class="absolute top-3 flex w-min gap-1  border border-secondary bg-background">
 			<Tabs.Trigger value="pendentes">Pendentes</Tabs.Trigger>
 			<Tabs.Trigger value="atendimento">Em Atendimento</Tabs.Trigger>
 			<Tabs.Trigger value="finalizados">Finalizados</Tabs.Trigger>
 			<Tabs.Trigger value="cancelados">Cancelados</Tabs.Trigger>
 		</Tabs.List>
 
-		<Tabs.Content class="pt-10" value="pendentes">
+		<Tabs.Content class="w-full pt-10" value="pendentes">
 			<DataTablePendentes leads={data.leads.pendentes} />
 		</Tabs.Content>
 
-		<Tabs.Content class="pt-10" value="atendimento">
+		<Tabs.Content class="w-full pt-10" value="atendimento">
 			<DataTableAtendimento leads={data.leads.emAtendimento} />
 		</Tabs.Content>
 
-		<Tabs.Content class="pt-10" value="finalizados">
+		<Tabs.Content class="w-full pt-10" value="finalizados">
 			<DataTableFinalizados leads={data.leads.finalizados} />
 		</Tabs.Content>
 
-		<Tabs.Content class="pt-10" value="cancelados">
+		<Tabs.Content class="w-full pt-10" value="cancelados">
 			<DataTableCancelados leads={data.leads.cancelados} />
 		</Tabs.Content>
 	</Tabs.Root>

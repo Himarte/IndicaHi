@@ -46,9 +46,11 @@
 	$: pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 </script>
 
-<div class="flex w-full flex-wrap gap-10 pt-4">
+<div class="flex w-full flex-wrap justify-center gap-10 pt-4">
 	{#each paginatedLeads as lead}
-		<div class="relative flex w-[40%] items-center gap-6 rounded-lg bg-zinc-800 p-4 text-white">
+		<div
+			class="relative flex h-[6rem] w-[40%] items-center justify-between gap-6 rounded-lg bg-zinc-800 p-4 text-white"
+		>
 			<Badge class="absolute -top-3 right-2 w-20 bg-gray-500 text-white hover:bg-gray-500">
 				Cancelado
 			</Badge>

@@ -7,12 +7,14 @@
 		Table2,
 		Banknote,
 		UserRoundSearch,
-		UserPlus
+		UserPlus,
+		LogOut
 	} from 'lucide-svelte';
 	import IconeHimarte from '$lib/img/logos/icon.webp';
 	import { page } from '$app/stores';
 	import { derived } from 'svelte/store';
 	import type { userDataFromCookies } from '$lib/server/lucia.server';
+	import Button from '../ui/button/button.svelte';
 
 	export let userData: userDataFromCookies;
 
@@ -27,18 +29,12 @@
 	const navItems: NavItem[] = [
 		{
 			href: '/dashboard',
-			icon: Home,
+			icon: LineChart,
 			label: 'Dashboard',
 			roles: ['Vendedor Externo'],
 			activePatterns: ['/dashboard']
 		},
-		{
-			href: '/dashboard/atividades',
-			icon: LineChart,
-			label: 'Atividades',
-			roles: ['Vendedor Externo'],
-			activePatterns: ['/dashboard/atividades']
-		},
+
 		{
 			href: '/financeiro',
 			icon: Table2,
@@ -153,6 +149,23 @@
 				</a>
 			</Tooltip.Trigger>
 			<Tooltip.Content side="right">{configItem.label}</Tooltip.Content>
+		</Tooltip.Root>
+
+		<Tooltip.Root>
+			<Tooltip.Trigger asChild let:builder>
+				<form action="/logout" method="POST">
+					<button
+						type="submit"
+						class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+						use:builder.action
+						{...builder}
+					>
+						<LogOut class="h-5 w-5" />
+						<span class="sr-only">Sair</span>
+					</button>
+				</form>
+			</Tooltip.Trigger>
+			<Tooltip.Content side="right">Sair</Tooltip.Content>
 		</Tooltip.Root>
 	</nav>
 </aside>

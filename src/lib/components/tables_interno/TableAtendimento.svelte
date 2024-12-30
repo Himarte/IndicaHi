@@ -59,14 +59,16 @@
 		/>
 	</div>
 {:then}
-	<div class="flex w-full flex-wrap gap-10 pt-4">
+	<div class="flex w-full flex-wrap justify-center gap-10 pt-4">
 		{#if paginatedLeads.length === 0}
 			<div class="flex w-full justify-center p-8 text-lg text-gray-500">
 				Nenhum lead em atendimento encontrado
 			</div>
 		{:else}
 			{#each paginatedLeads as lead}
-				<div class="relative flex w-[40%] items-center gap-6 rounded-lg bg-zinc-800 p-4 text-white">
+				<div
+					class="relative flex h-[6rem] w-[40%] items-center justify-between gap-6 rounded-lg bg-zinc-800 p-4 text-white"
+				>
 					<Badge class="absolute -top-3 right-2 w-24 bg-blue-600 text-white hover:bg-blue-600">
 						Atendimento
 					</Badge>
