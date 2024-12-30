@@ -10,18 +10,39 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	if (!userPromoCode) {
 		return {
-			leads: [],
+			leads: {
+				pendentes: [],
+				emAtendimento: [],
+				finalizados: [],
+				cancelados: []
+			},
 			message: 'Usuário não autenticado ou sem promoCode'
 		};
 	}
 
 	try {
-		const leads = await db.select().from(leadsTable).where(eq(leadsTable.promoCode, userPromoCode));
-		return { leads };
+		const allLeads = await db
+			.select()
+			.from(leadsTable)
+			.where(eq(leadsTable.promoCode, userPromoCode));
+
+		return {
+			leads: {
+				pendentes: allLeads.filter((lead) => lead.status === 'Pendente'),
+				emAtendimento: allLeads.filter((lead) => lead.status === 'Sendo Atendido'),
+				finalizados: allLeads.filter((lead) => lead.status === 'Finalizado'),
+				cancelados: allLeads.filter((lead) => lead.status === 'Sem Sucesso')
+			}
+		};
 	} catch (err) {
 		console.error('Erro ao buscar leads:', err);
 		return {
-			leads: [],
+			leads: {
+				pendentes: [],
+				emAtendimento: [],
+				finalizados: [],
+				cancelados: []
+			},
 			message: 'Erro interno do servidor'
 		};
 	}
@@ -46,7 +67,6 @@ export const actions: Actions = {
 				| 'Pago'
 				| 'Sem Sucesso';
 
-			// Verifica se o status é válido
 			if (!['Pendente', 'Sendo Atendido', 'Finalizado', 'Pago', 'Sem Sucesso'].includes(status)) {
 				return fail(400, {
 					success: false,
@@ -54,7 +74,6 @@ export const actions: Actions = {
 				});
 			}
 
-			// Verifica se o lead pertence ao usuário atual
 			const lead = await db
 				.select()
 				.from(leadsTable)
@@ -67,7 +86,6 @@ export const actions: Actions = {
 				});
 			}
 
-			// Atualiza o status do lead
 			await db.update(leadsTable).set({ status }).where(eq(leadsTable.id, id));
 
 			return {
