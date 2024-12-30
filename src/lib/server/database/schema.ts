@@ -14,7 +14,8 @@ export const statusEnum = pgEnum('status', [
 	'Finalizado',
 	'Pago',
 	'Sem Sucesso',
-	'Cancelado'
+	'Cancelado',
+	'Aguardando Pagamento'
 ]);
 export const modeloEnum = pgEnum('modelo', ['CPF', 'CNPJ']);
 
