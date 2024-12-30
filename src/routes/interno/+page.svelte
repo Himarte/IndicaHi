@@ -7,6 +7,8 @@
 	import { Circle3 } from 'svelte-loading-spinners';
 	import * as Tabs from '$lib/components/ui/tabs';
 	export let data: PageServerData;
+
+	$: leadsInternos = data.LeadsInternos;
 </script>
 
 {#await data.LeadsInternos}

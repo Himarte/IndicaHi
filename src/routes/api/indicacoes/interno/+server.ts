@@ -29,12 +29,15 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 			status: leadsTable.status,
 			cpf: leadsTable.cpf,
 			cnpj: leadsTable.cnpj,
-			dataAtendido: leadsTable.atendidoEm,
-			dataCriado: leadsTable.criadoEm,
 			telefone: leadsTable.telefone,
 			planoNome: leadsTable.planoNome,
 			planoModelo: leadsTable.planoModelo,
-			planoMegas: leadsTable.planoMegas
+			planoMegas: leadsTable.planoMegas,
+			promoCode: leadsTable.promoCode,
+			atendidoEm: leadsTable.atendidoEm,
+			criadoEm: leadsTable.criadoEm,
+			canceladoEm: leadsTable.canceladoEm,
+			finalizadoEm: leadsTable.finalizadoEm
 		})
 		.from(leadsTable)
 		.where(eq(leadsTable.status, 'Pendente'));

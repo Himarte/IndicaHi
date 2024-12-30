@@ -5,8 +5,12 @@
 	import { formatarData } from '$lib/uteis/masks';
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
+	import Dropdown from '$lib/components/Dropdown-dashboard.svelte';
 
 	export let leadsInternos: LeadsSchema[];
+
+	console.log('Dados recebidos:', leadsInternos);
+	console.log('Exemplo de lead:', leadsInternos[0]);
 
 	// Configuração da paginação
 	let currentPage = 1;
@@ -67,6 +71,9 @@
 				<h2>
 					PromoCode: <span class="font-semibold">{lead.promoCode}</span>
 				</h2>
+			</div>
+			<div>
+				<Dropdown {lead} />
 			</div>
 		</div>
 	{/each}

@@ -5,8 +5,10 @@
 	import { formatarData } from '$lib/uteis/masks';
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
-
+	import Dropdown from '$lib/components/Dropdown-dashboard.svelte';
 	export let leadsInternos: LeadsSchema[];
+
+	console.log(leadsInternos);
 
 	// Configuração da paginação
 	let currentPage = 1;
@@ -18,7 +20,7 @@
 	$: totalPages = Math.ceil(leadsAtendimento.length / itemsPerPage);
 
 	// Obtém os leads da página atual
-	$: paginatedLeads = leadsPendentes.slice(
+	$: paginatedLeads = leadsAtendimento.slice(
 		(currentPage - 1) * itemsPerPage,
 		currentPage * itemsPerPage
 	);
@@ -68,6 +70,8 @@
 					PromoCode: <span class="font-semibold">{lead.promoCode}</span>
 				</h2>
 			</div>
+
+			<Dropdown {lead} />
 		</div>
 	{/each}
 </div>

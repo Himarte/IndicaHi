@@ -13,7 +13,8 @@ export const statusEnum = pgEnum('status', [
 	'Sendo Atendido',
 	'Finalizado',
 	'Pago',
-	'Sem Sucesso'
+	'Sem Sucesso',
+	'Cancelado'
 ]);
 export const modeloEnum = pgEnum('modelo', ['CPF', 'CNPJ']);
 
@@ -73,12 +74,23 @@ export const leadsTable = pgTable('leads', {
 		precision: 6,
 		mode: 'string'
 	}),
-	finalizadoEm: timestamp('finalizado_em', {
+
+	aguardandoPagamentoEm: timestamp('aguardando_pagamento_em', {
 		withTimezone: true,
 		precision: 6,
 		mode: 'string'
 	}),
 	pagoEm: timestamp('pago_em', {
+		withTimezone: true,
+		precision: 6,
+		mode: 'string'
+	}),
+	canceladoEm: timestamp('cancelado_em', {
+		withTimezone: true,
+		precision: 6,
+		mode: 'string'
+	}),
+	finalizadoEm: timestamp('finalizado_em', {
 		withTimezone: true,
 		precision: 6,
 		mode: 'string'
