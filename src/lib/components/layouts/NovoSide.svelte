@@ -57,17 +57,11 @@
 			activePatterns: ['/interno']
 		},
 		{
-			href: '/admin/listas/vendedores-internos',
+			href: '/admin/listas',
 			icon: UserRoundSearch,
 			label: 'Listas',
 			roles: ['Admin'],
-			activePatterns: [
-				'/admin/listas',
-				'/admin/listas/vendedores-internos',
-				'/admin/listas/vendedores-externos',
-				'/admin/listas/administradores',
-				'/admin/listas/financeiro'
-			]
+			activePatterns: ['/admin/listas']
 		},
 		{
 			href: '/admin/criar/vendedores-internos',

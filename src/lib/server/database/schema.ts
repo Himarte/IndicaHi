@@ -101,4 +101,5 @@ export const leadsTable = pgTable('leads', {
 
 // Define types for insert schemas
 export type UserInsertSchema = typeof userTable.$inferInsert;
+export type UserSchema = typeof userTable.$inferSelect;
 export type LeadsSchema = typeof leadsTable.$inferInsert;
