@@ -1,46 +1,59 @@
 <script lang="ts">
 	import { Badge } from '../ui/badge';
 	import Separator from '../ui/separator/separator.svelte';
+	import type { LeadsSchema } from '$lib/server/database/schema';
 	import { formatarData } from '$lib/uteis/masks';
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
-	import Dropdown from '$lib/components/Dropdown-dashboard.svelte';
-	import type { LeadsSchema } from '$lib/server/database/schema';
+	import Dropdown from '$lib/components/StatusDropdown/Dropdown-dashboard.svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
 
 	export let leads: LeadsSchema[];
+	export let cargo: string;
+	export let status: 'Aguardando Pagamento' | 'Pago';
+
+	// Configuração visual por status
+	const statusConfig = {
+		'Aguardando Pagamento': {
+			badgeColor: 'bg-yellow-600 hover:bg-yellow-600',
+			badgeWidth: 'w-32',
+			label: 'Aguardando Pagamento',
+			emptyMessage: 'Nenhum lead aguardando pagamento encontrado'
+		},
+		Pago: {
+			badgeColor: 'bg-green-600 hover:bg-green-600',
+			badgeWidth: 'w-20',
+			label: 'Pago',
+			emptyMessage: 'Nenhum lead pago encontrado'
+		}
+	};
 
 	// Configuração da paginação
 	let currentPage = 1;
 	let itemsPerPage = 8;
-	$: leadsAguardando = leads?.filter((lead) => lead.status === 'Aguardando Pagamento') || [];
+
+	$: filteredLeads = leads?.filter((lead) => lead.status === status) || [];
 
 	// Calcula o número total de páginas
-	$: totalPages = Math.ceil(leadsAguardando.length / itemsPerPage);
+	$: totalPages = Math.ceil(filteredLeads.length / itemsPerPage);
 
 	// Obtém os leads da página atual
-	$: paginatedLeads = leadsAguardando.slice(
+	$: paginatedLeads = filteredLeads.slice(
 		(currentPage - 1) * itemsPerPage,
 		currentPage * itemsPerPage
 	);
 
 	// Funções para navegação
 	function nextPage() {
-		if (currentPage < totalPages) {
-			currentPage++;
-		}
+		if (currentPage < totalPages) currentPage++;
 	}
 
 	function previousPage() {
-		if (currentPage > 1) {
-			currentPage--;
-		}
+		if (currentPage > 1) currentPage--;
 	}
 
 	function goToPage(page: number) {
-		if (page >= 1 && page <= totalPages) {
-			currentPage = page;
-		}
+		if (page >= 1 && page <= totalPages) currentPage = page;
 	}
 
 	// Gera array com números das páginas
@@ -61,15 +74,18 @@
 	<div class="flex w-full flex-wrap justify-center gap-10 pt-4">
 		{#if paginatedLeads.length === 0}
 			<div class="flex w-full justify-center p-8 text-lg text-gray-500">
-				Nenhum lead aguardando pagamento encontrado
+				{statusConfig[status].emptyMessage}
 			</div>
 		{:else}
 			{#each paginatedLeads as lead}
 				<div
 					class="relative flex h-[6rem] w-[40%] items-center justify-between gap-6 rounded-lg bg-zinc-800 p-4 text-white"
 				>
-					<Badge class="absolute -top-3 right-2 w-32 bg-yellow-600 text-white hover:bg-yellow-600">
-						Aguardando Pagamento
+					<Badge
+						class="absolute -top-3 right-2 {statusConfig[status].badgeWidth} {statusConfig[status]
+							.badgeColor} text-white"
+					>
+						{statusConfig[status].label}
 					</Badge>
 
 					<div class="flex flex-col gap-2 pl-4">
@@ -89,7 +105,7 @@
 							PromoCode: <span class="font-semibold">{lead.promoCode}</span>
 						</h2>
 					</div>
-					<Dropdown {lead} />
+					<Dropdown {lead} {cargo} />
 				</div>
 			{/each}
 		{/if}

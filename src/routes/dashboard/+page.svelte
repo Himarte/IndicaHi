@@ -1,8 +1,5 @@
 <script lang="ts">
-	import DataTablePendentes from '$lib/components/tables_externo/TablePendentes-externo.svelte';
-	import DataTableAtendimento from '$lib/components/tables_externo/TableAtendimento-externo.svelte';
-	import DataTableFinalizados from '$lib/components/tables_externo/TableFinalizado-externo.svelte';
-	import DataTableCancelados from '$lib/components/tables_externo/TableCancelado-externo.svelte';
+	import TableBase from '$lib/components/tables_externo/TableBase.svelte';
 	import type { PageData } from './$types';
 	import * as Tabs from '$lib/components/ui/tabs';
 
@@ -31,19 +28,19 @@
 		</Tabs.List>
 
 		<Tabs.Content class="w-full pt-10" value="pendentes">
-			<DataTablePendentes leads={data.leads.pendentes} />
+			<TableBase leads={data.leads.pendentes} status="Pendente" />
 		</Tabs.Content>
 
 		<Tabs.Content class="w-full pt-10" value="atendimento">
-			<DataTableAtendimento leads={data.leads.emAtendimento} />
+			<TableBase leads={data.leads.emAtendimento} status="Sendo Atendido" />
 		</Tabs.Content>
 
 		<Tabs.Content class="w-full pt-10" value="finalizados">
-			<DataTableFinalizados leads={data.leads.finalizados} />
+			<TableBase leads={data.leads.finalizados} status="Finalizado" />
 		</Tabs.Content>
 
 		<Tabs.Content class="w-full pt-10" value="cancelados">
-			<DataTableCancelados leads={data.leads.cancelados} />
+			<TableBase leads={data.leads.cancelados} status="Sem Sucesso" />
 		</Tabs.Content>
 	</Tabs.Root>
 {/if}

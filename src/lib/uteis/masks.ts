@@ -58,8 +58,6 @@ export function cleanCNPJ(value: string): string {
 
 // Formatar Data DD/MM/YYYY - HH:MM:SS
 export function formatarData(dateString: string): string {
-	console.log(dateString);
-
 	const date = new Date(dateString);
 	const day = String(date.getDate()).padStart(2, '0');
 	const month = String(date.getMonth() + 1).padStart(2, '0');

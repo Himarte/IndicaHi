@@ -67,6 +67,8 @@ export const leadsTable = pgTable('leads', {
 	planoNome: varchar('plano_nome', { length: 256 }),
 	planoModelo: modeloEnum('plano_modelo'),
 	planoMegas: integer('plano_megas'),
+	atendidoPor: varchar('atendido_por', { length: 256 }),
+	pagoPor: varchar('pago_por', { length: 256 }),
 	criadoEm: timestamp('criadoEm', { mode: 'string', precision: 6, withTimezone: true })
 		.notNull()
 		.defaultNow(),
