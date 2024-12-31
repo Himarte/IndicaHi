@@ -14,8 +14,10 @@
 {:else}
 	<Tabs.Root value="aguardandoPagamento" class="relative flex h-full w-full justify-center pt-5 ">
 		<Tabs.List class="absolute top-3 flex w-min gap-1  border border-secondary bg-background">
-			<Tabs.Trigger value="aguardandoPagamento">Aguardando Pagamento</Tabs.Trigger>
-			<Tabs.Trigger value="pagos">Pagos</Tabs.Trigger>
+			<Tabs.Trigger value="aguardandoPagamento" class="data-[state=active]:bg-zinc-800"
+				>Aguardando Pagamento</Tabs.Trigger
+			>
+			<Tabs.Trigger value="pagos" class="data-[state=active]:bg-zinc-800">Pagos</Tabs.Trigger>
 		</Tabs.List>
 
 		<Tabs.Content class="w-full pt-10" value="aguardandoPagamento">

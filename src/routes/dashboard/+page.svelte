@@ -16,10 +16,18 @@
 {:else}
 	<Tabs.Root value="pendentes" class="relative flex h-full w-full justify-center pt-5 ">
 		<Tabs.List class="absolute top-3 flex w-min gap-1  border border-secondary bg-background">
-			<Tabs.Trigger value="pendentes">Pendentes</Tabs.Trigger>
-			<Tabs.Trigger value="atendimento">Em Atendimento</Tabs.Trigger>
-			<Tabs.Trigger value="finalizados">Finalizados</Tabs.Trigger>
-			<Tabs.Trigger value="cancelados">Cancelados</Tabs.Trigger>
+			<Tabs.Trigger value="pendentes" class="data-[state=active]:bg-zinc-800"
+				>Pendentes</Tabs.Trigger
+			>
+			<Tabs.Trigger value="atendimento" class="data-[state=active]:bg-zinc-800"
+				>Em Atendimento</Tabs.Trigger
+			>
+			<Tabs.Trigger value="finalizados" class="data-[state=active]:bg-zinc-800"
+				>Finalizados</Tabs.Trigger
+			>
+			<Tabs.Trigger value="cancelados" class="data-[state=active]:bg-zinc-800"
+				>Cancelados</Tabs.Trigger
+			>
 		</Tabs.List>
 
 		<Tabs.Content class="w-full pt-10" value="pendentes">

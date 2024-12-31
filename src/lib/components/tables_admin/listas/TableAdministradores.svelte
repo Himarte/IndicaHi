@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
 	import type { UserSchema } from '$lib/server/database/schema';
 	import { formatarData } from '$lib/uteis/masks';
-	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
+	import { CircleArrowLeftIcon, CircleArrowRight, Pencil, X } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Circle3 } from 'svelte-loading-spinners';
 
@@ -57,9 +56,20 @@
 				<div
 					class="relative flex h-[6rem] w-[40%] items-center justify-between gap-6 rounded-lg bg-zinc-800 p-4 text-white"
 				>
-					<Badge class="absolute -top-3 right-2 w-32 bg-purple-600 text-white hover:bg-purple-600">
-						Administrador
-					</Badge>
+					<div class="absolute -top-5 right-2 flex gap-2">
+						<Button
+							variant="ghost"
+							class="border-[0.5px] border-zinc-800 bg-zinc-900 p-0 px-2 py-1 hover:bg-zinc-950"
+						>
+							<Pencil size={20} />
+						</Button>
+						<Button
+							variant="ghost"
+							class="border-[0.5px] border-zinc-800 bg-zinc-900 p-0 px-2 py-1 hover:bg-red-900"
+						>
+							<X size={20} />
+						</Button>
+					</div>
 
 					<div class="flex flex-col gap-2 pl-4">
 						<h1 class="text-lg font-semibold">{usuario.name}</h1>
