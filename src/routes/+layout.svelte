@@ -31,12 +31,12 @@
 <main class="flex h-full w-full {isLoggedIn ? 'pl-[3.5rem]' : ''} relative">
 	{#if userData?.promoCode && userData?.job === 'Vendedor Externo'}
 		<div
-			class="absolute right-2 top-2 flex justify-center rounded-xl {$page.url.pathname ===
+			class="absolute right-2 top-2 z-50 flex justify-center rounded-xl {$page.url.pathname ===
 				'/configuracoes' || $page.url.pathname === '/configuracoes/privacidade'
 				? 'hidden'
 				: 'flex'} border border-border px-4 py-1 text-lg font-bold text-orange-500"
 		>
-			<span class="mr-2 text-white">Código de indicação: </span>
+			<span class="mr-2 select-none text-white">Código de indicação: </span>
 			{userData?.promoCode || 'Não possui'}
 		</div>
 	{/if}
