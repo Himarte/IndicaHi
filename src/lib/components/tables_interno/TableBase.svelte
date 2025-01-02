@@ -10,7 +10,7 @@
 
 	export let leads: LeadsSchema[];
 	export let cargo: string;
-	export let status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Sem Sucesso';
+	export let status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Cancelado';
 
 	// Configuração visual por status
 	const statusConfig = {
@@ -32,7 +32,7 @@
 			label: 'Finalizado',
 			emptyMessage: 'Nenhum lead finalizado encontrado'
 		},
-		'Sem Sucesso': {
+		Cancelado: {
 			badgeColor: 'bg-gray-500 hover:bg-gray-500',
 			badgeWidth: 'w-20',
 			label: 'Cancelado',

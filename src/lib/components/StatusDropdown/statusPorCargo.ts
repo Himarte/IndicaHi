@@ -9,7 +9,7 @@ export const STATUS_POR_CARGO: Record<string, StatusOption[]> = {
 		{ value: 'Sendo Atendido', label: 'Sendo Atendido' },
 		{ value: 'Finalizado', label: 'Finalizado' },
 		{ value: 'Aguardando Pagamento', label: 'Aguardando Pagamento' },
-		{ value: 'Sem Sucesso', label: 'Sem Sucesso' }
+		{ value: 'Cancelado', label: 'Cancelado' }
 	],
 	Financeiro: [
 		{ value: 'Aguardando Pagamento', label: 'Aguardando Pagamento' },
@@ -20,7 +20,7 @@ export const STATUS_POR_CARGO: Record<string, StatusOption[]> = {
 		{ value: 'Pendente', label: 'Pendente' },
 		{ value: 'Sendo Atendido', label: 'Sendo Atendido' },
 		{ value: 'Finalizado', label: 'Finalizado' },
-		{ value: 'Sem Sucesso', label: 'Sem Sucesso' },
+		{ value: 'Cancelado', label: 'Cancelado' },
 		{ value: 'Cancelado', label: 'Cancelado' },
 		{ value: 'Aguardando Pagamento', label: 'Aguardando Pagamento' },
 		{ value: 'Pago', label: 'Pago' }
