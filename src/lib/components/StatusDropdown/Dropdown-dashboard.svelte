@@ -15,7 +15,7 @@
 <form
 	action="?/updateStatus"
 	method="POST"
-	class="flex min-w-[30%] gap-2"
+	class="flex min-w-full gap-2"
 	use:enhance={() => {
 		return async ({ result, update }) => {
 			console.log('result', result);

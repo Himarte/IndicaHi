@@ -73,14 +73,14 @@
 		/>
 	</div>
 {:then}
-	<div class="flex w-full flex-wrap justify-center gap-10 pt-4">
+	<div class="flex w-full flex-wrap justify-center gap-12 pt-4">
 		{#if paginatedLeads.length === 0}
 			<div class="flex w-full justify-center p-8 text-lg text-gray-500">
 				{statusConfig[status].emptyMessage}
 			</div>
 		{:else if paginatedLeads.length === 1}
 			<div
-				class="relative flex w-1/2 flex-col items-center justify-center rounded-lg bg-zinc-800 px-4 py-2 text-white"
+				class="relative flex w-1/2 flex-col items-center justify-center rounded-lg bg-zinc-800 text-white"
 			>
 				<Badge
 					class="absolute -top-3 right-2 {statusConfig[status].badgeWidth} {statusConfig[status]
@@ -89,13 +89,16 @@
 					{statusConfig[status].label}
 				</Badge>
 
-				<h1 class="pb-4 text-xl font-semibold">{paginatedLeads[0].fullName}</h1>
-				<div class="flex w-full justify-between pb-2">
-					<div class="flex w-1/3 flex-col">
+				<h1 class="py-2 text-xl font-semibold">{paginatedLeads[0].fullName}</h1>
+				<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
+
+				<div class="flex w-full justify-between">
+					<div class="flex w-1/3 flex-col gap-2 p-3">
 						<div>
 							<h2 class="text-sm font-bold">Telefone:</h2>
 							<h2 class="text-sm">{paginatedLeads[0].telefone}</h2>
 						</div>
+
 						<div>
 							<h2 class="text-sm font-bold">CPF:</h2>
 							<h2 class="text-sm">
@@ -110,7 +113,7 @@
 						</div>
 					</div>
 					<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
-					<div class="flex w-1/3 flex-col gap-2 pl-2">
+					<div class="flex w-1/3 flex-col gap-2 p-3">
 						<div class="flex flex-col text-sm">
 							<span class="font-bold">Criado em:</span>
 							{paginatedLeads[0]?.criadoEm
@@ -127,7 +130,7 @@
 						</div>
 					</div>
 
-					<div class="flex w-1/4 items-center justify-start">
+					<div class="flex w-1/4 items-center justify-center pr-2">
 						<Dropdown lead={paginatedLeads[0]} {cargo} />
 					</div>
 				</div>
@@ -135,7 +138,7 @@
 		{:else}
 			{#each paginatedLeads as lead}
 				<div
-					class="relative flex w-[40%] flex-col items-center justify-center rounded-lg bg-zinc-800 px-4 py-2 text-white"
+					class="relative flex w-[40%] flex-col items-center justify-center rounded-lg bg-zinc-800 text-white"
 				>
 					<Badge
 						class="absolute -top-3 right-2 {statusConfig[status].badgeWidth} {statusConfig[status]
@@ -144,13 +147,16 @@
 						{statusConfig[status].label}
 					</Badge>
 
-					<h1 class="pb-4 text-xl font-semibold">{lead.fullName}</h1>
-					<div class="flex w-full justify-between pb-2">
-						<div class="flex w-1/3 flex-col">
+					<h1 class="py-2 text-xl font-semibold">{lead.fullName}</h1>
+					<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
+
+					<div class="flex w-full justify-between">
+						<div class="flex w-1/3 flex-col gap-2 p-3">
 							<div>
 								<h2 class="text-sm font-bold">Telefone:</h2>
 								<h2 class="text-sm">{lead.telefone}</h2>
 							</div>
+
 							<div>
 								<h2 class="text-sm font-bold">CPF:</h2>
 								<h2 class="text-sm">{lead.cpf ? lead.cpf : 'Não cadastrado'}</h2>
@@ -161,7 +167,7 @@
 							</div>
 						</div>
 						<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
-						<div class="flex w-1/3 flex-col gap-2 pl-2">
+						<div class="flex w-1/3 flex-col gap-2 p-3">
 							<div class="flex flex-col text-sm">
 								<span class="font-bold">Criado em:</span>
 								{lead?.criadoEm ? formatarData(lead.criadoEm) : 'Data não disponível'}
@@ -176,7 +182,7 @@
 							</div>
 						</div>
 
-						<div class="flex w-1/4 items-center justify-start">
+						<div class="flex w-1/4 items-center justify-center pr-2">
 							<Dropdown {lead} {cargo} />
 						</div>
 					</div>
@@ -186,7 +192,7 @@
 	</div>
 
 	{#if paginatedLeads.length > 0}
-		<div class="fixed bottom-0 left-0 right-0 my-4 flex items-center justify-center gap-2">
+		<div class="my-4 flex items-center justify-center gap-2 pt-5">
 			<Button
 				variant="ghost"
 				class="hover:bg-transparent"
