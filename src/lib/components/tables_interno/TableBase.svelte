@@ -72,110 +72,112 @@
 	$: pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 </script>
 
-{#await leads}
-	<div class="flex h-[80vh] w-full items-center justify-center">
-		<Circle3
-			size="70"
-			ballBottomLeft="#F97316"
-			ballBottomRight="#FAFAFA"
-			ballTopLeft="#FAFAFA"
-			ballTopRight="#F97316"
-		/>
-	</div>
-{:then}
-	<div class="flex w-full flex-wrap justify-center gap-10 pt-4">
-		{#if paginatedLeads.length === 0}
-			<div class="flex w-full justify-center p-8 text-lg text-gray-500">
-				{statusConfig[status].emptyMessage}
-			</div>
-		{:else}
-			{#each paginatedLeads as lead}
-				<div
-					class="relative flex h-[12rem] w-[40%] flex-col items-start justify-center rounded-lg bg-zinc-800 px-4 text-white"
-				>
-					<Badge
-						class="absolute -top-3 right-2 {statusConfig[status].badgeWidth} {statusConfig[status]
-							.badgeColor} text-white"
+<div class="flex h-full w-full flex-col justify-between">
+	{#await leads}
+		<div class="flex h-[80vh] w-full items-center justify-center">
+			<Circle3
+				size="70"
+				ballBottomLeft="#F97316"
+				ballBottomRight="#FAFAFA"
+				ballTopLeft="#FAFAFA"
+				ballTopRight="#F97316"
+			/>
+		</div>
+	{:then}
+		<div class="flex w-full flex-wrap justify-center gap-10 pt-4">
+			{#if paginatedLeads.length === 0}
+				<div class="flex w-full justify-center p-8 text-lg text-gray-500">
+					{statusConfig[status].emptyMessage}
+				</div>
+			{:else}
+				{#each paginatedLeads as lead}
+					<div
+						class="relative flex w-[40%] flex-col items-start justify-center rounded-lg bg-zinc-800 px-4 py-2 text-white"
 					>
-						{statusConfig[status].label}
-					</Badge>
+						<Badge
+							class="absolute -top-3 right-2 {statusConfig[status].badgeWidth} {statusConfig[status]
+								.badgeColor} text-white"
+						>
+							{statusConfig[status].label}
+						</Badge>
 
-					<h1 class="pb-4 text-xl font-semibold">{lead.fullName}</h1>
+						<h1 class="pb-4 text-xl font-semibold">{lead.fullName}</h1>
 
-					<div class="flex w-full justify-between pb-2">
-						<div class="flex w-1/3 flex-col gap-2">
-							<div>
-								<h2 class="text-sm font-bold">Telefone:</h2>
-								<h2 class="text-sm">{lead.telefone}</h2>
+						<div class="flex w-full justify-between pb-2">
+							<div class="flex w-1/3 flex-col gap-2">
+								<div>
+									<h2 class="text-sm font-bold">Telefone:</h2>
+									<h2 class="text-sm">{lead.telefone}</h2>
+								</div>
+								<div>
+									<h2 class="text-sm font-bold">CPF:</h2>
+									<h2 class="text-sm">{lead.cpf ? lead.cpf : 'Não cadastrado'}</h2>
+								</div>
+								<div>
+									<h2 class="text-sm font-bold">CNPJ:</h2>
+									<h2 class="text-sm">{lead.cnpj ? lead.cnpj : 'Não cadastrado'}</h2>
+								</div>
 							</div>
-							<div>
-								<h2 class="text-sm font-bold">CPF:</h2>
-								<h2 class="text-sm">{lead.cpf ? lead.cpf : 'Não cadastrado'}</h2>
-							</div>
-							<div>
-								<h2 class="text-sm font-bold">CNPJ:</h2>
-								<h2 class="text-sm">{lead.cnpj ? lead.cnpj : 'Não cadastrado'}</h2>
-							</div>
-						</div>
 
-						<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
+							<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
 
-						<div class="flex w-1/3 flex-col gap-2 pl-2">
-							<div class="flex flex-col text-sm">
-								<span class="font-bold">Criado em:</span>
-								{lead?.criadoEm ? formatarData(lead.criadoEm) : 'Data não disponível'}
+							<div class="flex w-1/3 flex-col gap-2 pl-2">
+								<div class="flex flex-col text-sm">
+									<span class="font-bold">Criado em:</span>
+									{lead?.criadoEm ? formatarData(lead.criadoEm) : 'Data não disponível'}
+								</div>
+								<div class="flex flex-col text-sm">
+									<span class="font-bold">Código Promocional:</span>
+									{lead.promoCode ? lead.promoCode : 'Não cadastrado'}
+								</div>
+								<div class="flex flex-col text-sm">
+									<span class="text-sm font-bold">Plano:</span>
+									{lead.planoNome}
+								</div>
 							</div>
-							<div class="flex flex-col text-sm">
-								<span class="font-bold">Código Promocional:</span>
-								{lead.promoCode ? lead.promoCode : 'Não cadastrado'}
+							<div class="flex items-center justify-center">
+								<Dropdown {lead} {cargo} />
 							</div>
-							<div class="flex flex-col text-sm">
-								<span class="text-sm font-bold">Plano:</span>
-								{lead.planoNome}
-							</div>
-						</div>
-						<div class="flex items-center justify-center">
-							<Dropdown {lead} {cargo} />
 						</div>
 					</div>
-				</div>
-			{/each}
-		{/if}
-	</div>
-
-	{#if paginatedLeads.length > 0}
-		<div class="flex w-full items-center justify-center gap-2 py-4">
-			<Button
-				variant="ghost"
-				class="hover:bg-transparent"
-				on:click={previousPage}
-				disabled={currentPage === 1}
-			>
-				<CircleArrowLeftIcon />
-			</Button>
-
-			{#each pages as page}
-				<Button
-					variant={currentPage === page ? 'default' : 'outline'}
-					class="h-8 w-8"
-					on:click={() => goToPage(page)}
-				>
-					{page}
-				</Button>
-			{/each}
-
-			<Button
-				variant="ghost"
-				class="hover:bg-transparent"
-				on:click={nextPage}
-				disabled={currentPage === totalPages}
-			>
-				<CircleArrowRight />
-			</Button>
+				{/each}
+			{/if}
 		</div>
-	{/if}
-{:catch error}
-	<div class="flex w-full justify-center p-8 text-lg text-red-500">
-		Erro ao carregar leads: {error.message}
-	</div>
-{/await}
+
+		{#if paginatedLeads.length > 0}
+			<div class="flex w-full items-center justify-center gap-2 py-4">
+				<Button
+					variant="ghost"
+					class="hover:bg-transparent"
+					on:click={previousPage}
+					disabled={currentPage === 1}
+				>
+					<CircleArrowLeftIcon />
+				</Button>
+
+				{#each pages as page}
+					<Button
+						variant={currentPage === page ? 'default' : 'outline'}
+						class="h-8 w-8"
+						on:click={() => goToPage(page)}
+					>
+						{page}
+					</Button>
+				{/each}
+
+				<Button
+					variant="ghost"
+					class="hover:bg-transparent"
+					on:click={nextPage}
+					disabled={currentPage === totalPages}
+				>
+					<CircleArrowRight />
+				</Button>
+			</div>
+		{/if}
+	{:catch error}
+		<div class="flex w-full justify-center p-8 text-lg text-red-500">
+			Erro ao carregar leads: {error.message}
+		</div>
+	{/await}
+</div>
