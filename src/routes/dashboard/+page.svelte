@@ -9,8 +9,6 @@
 {#if data.message}
 	<div class="flex w-full justify-center p-8 text-lg text-red-500">
 		{data.message}
-
-
 	</div>
 {:else}
 	<Tabs.Root value="pendentes" class="relative flex h-full w-full justify-center pt-5 ">

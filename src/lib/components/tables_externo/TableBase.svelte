@@ -15,25 +15,25 @@
 			badgeColor: 'bg-red-600 hover:bg-red-600',
 			badgeWidth: 'w-20',
 			label: 'Pendente',
-			emptyMessage: 'Nenhum lead pendente encontrado'
+			emptyMessage: 'Nenhuma indicação pendente encontrada'
 		},
 		'Sendo Atendido': {
 			badgeColor: 'bg-blue-600 hover:bg-blue-600',
 			badgeWidth: 'w-24',
 			label: 'Atendimento',
-			emptyMessage: 'Nenhum lead em atendimento encontrado'
+			emptyMessage: 'Nenhuma indicação em atendimento encontrada'
 		},
 		Finalizado: {
 			badgeColor: 'bg-green-600 hover:bg-green-600',
 			badgeWidth: 'w-20',
 			label: 'Finalizado',
-			emptyMessage: 'Nenhum lead finalizado encontrado'
+			emptyMessage: 'Nenhuma indicação finalizada encontrada'
 		},
 		'Sem Sucesso': {
 			badgeColor: 'bg-gray-500 hover:bg-gray-500',
 			badgeWidth: 'w-20',
 			label: 'Cancelado',
-			emptyMessage: 'Nenhum lead cancelado encontrado'
+			emptyMessage: 'Nenhuma indicação cancelada encontrada'
 		}
 	};
 
