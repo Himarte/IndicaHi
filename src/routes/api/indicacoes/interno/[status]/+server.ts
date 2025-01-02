@@ -12,7 +12,7 @@ const statusMap = {
 	pendentes: 'Pendente',
 	atendimento: 'Sendo Atendido',
 	finalizados: 'Finalizado',
-	cancelados: 'Sem Sucesso'
+	cancelados: 'Cancelado'
 };
 
 export const GET: RequestHandler = async ({ request, locals, params }) => {
