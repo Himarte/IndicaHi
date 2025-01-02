@@ -21,7 +21,7 @@
 		>
 	</Tabs.List>
 
-	<Tabs.Content class="h-full  pt-10" value="pendentes">
+	<Tabs.Content class=" w-full pt-10" value="pendentes">
 		<TableBase leads={data.leads.pendentes} {cargo} status="Pendente" />
 	</Tabs.Content>
 
