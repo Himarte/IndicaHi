@@ -3,7 +3,7 @@
 	import { Toaster } from '$lib/components/ui/sonner';
 	import type { LayoutData } from './$types';
 	import type { userDataFromCookies } from '$lib/server/lucia.server';
-	import NovoSide from '$lib/components/layouts/NovoSide.svelte';
+	import NovoSide from '$lib/components/layouts/SideBar.svelte';
 	import { ModeWatcher } from 'mode-watcher';
 	import PrimeiroLogin from '$lib/components/Dialogs/PrimeiroLogin.svelte';
 

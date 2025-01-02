@@ -57,7 +57,6 @@ export const actions: Actions = {
 				| 'Sendo Atendido'
 				| 'Finalizado'
 				| 'Pago'
-				| 'Sem Sucesso'
 				| 'Cancelado'
 				| 'Aguardando Pagamento';
 			if (
@@ -66,7 +65,6 @@ export const actions: Actions = {
 					'Sendo Atendido',
 					'Finalizado',
 					'Pago',
-					'Sem Sucesso',
 					'Cancelado',
 					'Aguardando Pagamento'
 				].includes(status)

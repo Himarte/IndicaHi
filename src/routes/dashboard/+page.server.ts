@@ -31,7 +31,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				pendentes: allLeads.filter((lead) => lead.status === 'Pendente'),
 				emAtendimento: allLeads.filter((lead) => lead.status === 'Sendo Atendido'),
 				finalizados: allLeads.filter((lead) => lead.status === 'Finalizado'),
-				cancelados: allLeads.filter((lead) => lead.status === 'Sem Sucesso')
+				cancelados: allLeads.filter((lead) => lead.status === 'Cancelado')
 			}
 		};
 	} catch (err) {
@@ -65,9 +65,9 @@ export const actions: Actions = {
 				| 'Sendo Atendido'
 				| 'Finalizado'
 				| 'Pago'
-				| 'Sem Sucesso';
+				| 'Cancelado';
 
-			if (!['Pendente', 'Sendo Atendido', 'Finalizado', 'Pago', 'Sem Sucesso'].includes(status)) {
+			if (!['Pendente', 'Sendo Atendido', 'Finalizado', 'Pago', 'Cancelado'].includes(status)) {
 				return fail(400, {
 					success: false,
 					message: 'Status inválido'

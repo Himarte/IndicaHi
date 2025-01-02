@@ -13,7 +13,6 @@ export const statusEnum = pgEnum('status', [
 	'Sendo Atendido',
 	'Finalizado',
 	'Pago',
-	'Sem Sucesso',
 	'Cancelado',
 	'Aguardando Pagamento'
 ]);

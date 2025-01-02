@@ -61,9 +61,9 @@ export const actions: Actions = {
 				| 'Sendo Atendido'
 				| 'Finalizado'
 				| 'Aguardando Pagamento'
-				| 'Sem Sucesso';
+				| 'Cancelado';
 
-			if (!['Pendente', 'Sendo Atendido', 'Finalizado', 'Pago', 'Sem Sucesso'].includes(status)) {
+			if (!['Pendente', 'Sendo Atendido', 'Finalizado', 'Pago', 'Cancelado'].includes(status)) {
 				return fail(400, {
 					success: false,
 					message: 'Status inválido'
