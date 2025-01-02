@@ -14,7 +14,6 @@
 	import { page } from '$app/stores';
 	import { derived } from 'svelte/store';
 	import type { userDataFromCookies } from '$lib/server/lucia.server';
-	import Button from '../ui/button/button.svelte';
 
 	export let userData: userDataFromCookies;
 
