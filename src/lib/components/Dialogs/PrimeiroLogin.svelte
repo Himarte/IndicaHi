@@ -21,57 +21,6 @@
 	let promoCodeValid = false;
 	let cpf = '';
 	let celular = '';
-	let selectedPixType = '';
-	let pixCode = '';
-
-	function handlePixCodeInput() {
-		if (!selectedPixType) return pixCode;
-
-		switch (selectedPixType) {
-			case 'cpf':
-				pixCode = applyMask(pixCode, 'cpf');
-				break;
-			case 'cnpj':
-				pixCode = applyMask(pixCode, 'cnpj');
-				break;
-			case 'celular':
-				pixCode = applyMask(pixCode, 'celular');
-				break;
-			case 'email':
-				// Email não precisa de máscara
-				break;
-		}
-	}
-
-	function getMaxLength(type: string): number {
-		switch (type) {
-			case 'cpf':
-				return 14;
-			case 'cnpj':
-				return 18;
-			case 'celular':
-				return 15;
-			case 'email':
-				return 100;
-			default:
-				return 100;
-		}
-	}
-
-	function getPlaceholder(type: string): string {
-		switch (type) {
-			case 'cpf':
-				return 'Ex: 123.456.789-10';
-			case 'cnpj':
-				return 'Ex: 12.345.678/0001-90';
-			case 'celular':
-				return 'Ex: (11) 99999-9999';
-			case 'email':
-				return 'Ex: seu@email.com';
-			default:
-				return 'Chave PIX';
-		}
-	}
 
 	const handlePromoCodeSubmission = async (event: Event) => {
 		event.preventDefault();
@@ -169,7 +118,7 @@
 			<div class="flex w-full flex-col gap-5">
 				<div class="flex w-full gap-5">
 					<div class="flex w-full flex-col gap-1.5">
-						<Select.Root bind:value={selectedPixType} portal={null}>
+						<Select.Root portal={null}>
 							<Select.Trigger class="w-full">
 								<Select.Value placeholder="Tipo de chave" />
 							</Select.Trigger>
@@ -187,16 +136,8 @@
 						<p class="text-xs text-muted-foreground">Ex. CPF</p>
 					</div>
 					<div class="flex w-full flex-col gap-1.5">
-						<Input
-							type={selectedPixType === 'email' ? 'email' : 'text'}
-							name="pixCode"
-							placeholder={getPlaceholder(selectedPixType)}
-							bind:value={pixCode}
-							on:input={handlePixCodeInput}
-							maxlength={getMaxLength(selectedPixType)}
-							required
-						/>
-						<p class="text-xs text-muted-foreground">{getPlaceholder(selectedPixType)}</p>
+						<Input type="text" name="pixCode" placeholder="Chave PIX" />
+						<p class="text-xs text-muted-foreground">Ex. 123.456.789-10</p>
 					</div>
 				</div>
 			</div>
