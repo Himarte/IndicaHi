@@ -10,6 +10,8 @@
 
 	export let userData: userDataFromCookies;
 
+	// TELA DO PRIMEIRO LOGIN
+
 	const pixTypes = [
 		{ value: 'cpf', label: 'CPF' },
 		{ value: 'cnpj', label: 'CNPJ' },
