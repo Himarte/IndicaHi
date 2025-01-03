@@ -40,7 +40,7 @@
 		</Tabs.Content>
 
 		<Tabs.Content class="w-full pt-10" value="cancelados">
-			<TableBase leads={data.leads.cancelados} status="Sem Sucesso" />
+			<TableBase leads={data.leads.cancelados} status="Cancelado" />
 		</Tabs.Content>
 	</Tabs.Root>
 {/if}

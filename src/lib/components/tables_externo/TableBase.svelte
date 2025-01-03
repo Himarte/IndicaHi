@@ -7,7 +7,7 @@
 	import Button from '../ui/button/button.svelte';
 
 	export let leads: LeadsSchema[];
-	export let status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Sem Sucesso';
+	export let status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Cancelado';
 
 	// Configuração visual por status
 	const statusConfig = {
@@ -29,7 +29,7 @@
 			label: 'Finalizado',
 			emptyMessage: 'Nenhuma indicação finalizada encontrada'
 		},
-		'Sem Sucesso': {
+		Cancelado: {
 			badgeColor: 'bg-gray-500 hover:bg-gray-500',
 			badgeWidth: 'w-20',
 			label: 'Cancelado',
@@ -77,7 +77,7 @@
 	{:else}
 		{#each paginatedLeads as lead}
 			<div
-				class="relative flex h-[6rem] w-[40%] items-center justify-between gap-6 rounded-lg bg-zinc-800 p-4 text-white"
+				class=" relative flex w-[40%] flex-col items-center justify-between rounded-lg bg-zinc-800 text-white"
 			>
 				<Badge
 					class="absolute -top-3 right-2 {statusConfig[status].badgeWidth} {statusConfig[status]
@@ -86,22 +86,33 @@
 					{statusConfig[status].label}
 				</Badge>
 
-				<div class="flex flex-col gap-2 pl-4">
-					<h1 class="text-lg font-semibold">{lead.fullName}</h1>
-					<h2>Tel: {lead.telefone}</h2>
-				</div>
+				<h1 class="py-2 text-xl font-semibold">{lead.fullName}</h1>
+				<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
 
-				<Separator orientation="vertical" class="h-14 bg-zinc-600 text-center" />
-
-				<div class="flex flex-col gap-2">
-					<h2 class="text-xs">
-						Criado em: <span class="font-semibold">
+				<div class="flex w-full justify-between">
+					<div class="flex w-1/2 flex-col gap-2 p-4">
+						<h2>
+							<span class="font-bold text-orange-400">Criado em:</span>
 							{lead?.criadoEm ? formatarData(lead.criadoEm) : 'Data não disponível'}
-						</span>
-					</h2>
-					<h2>
-						PromoCode: <span class="font-semibold">{lead.promoCode}</span>
-					</h2>
+						</h2>
+						<h2>
+							<span class="font-bold text-orange-400">Código Promocional:</span>
+							{lead.promoCode}
+						</h2>
+					</div>
+
+					<Separator orientation="vertical" class="bg-zinc-600 text-center" />
+
+					<div class="flex w-1/2 flex-col gap-2 p-4">
+						<h2>
+							<span class="font-bold text-orange-400">Plano:</span>
+							{lead.planoNome} - {lead.planoMegas} MB
+						</h2>
+						<h2>
+							<span class="font-bold text-orange-400">Tipo de plano:</span>
+							{lead.planoModelo}
+						</h2>
+					</div>
 				</div>
 			</div>
 		{/each}
