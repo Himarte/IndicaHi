@@ -1,14 +1,40 @@
 <script lang="ts">
 	import { Badge } from '../ui/badge';
 	import Separator from '../ui/separator/separator.svelte';
-	import type { LeadsSchema } from '$lib/server/database/schema';
+	import type { LeadsSchema, UserSchema } from '$lib/server/database/schema';
 	import { formatarData } from '$lib/uteis/masks';
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 	import Dropdown from '$lib/components/StatusDropdown/Dropdown-dashboard.svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
 
-	export let leads: LeadsSchema[];
+	interface LeadsFinanceiro {
+		success: boolean;
+		data: {
+			id: string;
+			fullName: string;
+			cpf: string | null;
+			cnpj: string | null;
+			status: 'Aguardando Pagamento' | 'Pago';
+			promoCode: string;
+			telefone: string;
+			planoNome: string;
+			planoModelo: 'CPF' | 'CNPJ';
+			planoMegas: number;
+			aguardandoPagamentoEm: string | null;
+			pagoEm: string | null;
+			vendedor: {
+				id: string;
+				nome: string;
+				email: string;
+				telefone: string | null;
+				pixType: 'cpf' | 'cnpj' | 'email' | 'telefone' | null;
+				pixCode: string | null;
+			} | null;
+		}[];
+	}
+
+	export let leads: LeadsFinanceiro;
 	export let cargo: string;
 	export let status: 'Aguardando Pagamento' | 'Pago';
 
@@ -33,7 +59,7 @@
 	let currentPage = 1;
 	let itemsPerPage = 4;
 
-	$: filteredLeads = leads?.filter((lead) => lead.status === status) || [];
+	$: filteredLeads = leads?.success ? leads.data.filter((lead) => lead.status === status) : [];
 
 	// Calcula o número total de páginas
 	$: totalPages = Math.ceil(filteredLeads.length / itemsPerPage);
@@ -77,8 +103,6 @@
 			<div class="flex w-full justify-center p-8 text-lg text-gray-500">
 				{statusConfig[status].emptyMessage}
 			</div>
-		{:else if paginatedLeads.length === 1}
-			<h1>Aguardando Pagamento</h1>
 		{:else}
 			{#each paginatedLeads as lead}
 				<div
@@ -96,39 +120,54 @@
 
 					<div class="flex w-full justify-between">
 						<div class="flex w-1/3 flex-col gap-2 p-3">
+							<div class="flex flex-col text-sm">
+								<span class="select-none font-bold text-orange-400">
+									{status === 'Aguardando Pagamento' ? 'Data de criação:' : 'Data de pagamento:'}
+								</span>
+								{status === 'Aguardando Pagamento'
+									? lead?.aguardandoPagamentoEm
+										? formatarData(lead.aguardandoPagamentoEm)
+										: 'Data não disponível'
+									: lead?.pagoEm
+										? formatarData(lead.pagoEm)
+										: 'Data não disponível'}
+							</div>
 							<div>
-								<h2 class="text-sm font-bold">Telefone:</h2>
+								<h2 class="select-none text-sm font-bold text-orange-400">Contato Lead:</h2>
 								<h2 class="text-sm">{lead.telefone}</h2>
 							</div>
 
 							<div>
-								<h2 class="text-sm font-bold">CPF:</h2>
-								<h2 class="text-sm">{lead.cpf ? lead.cpf : 'Não cadastrado'}</h2>
-							</div>
-							<div>
-								<h2 class="text-sm font-bold">CNPJ:</h2>
-								<h2 class="text-sm">{lead.cnpj ? lead.cnpj : 'Não cadastrado'}</h2>
-							</div>
-						</div>
-						<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
-						<div class="flex w-1/3 flex-col gap-2 p-3">
-							<div class="flex flex-col text-sm">
-								<span class="font-bold">Aguardando Desde:</span>
-								{lead?.aguardandoPagamentoEm
-									? formatarData(lead.aguardandoPagamentoEm)
-									: 'Data não disponível'}
-							</div>
-							<div class="flex flex-col text-sm">
-								<span class="font-bold">Código Promocional:</span>
-								{lead.promoCode ? lead.promoCode : 'Não cadastrado'}
-							</div>
-							<div class="flex flex-col text-sm">
-								<span class="text-sm font-bold">Plano:</span>
-								{lead.planoNome}
+								<h2 class="select-none text-sm font-bold text-orange-400">CPF Lead :</h2>
+								<h2 class="text-sm">{lead.cpf || 'Não cadastrado'}</h2>
 							</div>
 						</div>
 
-						<div class="flex w-1/4 items-center justify-center pr-2">
+						<Separator orientation="vertical" class="bg-zinc-600 text-center" />
+
+						<div class="flex w-1/3 flex-col gap-2 p-3">
+							{#if lead.vendedor}
+								<div class="flex flex-col text-sm">
+									<span class="font-bold text-orange-400">Vendedor:</span>
+									{lead.vendedor.nome}
+								</div>
+								<div class="flex flex-col text-sm">
+									<span class="font-bold text-orange-400">Código Promocional:</span>
+									{lead.promoCode}
+								</div>
+								<div class="flex flex-col text-sm">
+									<span class="font-bold text-orange-400">Chave PIX ({lead.vendedor.pixType}):</span
+									>
+									{lead.vendedor.pixCode}
+								</div>
+							{:else}
+								<div class="flex flex-col text-sm">
+									<span class="text-yellow-500">Vendedor não encontrado</span>
+								</div>
+							{/if}
+						</div>
+
+						<div class="flex w-1/3 items-center justify-center pr-2">
 							<Dropdown {lead} {cargo} />
 						</div>
 					</div>
