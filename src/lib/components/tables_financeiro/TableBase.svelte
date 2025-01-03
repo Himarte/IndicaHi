@@ -12,11 +12,12 @@
 	export let cargo: string;
 	export let status: 'Aguardando Pagamento' | 'Pago';
 
+	// console.log(leads);
 	// Configuração visual por status
 	const statusConfig = {
 		'Aguardando Pagamento': {
 			badgeColor: 'bg-yellow-600 hover:bg-yellow-600',
-			badgeWidth: 'w-32',
+			badgeWidth: 'w-38',
 			label: 'Aguardando Pagamento',
 			emptyMessage: 'Nenhum lead aguardando pagamento encontrado'
 		},
@@ -30,7 +31,7 @@
 
 	// Configuração da paginação
 	let currentPage = 1;
-	let itemsPerPage = 8;
+	let itemsPerPage = 4;
 
 	$: filteredLeads = leads?.filter((lead) => lead.status === status) || [];
 
@@ -76,10 +77,12 @@
 			<div class="flex w-full justify-center p-8 text-lg text-gray-500">
 				{statusConfig[status].emptyMessage}
 			</div>
+		{:else if paginatedLeads.length === 1}
+			<h1>Aguardando Pagamento</h1>
 		{:else}
 			{#each paginatedLeads as lead}
 				<div
-					class="relative flex h-[6rem] w-[40%] items-center justify-between gap-6 rounded-lg bg-zinc-800 p-4 text-white"
+					class="relative flex w-[40%] flex-col items-center justify-center rounded-lg bg-zinc-800 text-white"
 				>
 					<Badge
 						class="absolute -top-3 right-2 {statusConfig[status].badgeWidth} {statusConfig[status]
@@ -88,24 +91,47 @@
 						{statusConfig[status].label}
 					</Badge>
 
-					<div class="flex flex-col gap-2 pl-4">
-						<h1 class="text-lg font-semibold">{lead.fullName}</h1>
-						<h2>Tel: {lead.telefone}</h2>
-					</div>
+					<h1 class="py-2 text-xl font-semibold">{lead.fullName}</h1>
+					<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
 
-					<Separator orientation="vertical" class="h-14 bg-zinc-600 text-center" />
+					<div class="flex w-full justify-between">
+						<div class="flex w-1/3 flex-col gap-2 p-3">
+							<div>
+								<h2 class="text-sm font-bold">Telefone:</h2>
+								<h2 class="text-sm">{lead.telefone}</h2>
+							</div>
 
-					<div class="flex flex-col gap-2">
-						<h2 class="text-xs">
-							Criado em: <span class="font-semibold">
-								{lead?.criadoEm ? formatarData(lead.criadoEm) : 'Data não disponível'}
-							</span>
-						</h2>
-						<h2>
-							PromoCode: <span class="font-semibold">{lead.promoCode}</span>
-						</h2>
+							<div>
+								<h2 class="text-sm font-bold">CPF:</h2>
+								<h2 class="text-sm">{lead.cpf ? lead.cpf : 'Não cadastrado'}</h2>
+							</div>
+							<div>
+								<h2 class="text-sm font-bold">CNPJ:</h2>
+								<h2 class="text-sm">{lead.cnpj ? lead.cnpj : 'Não cadastrado'}</h2>
+							</div>
+						</div>
+						<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
+						<div class="flex w-1/3 flex-col gap-2 p-3">
+							<div class="flex flex-col text-sm">
+								<span class="font-bold">Aguardando Desde:</span>
+								{lead?.aguardandoPagamentoEm
+									? formatarData(lead.aguardandoPagamentoEm)
+									: 'Data não disponível'}
+							</div>
+							<div class="flex flex-col text-sm">
+								<span class="font-bold">Código Promocional:</span>
+								{lead.promoCode ? lead.promoCode : 'Não cadastrado'}
+							</div>
+							<div class="flex flex-col text-sm">
+								<span class="text-sm font-bold">Plano:</span>
+								{lead.planoNome}
+							</div>
+						</div>
+
+						<div class="flex w-1/4 items-center justify-center pr-2">
+							<Dropdown {lead} {cargo} />
+						</div>
 					</div>
-					<Dropdown {lead} {cargo} />
 				</div>
 			{/each}
 		{/if}

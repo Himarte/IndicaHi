@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SITE_CHAVE_API } from '$env/static/private';
 import { leadsTable } from '$lib/server/database/schema';
 import type { RequestHandler } from './$types';
@@ -25,10 +26,10 @@ export const GET: RequestHandler = async ({ request, params }) => {
 	}
 
 	try {
+		// Busca os usuários que possuem leads com o status específico
 		const leads = await db
 			.select()
 			.from(leadsTable)
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			.where(eq(leadsTable.status, status as any));
 
 		return new Response(JSON.stringify(leads), {
@@ -37,7 +38,7 @@ export const GET: RequestHandler = async ({ request, params }) => {
 			}
 		});
 	} catch (error) {
-		console.error('Erro ao buscar leads:', error);
+		console.error('Erro ao buscar usuários:', error);
 		return new Response('Erro interno do servidor', { status: 500 });
 	}
 };
