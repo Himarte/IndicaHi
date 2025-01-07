@@ -7,7 +7,7 @@ export const jobEnum = pgEnum('job', [
 	'Financeiro',
 	'Admin'
 ]);
-export const pixTypeEnum = pgEnum('pix_type', ['cpf', 'cnpj', 'email', 'telefone']);
+export const pixTypeEnum = pgEnum('pix_type', ['cpf', 'cnpj']);
 export const statusEnum = pgEnum('status', [
 	'Pendente',
 	'Sendo Atendido',

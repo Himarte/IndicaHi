@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Badge } from '../ui/badge';
 	import Separator from '../ui/separator/separator.svelte';
-	import type { LeadsSchema, UserSchema } from '$lib/server/database/schema';
 	import { formatarData } from '$lib/uteis/masks';
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
