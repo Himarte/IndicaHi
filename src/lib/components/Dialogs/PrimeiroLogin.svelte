@@ -147,20 +147,18 @@
 			<div class="flex w-full flex-col gap-5">
 				<div class="flex w-full gap-5">
 					<div class="flex w-full flex-col gap-1.5">
-						<Label>Tipo de Chave PIX</Label>
+						<Label class="pb-1">Tipo de Chave PIX</Label>
 						<RadioGroup.Root bind:value={selectedPixType}>
 							{#each pixTypes as type}
 								<div class="flex items-center space-x-2">
-									<RadioGroup.Item value={type.value} id={type.value}>
-										<RadioGroup.Indicator />
-									</RadioGroup.Item>
+									<RadioGroup.Item value={type.value} id={type.value}></RadioGroup.Item>
 									<Label for={type.value}>{type.label}</Label>
 								</div>
 							{/each}
 						</RadioGroup.Root>
 					</div>
 					<div class="flex w-full flex-col gap-1.5">
-						<Label>Chave PIX</Label>
+						<Label class="pb-1">Chave PIX</Label>
 						<Input
 							type="text"
 							name="pixCode"
