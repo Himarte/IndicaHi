@@ -10,9 +10,6 @@
 		<span>Sistema de Indicações da</span>
 		<span class="font-bold text-orange-500">HIMARTE</span>
 	</div>
-	<div class="flex w-full flex-col items-center justify-center">
-		<p class=" text-center">Você pode monitorar</p>
-		<p class="pb-2 text-center">os leads que você indicou aqui.</p>
-		<Button href="/dashboard" variant="default">Seu Dashboard</Button>
-	</div>
+
+	<Button href="/dashboard" variant="default">Seu Dashboard</Button>
 </div>

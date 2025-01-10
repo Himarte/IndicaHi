@@ -95,18 +95,18 @@
 				<div class="flex w-full justify-between">
 					<div class="flex w-1/3 flex-col gap-2 p-3">
 						<div>
-							<h2 class="text-sm font-bold">Telefone:</h2>
+							<h2 class="text-sm font-bold text-orange-400">Telefone:</h2>
 							<h2 class="text-sm">{paginatedLeads[0].telefone}</h2>
 						</div>
 
 						<div>
-							<h2 class="text-sm font-bold">CPF:</h2>
+							<h2 class="text-sm font-bold text-orange-400">CPF:</h2>
 							<h2 class="text-sm">
 								{paginatedLeads[0].cpf ? paginatedLeads[0].cpf : 'Não cadastrado'}
 							</h2>
 						</div>
 						<div>
-							<h2 class="text-sm font-bold">CNPJ:</h2>
+							<h2 class="text-sm font-bold text-orange-400">CNPJ:</h2>
 							<h2 class="text-sm">
 								{paginatedLeads[0].cnpj ? paginatedLeads[0].cnpj : 'Não cadastrado'}
 							</h2>
@@ -115,17 +115,17 @@
 					<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
 					<div class="flex w-1/3 flex-col gap-2 p-3">
 						<div class="flex flex-col text-sm">
-							<span class="font-bold">Criado em:</span>
-							{paginatedLeads[0]?.criadoEm
-								? formatarData(paginatedLeads[0].criadoEm)
+							<span class="font-bold text-orange-400">Criado em:</span>
+							{paginatedLeads[0]?.atendidoEm
+								? formatarData(paginatedLeads[0].atendidoEm)
 								: 'Data não disponível'}
 						</div>
 						<div class="flex flex-col text-sm">
-							<span class="font-bold">Código Promocional:</span>
+							<span class="font-bold text-orange-400">Código Promocional:</span>
 							{paginatedLeads[0].promoCode ? paginatedLeads[0].promoCode : 'Não cadastrado'}
 						</div>
 						<div class="flex flex-col text-sm">
-							<span class="text-sm font-bold">Plano:</span>
+							<span class="text-sm font-bold text-orange-400">Plano:</span>
 							{paginatedLeads[0].planoNome}
 						</div>
 					</div>
@@ -153,31 +153,31 @@
 					<div class="flex w-full justify-between">
 						<div class="flex w-1/3 flex-col gap-2 p-3">
 							<div>
-								<h2 class="text-sm font-bold">Telefone:</h2>
+								<h2 class="text-sm font-bold text-orange-400">Telefone:</h2>
 								<h2 class="text-sm">{lead.telefone}</h2>
 							</div>
 
 							<div>
-								<h2 class="text-sm font-bold">CPF:</h2>
+								<h2 class="text-sm font-bold text-orange-400">CPF:</h2>
 								<h2 class="text-sm">{lead.cpf ? lead.cpf : 'Não cadastrado'}</h2>
 							</div>
 							<div>
-								<h2 class="text-sm font-bold">CNPJ:</h2>
+								<h2 class="text-sm font-bold text-orange-400">CNPJ:</h2>
 								<h2 class="text-sm">{lead.cnpj ? lead.cnpj : 'Não cadastrado'}</h2>
 							</div>
 						</div>
 						<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
 						<div class="flex w-1/3 flex-col gap-2 p-3">
 							<div class="flex flex-col text-sm">
-								<span class="font-bold">Criado em:</span>
+								<span class="font-bold text-orange-400">Criado em:</span>
 								{lead?.criadoEm ? formatarData(lead.criadoEm) : 'Data não disponível'}
 							</div>
 							<div class="flex flex-col text-sm">
-								<span class="font-bold">Código Promocional:</span>
+								<span class="font-bold text-orange-400">Código Promocional:</span>
 								{lead.promoCode ? lead.promoCode : 'Não cadastrado'}
 							</div>
 							<div class="flex flex-col text-sm">
-								<span class="text-sm font-bold">Plano:</span>
+								<span class="text-sm font-bold text-orange-400">Plano:</span>
 								{lead.planoNome}
 							</div>
 						</div>
