@@ -8,7 +8,8 @@
 		Banknote,
 		UserRoundSearch,
 		UserPlus,
-		LogOut
+		LogOut,
+		HelpCircle
 	} from 'lucide-svelte';
 	import IconeHimarte from '$lib/img/logos/icon.webp';
 	import { page } from '$app/stores';
@@ -77,13 +78,22 @@
 		}
 	];
 
-	const configItem = {
-		href: '/configuracoes',
-		icon: Settings,
-		label: 'Configurações',
-		roles: ['Vendedor Externo', 'Vendedor Interno', 'Financeiro', 'Admin'],
-		activePatterns: ['/configuracoes', '/configuracoes/privacidade']
-	};
+	const configItem = [
+		{
+			href: '/configuracoes',
+			icon: Settings,
+			label: 'Configurações',
+			roles: ['Vendedor Externo', 'Vendedor Interno', 'Financeiro', 'Admin'],
+			activePatterns: ['/configuracoes', '/configuracoes/privacidade']
+		},
+		{
+			href: '/suporte',
+			icon: HelpCircle,
+			label: 'Suporte',
+			roles: ['Vendedor Externo', 'Vendedor Interno', 'Financeiro', 'Admin'],
+			activePatterns: ['/suporte']
+		}
+	];
 
 	$: userRole = userData.job;
 	$: filteredNavItems = navItems.filter((item) => item.roles.includes(userRole));
@@ -129,19 +139,37 @@
 		<Tooltip.Root>
 			<Tooltip.Trigger asChild let:builder>
 				<a
-					href={configItem.href}
+					href={configItem[0].href}
 					class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8 {$activeRoute &&
-					isActiveRoute(configItem.href, configItem.activePatterns)
+					isActiveRoute(configItem[0].href, configItem[0].activePatterns)
 						? 'bg-accent'
 						: ''}"
 					use:builder.action
 					{...builder}
 				>
 					<Settings class="h-5 w-5" />
-					<span class="sr-only">{configItem.label}</span>
+					<span class="sr-only">{configItem[0].label}</span>
 				</a>
 			</Tooltip.Trigger>
-			<Tooltip.Content side="right">{configItem.label}</Tooltip.Content>
+			<Tooltip.Content side="right">{configItem[0].label}</Tooltip.Content>
+		</Tooltip.Root>
+
+		<Tooltip.Root>
+			<Tooltip.Trigger asChild let:builder>
+				<a
+					href={configItem[1].href}
+					class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8 {$activeRoute &&
+					isActiveRoute(configItem[1].href, configItem[1].activePatterns)
+						? 'bg-accent'
+						: ''}"
+					use:builder.action
+					{...builder}
+				>
+					<HelpCircle class="h-5 w-5" />
+					<span class="sr-only">{configItem[1].label}</span>
+				</a>
+			</Tooltip.Trigger>
+			<Tooltip.Content side="right">{configItem[1].label}</Tooltip.Content>
 		</Tooltip.Root>
 
 		<Tooltip.Root>
