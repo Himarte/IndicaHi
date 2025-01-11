@@ -1,5 +1,10 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/button/button.svelte';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+
+	let userJob = data.user?.job;
 </script>
 
 <div class="flex h-full w-full flex-col items-center justify-center gap-10 text-2xl">
@@ -11,5 +16,13 @@
 		<span class="font-bold text-orange-500">HIMARTE</span>
 	</div>
 
-	<Button href="/dashboard" variant="default">Seu Dashboard</Button>
+	{#if userJob === 'Vendedor Externo'}
+		<Button href="/dashboard" variant="default">Seu Dashboard</Button>
+	{:else if userJob === 'Vendedor Interno'}
+		<Button href="/interno" variant="default">Seu Dashboard</Button>
+	{:else if userJob === 'Financeiro'}
+		<Button href="/financeiro" variant="default">Seu Dashboard</Button>
+	{:else if userJob === 'Admin'}
+		<Button href="/admin" variant="default">Seu Dashboard</Button>
+	{/if}
 </div>
