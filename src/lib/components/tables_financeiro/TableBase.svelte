@@ -6,7 +6,7 @@
 	import Button from '../ui/button/button.svelte';
 	import Dropdown from '$lib/components/StatusDropdown/Dropdown-dashboard.svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
-
+	import SheetFinanceiro from '$lib/components/SheetFinanceiro.svelte';
 	interface LeadsFinanceiro {
 		success: boolean;
 		data: {
@@ -108,8 +108,8 @@
 					class="relative flex w-[40%] flex-col items-center justify-center rounded-lg bg-zinc-800 text-white"
 				>
 					<Badge
-						class="absolute -top-3 right-2 {statusConfig[status].badgeWidth} {statusConfig[status]
-							.badgeColor} text-white"
+						class="absolute -top-3 right-2 flex items-center justify-center {statusConfig[status]
+							.badgeWidth} {statusConfig[status].badgeColor} text-white"
 					>
 						{statusConfig[status].label}
 					</Badge>
@@ -132,12 +132,12 @@
 										: 'Data não disponível'}
 							</div>
 							<div>
-								<h2 class="select-none text-sm font-bold text-orange-400">Contato Lead:</h2>
+								<h2 class="select-none text-sm font-bold text-orange-400">Telefone:</h2>
 								<h2 class="text-sm">{lead.telefone}</h2>
 							</div>
 
 							<div>
-								<h2 class="select-none text-sm font-bold text-orange-400">CPF Lead :</h2>
+								<h2 class="select-none text-sm font-bold text-orange-400">CPF:</h2>
 								<h2 class="text-sm">{lead.cpf || 'Não cadastrado'}</h2>
 							</div>
 						</div>
@@ -167,7 +167,7 @@
 						</div>
 
 						<div class="flex w-1/3 items-center justify-center pr-2">
-							<Dropdown {lead} {cargo} />
+							<SheetFinanceiro {lead} {cargo} />
 						</div>
 					</div>
 				</div>
