@@ -92,8 +92,30 @@
 				<div class="flex w-full justify-between">
 					<div class="flex w-1/2 flex-col gap-2 p-4">
 						<h2>
-							<span class="font-bold text-orange-400">Criado em:</span>
-							{lead?.criadoEm ? formatarData(lead.criadoEm) : 'Data não disponível'}
+							<span class="font-bold text-orange-400">
+								{status === 'Sendo Atendido'
+									? 'Atendido em:'
+									: status === 'Finalizado'
+										? 'Finalizado em:'
+										: status === 'Cancelado'
+											? 'Cancelado em:'
+											: 'Criado em:'}
+							</span>
+							{status === 'Sendo Atendido'
+								? lead?.atendidoEm
+									? formatarData(lead.atendidoEm)
+									: 'Data não disponível'
+								: status === 'Finalizado'
+									? lead?.finalizadoEm
+										? formatarData(lead.finalizadoEm)
+										: 'Data não disponível'
+									: status === 'Cancelado'
+										? lead?.canceladoEm
+											? formatarData(lead.canceladoEm)
+											: 'Data não disponível'
+										: lead?.criadoEm
+											? formatarData(lead.criadoEm)
+											: 'Data não disponível'}
 						</h2>
 						<h2>
 							<span class="font-bold text-orange-400">Código Promocional:</span>
