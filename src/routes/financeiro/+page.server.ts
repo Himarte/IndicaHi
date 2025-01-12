@@ -59,6 +59,7 @@ export const actions: Actions = {
 				| 'Pago'
 				| 'Cancelado'
 				| 'Aguardando Pagamento';
+			const comprovante = formData.get('comprovante') as File;
 			if (
 				![
 					'Pendente',
@@ -75,8 +76,32 @@ export const actions: Actions = {
 				});
 			}
 
-			const lead = await db.select().from(leadsTable).where(eq(leadsTable.id, id));
+			const ValidarComprovante = (comprovante: File) => {
+				if (!comprovante) return 'Comprovante é obrigatório';
+				const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
+				if (!tiposPermitidos.includes(comprovante.type)) return 'Formato de imagem inválido';
+				const maxSize = 2 * 1024 * 1024; // 2MB
+				if (comprovante.size > maxSize) return 'Comprovante deve ter no máximo 2MB';
+				return null;
+			};
 
+			const erroComprovante = ValidarComprovante(comprovante);
+			if (erroComprovante) {
+				return fail(400, {
+					success: false,
+					message: erroComprovante
+				});
+			}
+
+			const processarComprovante = async (arquivo: File) => {
+				const buffer = await arquivo.arrayBuffer();
+				const base64 = Buffer.from(buffer).toString('base64');
+				return `data:${arquivo.type};base64,${base64}`;
+			};
+
+			const comprovanteBase64 = await processarComprovante(comprovante);
+
+			const lead = await db.select().from(leadsTable).where(eq(leadsTable.id, id));
 			if (!lead || lead.length === 0) {
 				return fail(404, {
 					success: false,
@@ -86,7 +111,12 @@ export const actions: Actions = {
 
 			await db
 				.update(leadsTable)
-				.set({ status, pagoPor: locals.user.email, pagoEm: new Date().toISOString() })
+				.set({
+					status,
+					pagoPor: locals.user.email,
+					pagoEm: new Date().toISOString(),
+					comprovantePagamento: comprovanteBase64
+				})
 				.where(eq(leadsTable.id, id));
 
 			return {
