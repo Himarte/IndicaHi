@@ -57,24 +57,18 @@
 			activePatterns: ['/interno']
 		},
 		{
-			href: '/admin/listas',
+			href: '/admin/users',
 			icon: UserRoundSearch,
 			label: 'Listas',
 			roles: ['Admin'],
-			activePatterns: ['/admin/listas']
+			activePatterns: ['/admin/users']
 		},
 		{
-			href: '/admin/criar/vendedores-internos',
+			href: '/admin/leads',
 			icon: UserPlus,
-			label: 'Criar',
+			label: 'Leads',
 			roles: ['Admin'],
-			activePatterns: [
-				'/admin/criar',
-				'/admin/criar/vendedores-internos',
-				'/admin/criar/vendedores-externos',
-				'/admin/criar/administradores',
-				'/admin/criar/financeiro'
-			]
+			activePatterns: ['/admin/leads']
 		}
 	];
 
