@@ -51,7 +51,14 @@ export const actions: Actions = {
 
 		try {
 			const formData = await request.formData();
+			console.log('FormData recebido:', {
+				id: formData.get('id'),
+				status: formData.get('status'),
+				comprovante: formData.get('comprovante')
+			});
 			const id = formData.get('id') as string;
+			console.log('FormData completo recebido:', Object.fromEntries(formData));
+
 			const status = formData.get('status') as
 				| 'Pendente'
 				| 'Sendo Atendido'
@@ -84,7 +91,6 @@ export const actions: Actions = {
 				if (comprovante.size > maxSize) return 'Comprovante deve ter no máximo 2MB';
 				return null;
 			};
-
 			const erroComprovante = ValidarComprovante(comprovante);
 			if (erroComprovante) {
 				return fail(400, {
