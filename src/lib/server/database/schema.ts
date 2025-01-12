@@ -97,6 +97,8 @@ export const leadsTable = pgTable('leads', {
 		precision: 6,
 		mode: 'string'
 	}),
+	comprovantePagamento: text('comprovante_pagamento'),
+
 	userIdPromoCode: text('user_id_promocode').references(() => userTable.id)
 });
 
