@@ -60,10 +60,20 @@ export const actions: Actions = {
 				| 'Pendente'
 				| 'Sendo Atendido'
 				| 'Finalizado'
-				| 'Aguardando Pagamento'
-				| 'Cancelado';
+				| 'Pago'
+				| 'Cancelado'
+				| 'Aguardando Pagamento';
 
-			if (!['Pendente', 'Sendo Atendido', 'Finalizado', 'Pago', 'Cancelado'].includes(status)) {
+			if (
+				![
+					'Pendente',
+					'Sendo Atendido',
+					'Finalizado',
+					'Pago',
+					'Cancelado',
+					'Aguardando Pagamento'
+				].includes(status)
+			) {
 				return fail(400, {
 					success: false,
 					message: 'Status inválido'

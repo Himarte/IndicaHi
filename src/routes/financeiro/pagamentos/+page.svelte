@@ -3,3 +3,5 @@
 
 	export let data: PageData;
 </script>
+
+<h1>Pagamentos</h1>
