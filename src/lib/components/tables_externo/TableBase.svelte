@@ -41,7 +41,7 @@
 
 	// Configuração da paginação
 	let currentPage = 1;
-	let itemsPerPage = 6;
+	let itemsPerPage = 4;
 
 	$: filteredLeads = leads?.filter((lead) => lead.status === status) || [];
 
