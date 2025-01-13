@@ -3,7 +3,7 @@
 	import Separator from '../ui/separator/separator.svelte';
 	import type { LeadsSchema } from '$lib/server/database/schema';
 	import { formatarData } from '$lib/uteis/masks';
-	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
+	import { CircleArrowLeftIcon, CircleArrowRight, DownloadIcon } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 
 	export let leads: LeadsSchema[];
@@ -125,7 +125,7 @@
 
 					<Separator orientation="vertical" class="bg-zinc-600 text-center" />
 
-					<div class="flex w-1/2 flex-col gap-2 p-4">
+					<div class="flex w-1/2 flex-col items-start gap-2 p-4">
 						<h2>
 							<span class="font-bold text-orange-400">Plano:</span>
 							{lead.planoNome} - {lead.planoMegas} MB
@@ -134,6 +134,11 @@
 							<span class="font-bold text-orange-400">Tipo de plano:</span>
 							{lead.planoModelo}
 						</h2>
+						{#if status === 'Finalizado'}
+							<Button variant="link" class="flex items-center gap-2 p-0 text-orange-400">
+								<DownloadIcon /> Baixar Comprovante
+							</Button>
+						{/if}
 					</div>
 				</div>
 			</div>

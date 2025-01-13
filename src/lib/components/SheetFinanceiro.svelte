@@ -18,7 +18,6 @@
 		return async ({ formData, cancel }: { formData: FormData; cancel: () => void }) => {
 			isSubmitting = true;
 
-			// Validação do arquivo
 			const comprovante = formData.get('comprovante') as File;
 			if (!comprovante || comprovante.size === 0) {
 				toast.error('Por favor, anexe um comprovante');

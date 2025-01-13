@@ -51,13 +51,7 @@ export const actions: Actions = {
 
 		try {
 			const formData = await request.formData();
-			console.log('FormData recebido:', {
-				id: formData.get('id'),
-				status: formData.get('status'),
-				comprovante: formData.get('comprovante')
-			});
 			const id = formData.get('id') as string;
-			console.log('FormData completo recebido:', Object.fromEntries(formData));
 
 			const status = formData.get('status') as
 				| 'Pendente'
