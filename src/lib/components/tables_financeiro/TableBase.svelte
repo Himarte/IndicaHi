@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { Badge } from '../ui/badge';
 	import Separator from '../ui/separator/separator.svelte';
-	import { formatarData } from '$lib/uteis/masks';
+	import { formatarData, formatarCPF, formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
-	import Dropdown from '$lib/components/StatusDropdown/Dropdown-dashboard.svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
 	import SheetFinanceiro from '$lib/components/SheetFinanceiro.svelte';
 	interface LeadsFinanceiro {
@@ -121,7 +120,7 @@
 						<div class="flex w-1/3 flex-col gap-2 p-3">
 							<div class="flex flex-col text-sm">
 								<span class="select-none font-bold text-orange-400">
-									{status === 'Aguardando Pagamento' ? 'Data de criação:' : 'Data de pagamento:'}
+									{status === 'Aguardando Pagamento' ? 'Aguardando desde:' : 'Data de pagamento:'}
 								</span>
 								{status === 'Aguardando Pagamento'
 									? lead?.aguardandoPagamentoEm
@@ -132,13 +131,23 @@
 										: 'Data não disponível'}
 							</div>
 							<div>
-								<h2 class="select-none text-sm font-bold text-orange-400">Telefone:</h2>
-								<h2 class="text-sm">{lead.telefone}</h2>
+								<h2 class="select-none text-sm font-bold text-orange-400">Telefone do lead:</h2>
+								<h2 class="text-sm">{formatarTelefone(lead.telefone)}</h2>
 							</div>
 
 							<div>
-								<h2 class="select-none text-sm font-bold text-orange-400">CPF:</h2>
-								<h2 class="text-sm">{lead.cpf || 'Não cadastrado'}</h2>
+								<h2 class="select-none text-sm font-bold text-orange-400">
+									{lead.cpf ? 'CPF:' : lead.cnpj ? 'CNPJ:' : 'CPF/CNPJ:'}
+								</h2>
+								<h2 class="text-sm">
+									{#if lead.cpf}
+										{formatarCPF(lead.cpf)}
+									{:else if lead.cnpj}
+										{formatarCNPJ(lead.cnpj)}
+									{:else}
+										Não cadastrado
+									{/if}
+								</h2>
 							</div>
 						</div>
 
@@ -157,7 +166,13 @@
 								<div class="flex flex-col text-sm">
 									<span class="font-bold text-orange-400">Chave PIX ({lead.vendedor.pixType}):</span
 									>
-									{lead.vendedor.pixCode}
+									{lead.vendedor?.pixType === 'cpf'
+										? formatarCPF(lead.vendedor?.pixCode ?? '')
+										: lead.vendedor?.pixType === 'cnpj'
+											? formatarCNPJ(lead.vendedor?.pixCode ?? '')
+											: lead.vendedor?.pixType === 'telefone'
+												? formatarTelefone(lead.vendedor?.pixCode ?? '')
+												: (lead.vendedor?.pixCode ?? '')}
 								</div>
 							{:else}
 								<div class="flex flex-col text-sm">

@@ -79,10 +79,11 @@ export const actions: Actions = {
 
 			const ValidarComprovante = (comprovante: File) => {
 				if (!comprovante) return 'Comprovante é obrigatório';
-				const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
+				const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
 				if (!tiposPermitidos.includes(comprovante.type)) return 'Formato de imagem inválido';
-				const maxSize = 2 * 1024 * 1024; // 2MB
-				if (comprovante.size > maxSize) return 'Comprovante deve ter no máximo 2MB';
+
+				const maxSize = 5 * 1024 * 1024;
+				if (comprovante.size > maxSize) return 'Comprovante deve ter no máximo 5MB';
 				return null;
 			};
 			const erroComprovante = ValidarComprovante(comprovante);

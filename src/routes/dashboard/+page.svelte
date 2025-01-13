@@ -36,7 +36,7 @@
 		</Tabs.Content>
 
 		<Tabs.Content class="w-full pt-10" value="finalizados">
-			<TableBase leads={data.leads.finalizados} status="Finalizado" />
+			<TableBase leads={data.leads.pagos} status="Pago" />
 		</Tabs.Content>
 
 		<Tabs.Content class="w-full pt-10" value="cancelados">

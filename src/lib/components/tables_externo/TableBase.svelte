@@ -5,9 +5,10 @@
 	import { formatarData } from '$lib/uteis/masks';
 	import { CircleArrowLeftIcon, CircleArrowRight, DownloadIcon } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
+	import { toast } from 'svelte-sonner';
 
 	export let leads: LeadsSchema[];
-	export let status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Cancelado';
+	export let status: 'Pendente' | 'Sendo Atendido' | 'Pago' | 'Cancelado';
 
 	// Configuração visual por status
 	const statusConfig = {
@@ -23,7 +24,7 @@
 			label: 'Atendimento',
 			emptyMessage: 'Nenhuma indicação em atendimento encontrada'
 		},
-		Finalizado: {
+		Pago: {
 			badgeColor: 'bg-green-600 hover:bg-green-600',
 			badgeWidth: 'w-20',
 			label: 'Finalizado',
@@ -39,7 +40,7 @@
 
 	// Configuração da paginação
 	let currentPage = 1;
-	let itemsPerPage = 8;
+	let itemsPerPage = 6;
 
 	$: filteredLeads = leads?.filter((lead) => lead.status === status) || [];
 
@@ -67,6 +68,53 @@
 
 	// Gera array com números das páginas
 	$: pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+	function handleDownloadComprovante(comprovantePagamento: string | null) {
+		if (!comprovantePagamento) {
+			toast.error('Comprovante não disponível');
+			return;
+		}
+
+		try {
+			// Extrai o tipo do arquivo e os dados do base64
+			const [, tipo, base64] = comprovantePagamento.match(/data:(.*);base64,(.*)/) || [];
+
+			if (!tipo || !base64) {
+				toast.error('Formato do comprovante inválido');
+				return;
+			}
+
+			// Converte o base64 para Blob
+			const byteCharacters = atob(base64);
+			const byteNumbers = new Array(byteCharacters.length);
+
+			for (let i = 0; i < byteCharacters.length; i++) {
+				byteNumbers[i] = byteCharacters.charCodeAt(i);
+			}
+
+			const byteArray = new Uint8Array(byteNumbers);
+			const blob = new Blob([byteArray], { type: tipo });
+
+			// Cria URL do blob e link para download
+			const url = window.URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = `comprovante_${leads[0].fullName.replace(/\s+/g, '_')}.${tipo.split('/')[1]}`;
+
+			// Simula o clique no link
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+
+			// Libera a URL
+			window.URL.revokeObjectURL(url);
+
+			toast.success('Download iniciado com sucesso!');
+		} catch (error) {
+			console.error('Erro ao baixar comprovante:', error);
+			toast.error('Erro ao baixar o comprovante');
+		}
+	}
 </script>
 
 <div class="flex w-full flex-wrap justify-center gap-10 pt-4">
@@ -95,7 +143,7 @@
 							<span class="font-bold text-orange-400">
 								{status === 'Sendo Atendido'
 									? 'Atendido em:'
-									: status === 'Finalizado'
+									: status === 'Pago'
 										? 'Finalizado em:'
 										: status === 'Cancelado'
 											? 'Cancelado em:'
@@ -105,9 +153,9 @@
 								? lead?.atendidoEm
 									? formatarData(lead.atendidoEm)
 									: 'Data não disponível'
-								: status === 'Finalizado'
-									? lead?.finalizadoEm
-										? formatarData(lead.finalizadoEm)
+								: status === 'Pago'
+									? lead?.pagoEm
+										? formatarData(lead.pagoEm)
 										: 'Data não disponível'
 									: status === 'Cancelado'
 										? lead?.canceladoEm
@@ -134,9 +182,13 @@
 							<span class="font-bold text-orange-400">Tipo de plano:</span>
 							{lead.planoModelo}
 						</h2>
-						{#if status === 'Finalizado'}
-							<Button variant="link" class="flex items-center gap-2 p-0 text-orange-400">
-								<DownloadIcon /> Baixar Comprovante
+						{#if status === 'Pago'}
+							<Button
+								variant="ghost"
+								class="absolute bottom-2 right-2 flex items-center text-orange-400"
+								on:click={() => handleDownloadComprovante(lead.comprovantePagamento ?? null)}
+							>
+								<DownloadIcon />
 							</Button>
 						{/if}
 					</div>

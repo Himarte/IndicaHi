@@ -91,7 +91,19 @@ export const actions: Actions = {
 
 			await db
 				.update(leadsTable)
-				.set({ status, atendidoPor: locals.user.email, atendidoEm: new Date().toISOString() })
+				.set({
+					status,
+					atendidoPor: locals.user.email,
+					...(status === 'Aguardando Pagamento'
+						? { aguardandoPagamentoEm: new Date().toISOString() }
+						: status === 'Sendo Atendido'
+							? { atendidoEm: new Date().toISOString() }
+							: status === 'Finalizado'
+								? { finalizadoEm: new Date().toISOString() }
+								: status === 'Cancelado'
+									? { canceladoEm: new Date().toISOString() }
+									: {})
+				})
 				.where(eq(leadsTable.id, id));
 
 			return {
