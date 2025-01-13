@@ -3,26 +3,13 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
-	import type { LeadsSchema } from '$lib/server/database/schema';
+	import type { LeadFinanceiro } from '$lib/types/financeiro';
 	import Dropdown from '$lib/components/StatusDropdown/Dropdown-financeiro.svelte';
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
 	import { formatarCPF, formatarData, formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
 
-	interface Vendedor {
-		id: string;
-		nome: string;
-		email: string;
-		telefone: string | null;
-		pixType: 'cpf' | 'cnpj' | 'email' | 'telefone' | null;
-		pixCode: string | null;
-	}
-
-	interface LeadWithVendedor extends LeadsSchema {
-		vendedor: Vendedor | null;
-	}
-
-	export let lead: LeadWithVendedor;
+	export let lead: LeadFinanceiro;
 	export let cargo: string;
 
 	let isOpen = false;

@@ -6,30 +6,11 @@
 	import Button from '../ui/button/button.svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
 	import SheetFinanceiro from '$lib/components/Sheets/SheetFinanceiro.svelte';
+	import type { LeadFinanceiro } from '$lib/types/financeiro';
+
 	interface LeadsFinanceiro {
 		success: boolean;
-		data: {
-			id: string;
-			fullName: string;
-			cpf: string | null;
-			cnpj: string | null;
-			status: 'Aguardando Pagamento' | 'Pago';
-			promoCode: string;
-			telefone: string;
-			planoNome: string;
-			planoModelo: 'CPF' | 'CNPJ';
-			planoMegas: number;
-			aguardandoPagamentoEm: string | null;
-			pagoEm: string | null;
-			vendedor: {
-				id: string;
-				nome: string;
-				email: string;
-				telefone: string | null;
-				pixType: 'cpf' | 'cnpj' | 'email' | 'telefone' | null;
-				pixCode: string | null;
-			} | null;
-		}[];
+		data: LeadFinanceiro[];
 	}
 
 	export let leads: LeadsFinanceiro;

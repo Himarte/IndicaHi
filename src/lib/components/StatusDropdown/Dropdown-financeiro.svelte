@@ -1,9 +1,9 @@
 <script lang="ts">
 	import * as Select from '$lib/components/ui/select';
-	import type { LeadsSchema } from '$lib/server/database/schema';
+	import type { LeadFinanceiro } from '$lib/types/financeiro';
 	import { getStatusPorCargo } from '$lib/components/StatusDropdown/statusPorCargo';
 
-	export let lead: LeadsSchema;
+	export let lead: LeadFinanceiro;
 	export let cargo: string;
 
 	$: status = getStatusPorCargo(cargo);
