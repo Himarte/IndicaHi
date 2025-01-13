@@ -105,4 +105,29 @@ export const leadsTable = pgTable('leads', {
 // Define types for insert schemas
 export type UserInsertSchema = typeof userTable.$inferInsert;
 export type UserSchema = typeof userTable.$inferSelect;
-export type LeadsSchema = typeof leadsTable.$inferInsert;
+export interface LeadsSchema {
+	id: string;
+	fullName: string;
+	cpf: string | null;
+	cnpj: string | null;
+	status: 'Aguardando Pagamento' | 'Pago';
+	promoCode: string;
+	telefone: string;
+	planoNome: string;
+	planoModelo: 'CPF' | 'CNPJ';
+	planoMegas: number;
+	aguardandoPagamentoEm: string | null;
+	pagoEm: string | null;
+	vendedor: {
+		id: string;
+		nome: string;
+		email: string;
+		telefone: string | null;
+		pixType: 'cpf' | 'cnpj' | 'email' | 'telefone' | null;
+		pixCode: string | null;
+	} | null;
+	atendidoPor?: string;
+	pagoPor?: string;
+	criadoEm?: string;
+	atendidoEm?: string;
+}

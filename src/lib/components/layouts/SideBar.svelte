@@ -7,7 +7,7 @@
 		Table2,
 		Banknote,
 		UserRoundSearch,
-		UserPlus,
+		FileSearch,
 		LogOut,
 		HelpCircle
 	} from 'lucide-svelte';
@@ -59,14 +59,14 @@
 		{
 			href: '/admin/users',
 			icon: UserRoundSearch,
-			label: 'Listas',
+			label: 'Lista de Users',
 			roles: ['Admin'],
 			activePatterns: ['/admin/users']
 		},
 		{
 			href: '/admin/leads',
-			icon: UserPlus,
-			label: 'Leads',
+			icon: FileSearch,
+			label: 'Lista de Leads',
 			roles: ['Admin'],
 			activePatterns: ['/admin/leads']
 		}

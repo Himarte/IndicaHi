@@ -5,7 +5,7 @@
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
-	import SheetFinanceiro from '$lib/components/SheetFinanceiro.svelte';
+	import SheetFinanceiro from '$lib/components/Sheets/SheetFinanceiro.svelte';
 	interface LeadsFinanceiro {
 		success: boolean;
 		data: {

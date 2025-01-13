@@ -1,7 +1,8 @@
 <script lang="ts">
-	import TableBase from '$lib/components/tables_admin/listas/TableBase.svelte';
+	import TableBase from '$lib/components/tables_admin/user/TableBase.svelte';
 	import type { PageData } from './$types';
 	import * as Tabs from '$lib/components/ui/tabs';
+	import { Circle3 } from 'svelte-loading-spinners';
 
 	export let data: PageData;
 </script>
@@ -22,19 +23,35 @@
 		>
 	</Tabs.List>
 
-	<Tabs.Content class="w-full pt-10" value="vendedores-internos">
-		<TableBase usuarios={data.usuarios.vendedoresInternos} tipo="vendedor-interno" />
-	</Tabs.Content>
+	{#await data.usuarios}
+		<div class="flex h-[80vh] w-full items-center justify-center">
+			<Circle3
+				size="70"
+				ballBottomLeft="#F97316"
+				ballBottomRight="#FAFAFA"
+				ballTopLeft="#FAFAFA"
+				ballTopRight="#F97316"
+			/>
+		</div>
+	{:then usuarios}
+		<Tabs.Content class="w-full pt-10" value="vendedores-internos">
+			<TableBase usuarios={usuarios.vendedoresInternos} tipo="vendedor-interno" />
+		</Tabs.Content>
 
-	<Tabs.Content class="w-full pt-10" value="vendedores-externos">
-		<TableBase usuarios={data.usuarios.vendedoresExternos} tipo="vendedor-externo" />
-	</Tabs.Content>
+		<Tabs.Content class="w-full pt-10" value="vendedores-externos">
+			<TableBase usuarios={data.usuarios.vendedoresExternos} tipo="vendedor-externo" />
+		</Tabs.Content>
 
-	<Tabs.Content class="w-full pt-10" value="administradores">
-		<TableBase usuarios={data.usuarios.administradores} tipo="administrador" />
-	</Tabs.Content>
+		<Tabs.Content class="w-full pt-10" value="administradores">
+			<TableBase usuarios={data.usuarios.administradores} tipo="administrador" />
+		</Tabs.Content>
 
-	<Tabs.Content class="w-full pt-10" value="financeiro">
-		<TableBase usuarios={data.usuarios.financeiro} tipo="financeiro" />
-	</Tabs.Content>
+		<Tabs.Content class="w-full pt-10" value="financeiro">
+			<TableBase usuarios={usuarios.financeiro} tipo="financeiro" />
+		</Tabs.Content>
+	{:catch error}
+		<div class="flex w-full justify-center p-8 text-lg text-red-500">
+			Erro ao carregar usuários: {error.message}
+		</div>
+	{/await}
 </Tabs.Root>

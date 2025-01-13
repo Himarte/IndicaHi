@@ -1,53 +1,50 @@
 import type { PageServerLoad } from './$types';
 import { SITE_CHAVE_API } from '$env/static/private';
-import type { AdminPageData } from '$lib/types/admin';
 
-export const load: PageServerLoad<AdminPageData> = async ({ fetch, locals }) => {
-	if (!locals.user?.job?.includes('Admin')) {
-		return {
-			usuarios: {
-				vendedoresInternos: [],
-				vendedoresExternos: [],
-				administradores: [],
-				financeiro: []
-			}
-		};
-	}
-
-	const fetchUsuariosPorCargo = async (cargo: string) => {
+export const load: PageServerLoad = async ({ fetch }) => {
+	const fetchLeadsByStatus = async (status: string) => {
 		try {
-			const response = await fetch(`/api/admin/usuarios/${cargo}`, {
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+			const response = await fetch(`/api/admin/leads/${status}`, {
 				method: 'GET',
 				headers: {
 					'API-KEY': SITE_CHAVE_API,
 					'Content-Type': 'application/json'
-				}
+				},
+				signal: controller.signal
 			});
 
+			clearTimeout(timeoutId);
+
 			if (!response.ok) {
-				throw new Error(`Erro ao buscar usuários ${cargo}`);
+				throw new Error(`Erro ao buscar leads ${status}`);
 			}
 
-			return await response.json();
+			const data = await response.json();
+			return data;
 		} catch (err) {
-			console.error(`Erro ao buscar usuários ${cargo}:`, err);
+			console.error(`Erro ao buscar leads ${status}:`, err);
 			return [];
 		}
 	};
 
-	const [vendedoresInternos, vendedoresExternos, administradores, financeiro] = await Promise.all([
-		fetchUsuariosPorCargo('vendedores_internos'),
-		fetchUsuariosPorCargo('vendedores_externos'),
-		fetchUsuariosPorCargo('administrador'),
-		fetchUsuariosPorCargo('financeiro')
-	]);
-
 	return {
-		usuarios: {
-			vendedoresInternos,
-			vendedoresExternos,
-			administradores,
-			financeiro
-		}
+		leads: Promise.all([
+			fetchLeadsByStatus('pendentes'),
+			fetchLeadsByStatus('em-atendimento'),
+			fetchLeadsByStatus('aguardando-pagamento'),
+			fetchLeadsByStatus('pagos'),
+			fetchLeadsByStatus('finalizados'),
+			fetchLeadsByStatus('cancelados')
+		]).then(([pendentes, emAtendimento, aguardandoPagamento, pagos, finalizados, cancelados]) => ({
+			pendentes,
+			emAtendimento,
+			aguardandoPagamento,
+			pagos,
+			finalizados,
+			cancelados
+		}))
 	};
 };
