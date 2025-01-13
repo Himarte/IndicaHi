@@ -6,6 +6,7 @@
 	import { CircleArrowLeftIcon, CircleArrowRight, DownloadIcon } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 	import { toast } from 'svelte-sonner';
+	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 
 	export let leads: LeadsSchema[];
 	export let status: 'Pendente' | 'Sendo Atendido' | 'Pago' | 'Cancelado';
@@ -183,13 +184,21 @@
 							{lead.planoModelo}
 						</h2>
 						{#if status === 'Pago'}
-							<Button
-								variant="ghost"
-								class="absolute bottom-2 right-2 flex items-center text-orange-400"
-								on:click={() => handleDownloadComprovante(lead.comprovantePagamento ?? null)}
-							>
-								<DownloadIcon />
-							</Button>
+							<Tooltip.Root>
+								<Tooltip.Trigger asChild let:builder>
+									<Button
+										builders={[builder]}
+										variant="ghost"
+										class="absolute bottom-2 right-2 flex items-center text-orange-400"
+										on:click={() => handleDownloadComprovante(lead.comprovantePagamento ?? null)}
+									>
+										<DownloadIcon />
+									</Button>
+								</Tooltip.Trigger>
+								<Tooltip.Content side="bottom">
+									<p>Baixar Comprovante</p>
+								</Tooltip.Content>
+							</Tooltip.Root>
 						{/if}
 					</div>
 				</div>
