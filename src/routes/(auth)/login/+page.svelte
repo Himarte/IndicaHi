@@ -13,7 +13,11 @@
 				class="absolute top-[14rem] flex w-full flex-col items-center justify-center text-3xl font-bold"
 			>
 				Bem Vindo! <br />
-				Vamos nessa jornada <br /> Juntos com a HIMARTE
+				Vamos nessa jornada <br />
+				<span
+					>Juntos com a
+					<span class="font-bold text-orange-500">HIMARTE</span></span
+				>
 			</p>
 			<img
 				src={Rocket}

@@ -1,18 +1,14 @@
 import { and, eq } from 'drizzle-orm';
-import { userTable, leadsTable } from '../schema';
-import { db } from '../db.server';
+import { userTable, leadsTable } from '$lib/server/database/schema';
+import { db } from '$lib/server/database/db.server';
 
 // Verificar se o Email ja esta cadastrado
 export async function getUserByEmail(email: string) {
-	return await db.query.userTable.findFirst({
-		where: eq(userTable.email, email)
-	});
+	return await db.select().from(userTable).where(eq(userTable.email, email));
 }
 // Verificar se o CPF ja esta cadastrado
 export async function getUserByCpf(cpfLimpo: string) {
-	return await db.query.userTable.findFirst({
-		where: eq(userTable.cpf, cpfLimpo)
-	});
+	return await db.select().from(userTable).where(eq(userTable.cpf, cpfLimpo));
 }
 
 // Verificar se o Email ja esta cadastrado

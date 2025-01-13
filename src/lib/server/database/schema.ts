@@ -7,13 +7,12 @@ export const jobEnum = pgEnum('job', [
 	'Financeiro',
 	'Admin'
 ]);
-export const pixTypeEnum = pgEnum('pix_type', ['cpf', 'cnpj', 'email', 'telefone']);
+export const pixTypeEnum = pgEnum('pix_type', ['cpf', 'cnpj']);
 export const statusEnum = pgEnum('status', [
 	'Pendente',
 	'Sendo Atendido',
 	'Finalizado',
 	'Pago',
-	'Sem Sucesso',
 	'Cancelado',
 	'Aguardando Pagamento'
 ]);
@@ -67,6 +66,8 @@ export const leadsTable = pgTable('leads', {
 	planoNome: varchar('plano_nome', { length: 256 }),
 	planoModelo: modeloEnum('plano_modelo'),
 	planoMegas: integer('plano_megas'),
+	atendidoPor: varchar('atendido_por', { length: 256 }),
+	pagoPor: varchar('pago_por', { length: 256 }),
 	criadoEm: timestamp('criadoEm', { mode: 'string', precision: 6, withTimezone: true })
 		.notNull()
 		.defaultNow(),
@@ -96,9 +97,12 @@ export const leadsTable = pgTable('leads', {
 		precision: 6,
 		mode: 'string'
 	}),
+	comprovantePagamento: text('comprovante_pagamento'),
+
 	userIdPromoCode: text('user_id_promocode').references(() => userTable.id)
 });
 
 // Define types for insert schemas
 export type UserInsertSchema = typeof userTable.$inferInsert;
-export type LeadsSchema = typeof leadsTable.$inferInsert;
+export type UserSchema = typeof userTable.$inferSelect;
+export type LeadsSchema = typeof leadsTable.$inferSelect;

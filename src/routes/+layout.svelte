@@ -3,10 +3,10 @@
 	import { Toaster } from '$lib/components/ui/sonner';
 	import type { LayoutData } from './$types';
 	import type { userDataFromCookies } from '$lib/server/lucia.server';
-	import NovoHeader from '$lib/components/layouts/header/NovoHeader.svelte';
-	import NovoSide from '$lib/components/layouts/NovoSide.svelte';
+	import NovoSide from '$lib/components/layouts/SideBar.svelte';
 	import { ModeWatcher } from 'mode-watcher';
 	import PrimeiroLogin from '$lib/components/Dialogs/PrimeiroLogin.svelte';
+	import { page } from '$app/stores';
 
 	export let data: LayoutData;
 	export let isLoggedIn = data.isUserLoggedIn;
@@ -26,9 +26,20 @@
 <Toaster richColors closeButton />
 <ModeWatcher defaultMode={'dark'} />
 
-<NovoHeader {isLoggedIn} {userData} />
+<!-- <NovoHeader {isLoggedIn} {userData} /> -->
 
-<main class="flex h-full w-full {isLoggedIn ? 'pl-[3.5rem]' : ''}">
+<main class="flex h-full w-full {isLoggedIn ? 'pl-[3.5rem]' : ''} relative">
+	{#if userData?.promoCode && userData?.job === 'Vendedor Externo'}
+		<div
+			class="absolute right-2 top-2 z-50 flex justify-center rounded-xl {$page.url.pathname ===
+				'/configuracoes' || $page.url.pathname === '/configuracoes/privacidade'
+				? 'hidden'
+				: 'flex'} border border-border px-4 py-1 text-lg font-bold text-orange-500"
+		>
+			<span class="mr-2 select-none text-white">Código de indicação: </span>
+			{userData?.promoCode || 'Não possui'}
+		</div>
+	{/if}
 	{#if isLoggedIn && userData}
 		{#if showPrimeiroLogin}
 			<PrimeiroLogin {userData} />

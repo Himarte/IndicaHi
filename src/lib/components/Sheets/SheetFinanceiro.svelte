@@ -1,0 +1,179 @@
+<script lang="ts">
+	import * as Sheet from '$lib/components/ui/sheet/index.js';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
+	import type { LeadFinanceiro } from '$lib/types/financeiro';
+	import Dropdown from '$lib/components/StatusDropdown/Dropdown-financeiro.svelte';
+	import { enhance } from '$app/forms';
+	import { toast } from 'svelte-sonner';
+	import { formatarCPF, formatarData, formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
+
+	export let lead: LeadFinanceiro;
+	export let cargo: string;
+
+	let isOpen = false;
+	let isSubmitting = false;
+	let formEl: HTMLFormElement;
+
+	const handleSubmit = () => {
+		return async ({ formData, cancel }: { formData: FormData; cancel: () => void }) => {
+			isSubmitting = true;
+
+			const comprovante = formData.get('comprovante') as File;
+			if (!comprovante || comprovante.size === 0) {
+				toast.error('Por favor, anexe um comprovante');
+				isSubmitting = false;
+				cancel();
+				return;
+			}
+
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			return async ({ result, update }: { result: any; update: () => Promise<void> }) => {
+				isSubmitting = false;
+
+				if (result.type === 'error') {
+					toast.error(result.error.message || 'Erro ao atualizar informações');
+					return;
+				}
+
+				if (result.type === 'failure') {
+					toast.error(result.data?.message || 'Falha ao atualizar informações');
+					return;
+				}
+
+				toast.success('Informações atualizadas com sucesso!');
+				formEl.reset();
+				isOpen = false;
+				await update();
+			};
+		};
+	};
+
+	// console.log('lead', lead);
+</script>
+
+<Sheet.Root bind:open={isOpen}>
+	<Sheet.Trigger asChild let:builder>
+		<Button
+			builders={[builder]}
+			variant="outline"
+			class="text-orange-400 hover:bg-stone-900 hover:text-orange-400"
+		>
+			Alterar Dados
+		</Button>
+	</Sheet.Trigger>
+
+	<Sheet.Content side="right" class="border-border">
+		<Sheet.Header>
+			<Sheet.Title class="text-orange-400">Informações do Vendedor</Sheet.Title>
+			<Sheet.Description>
+				Preencha os dados e anexe o comprovante para atualizar o status
+			</Sheet.Description>
+		</Sheet.Header>
+
+		<form
+			bind:this={formEl}
+			action="?/updateStatus"
+			method="POST"
+			class="grid h-full py-5"
+			enctype="multipart/form-data"
+			use:enhance={handleSubmit()}
+		>
+			<div class="flex flex-col gap-4">
+				<input type="hidden" name="id" value={lead.id} />
+				<div class="flex flex-col items-start gap-2">
+					<Label for="vendedor" class="text-right text-orange-400">Vendedor:</Label>
+					<Input
+						id="vendedor"
+						name="vendedor"
+						value={lead.vendedor ? lead.vendedor.nome : 'Nenhum vendedor informado'}
+						class="col-span-3"
+						readonly
+					/>
+				</div>
+				<div class="flex flex-col items-start gap-2">
+					<Label for="cpf" class="text-right text-orange-400">ID do vendedor:</Label>
+					<Input
+						id="cpf"
+						name="cpf"
+						value={lead.vendedor ? lead.vendedor.id : 'Nenhum ID informado'}
+						class="col-span-3"
+						readonly
+					/>
+				</div>
+
+				<div class="flex flex-col items-start gap-2">
+					<Label for="telefone" class="text-right text-orange-400">Telefone do vendedor:</Label>
+					<Input
+						id="telefone"
+						name="telefone"
+						value={lead.vendedor
+							? lead.vendedor.telefone
+								? formatarTelefone(lead.vendedor.telefone)
+								: 'Nenhum telefone informado'
+							: 'Nenhum vendedor informado'}
+						class="col-span-3"
+						readonly
+					/>
+				</div>
+
+				<div class="flex flex-col items-start gap-2">
+					<Label for="pixType" class="text-right text-orange-400	">
+						Chave PIX: ({lead.vendedor?.pixType === 'cpf'
+							? 'CPF'
+							: lead.vendedor?.pixType === 'cnpj'
+								? 'CNPJ'
+								: lead.vendedor?.pixType === 'telefone'
+									? 'Telefone'
+									: 'E-mail'})
+					</Label>
+					<Input
+						id="pixType"
+						name="pixType"
+						value={lead.vendedor
+							? lead.vendedor.pixCode
+								? lead.vendedor.pixType === 'cpf'
+									? formatarCPF(lead.vendedor.pixCode)
+									: lead.vendedor.pixType === 'cnpj'
+										? formatarCNPJ(lead.vendedor.pixCode)
+										: lead.vendedor.pixType === 'telefone'
+											? formatarTelefone(lead.vendedor.pixCode)
+											: lead.vendedor.pixCode
+								: 'Não cadastrado'
+							: 'Não cadastrado'}
+						class="col-span-3"
+						readonly
+					/>
+				</div>
+
+				<div class="flex flex-col items-start gap-2">
+					<Label for="status" class="text-right text-orange-400		">Alterar status:</Label>
+					<Dropdown {lead} {cargo} />
+				</div>
+
+				<div class=" flex flex-col items-start gap-2">
+					<Label for="comprovante" class="text-right text-orange-400">Anexar comprovante:</Label>
+					<input
+						type="file"
+						id="comprovante"
+						name="comprovante"
+						class=" block w-full rounded-lg bg-border px-3 py-2 text-sm text-gray-200 placeholder-gray-200 file:rounded-full file:border-none file:bg-gray-200 file:px-4 file:py-1 file:text-sm file:text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+						accept=".jpg,.jpeg,.png,.pdf,.webp"
+						required
+					/>
+				</div>
+			</div>
+			<Sheet.Footer>
+				<div class="flex w-full justify-end gap-2">
+					<Sheet.Close asChild let:builder>
+						<Button builders={[builder]} variant="outline" type="button">Cancelar</Button>
+					</Sheet.Close>
+					<Button type="submit" disabled={isSubmitting}>
+						{isSubmitting ? 'Salvando...' : 'Salvar'}
+					</Button>
+				</div>
+			</Sheet.Footer>
+		</form>
+	</Sheet.Content>
+</Sheet.Root>

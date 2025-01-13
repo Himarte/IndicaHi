@@ -12,78 +12,69 @@
 	export let userData: userDataFromCookies;
 	export let isLoggedIn: boolean;
 
-	$: userRole = userData?.job;
-	$: isVendedorExterno = userRole === 'Vendedor Externo';
+	$: isVendedorExterno = userData?.job === 'Vendedor Externo';
+	$: showHeader = isLoggedIn && isVendedorExterno;
 </script>
 
-<header
-	class="z-2 static top-0 flex h-14 w-full items-center justify-between gap-4 border-b border-secondary px-3 md:pl-24 md:pr-10"
->
-	<!-- Menu Mobile -->
-	<Sheet.Root>
-		<Sheet.Trigger asChild let:builder>
-			<Button builders={[builder]} size="icon" variant="outline" class="sm:hidden">
-				<PanelLeft class="h-5 w-5" />
-				<span class="sr-only">Toggle Menu</span>
-			</Button>
-		</Sheet.Trigger>
+{#if showHeader}
+	<header
+		class="z-2 static top-0 flex h-14 w-full items-center justify-between gap-4 border-b border-secondary px-3 md:pl-24 md:pr-10"
+	>
+		<!-- Menu Mobile -->
+		<Sheet.Root>
+			<Sheet.Trigger asChild let:builder>
+				<Button builders={[builder]} size="icon" variant="outline" class="sm:hidden">
+					<PanelLeft class="h-5 w-5" />
+					<span class="sr-only">Toggle Menu</span>
+				</Button>
+			</Sheet.Trigger>
 
-		<Sheet.Content side="left" class="sm:max-w-xs">
-			<nav class="flex w-2/3 flex-col items-center gap-5 rounded-xl">
-				<a href="/">
-					<img src={LogoHimarte} alt="Logo Himarte" class="w-36 py-5 pr-5" />
-				</a>
-				<Button
-					variant="ghost"
-					href="/"
-					class={$page.url.pathname === '/' ? 'bg-secondary text-accent-foreground' : ''}
-					>Home</Button
-				>
-				{#if isLoggedIn && isVendedorExterno}
+			<Sheet.Content side="left" class="sm:max-w-xs">
+				<nav class="flex w-2/3 flex-col items-center gap-5 rounded-xl">
+					<a href="/">
+						<img src={LogoHimarte} alt="Logo Himarte" class="w-36 py-5 pr-5" />
+					</a>
+					<Button
+						variant="ghost"
+						href="/"
+						class={$page.url.pathname === '/' ? 'bg-secondary text-accent-foreground' : ''}
+					>
+						Home
+					</Button>
 					<Button
 						variant="ghost"
 						href="/dashboard"
 						class={$page.url.pathname === '/dashboard' ? 'bg-secondary text-accent-foreground' : ''}
-						>Dashboard</Button
 					>
-				{/if}
-			</nav>
-		</Sheet.Content>
-	</Sheet.Root>
+						Dashboard
+					</Button>
+				</nav>
+			</Sheet.Content>
+		</Sheet.Root>
 
-	<!-- Menu Desktop -->
-	<nav class="hidden w-2/3 items-center gap-5 md:flex">
-		{#if !isLoggedIn}
-			<a href="/">
-				<img src={LogoHimarte} alt="Logo Himarte" class="w-36 py-5 pr-5" />
-			</a>
-		{/if}
-
-		{#if isLoggedIn}
+		<!-- Menu Desktop -->
+		<nav class="hidden w-2/3 items-center gap-5 md:flex">
 			<Button
 				variant="ghost"
 				href="/"
-				class={$page.url.pathname === '/' ? 'bg-secondary text-accent-foreground' : ''}>Home</Button
+				class={$page.url.pathname === '/' ? 'bg-secondary text-accent-foreground' : ''}
 			>
-			{#if isVendedorExterno}
-				<Button
-					variant="ghost"
-					href="/dashboard"
-					class={$page.url.pathname === '/dashboard' ? 'bg-secondary text-accent-foreground' : ''}
-					>Dashboard</Button
-				>
-			{/if}
-		{/if}
-	</nav>
+				Home
+			</Button>
+			<Button
+				variant="ghost"
+				href="/dashboard"
+				class={$page.url.pathname === '/dashboard' ? 'bg-secondary text-accent-foreground' : ''}
+			>
+				Dashboard
+			</Button>
+		</nav>
 
-	<!-- Ações do Usuário -->
-	<nav class="flex w-1/3 items-center justify-end gap-24">
-		{#if isLoggedIn}
-			{#if isVendedorExterno}
-				<p class="hidden gap-2 text-orange-500 lg:flex">
-					Seu Codigo: <span class="text-white">{userData.promoCode}</span>
-				</p>
-			{/if}
+		<!-- Ações do Usuário -->
+		<nav class="flex w-1/3 items-center justify-end gap-24">
+			<p class="hidden gap-2 text-orange-500 lg:flex">
+				Seu Codigo: <span class="text-white">{userData.promoCode}</span>
+			</p>
 			<Popover.Root>
 				<Popover.Trigger>
 					<Avatar.Root class="h-10 w-10">
@@ -95,6 +86,6 @@
 					<AvatarOpcoes />
 				</Popover.Content>
 			</Popover.Root>
-		{/if}
-	</nav>
-</header>
+		</nav>
+	</header>
+{/if}

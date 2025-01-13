@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			leads: {
 				pendentes: [],
 				emAtendimento: [],
-				finalizados: [],
+				pagos: [],
 				cancelados: []
 			},
 			message: 'Usuário não autenticado ou sem promoCode'
@@ -30,8 +30,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			leads: {
 				pendentes: allLeads.filter((lead) => lead.status === 'Pendente'),
 				emAtendimento: allLeads.filter((lead) => lead.status === 'Sendo Atendido'),
-				finalizados: allLeads.filter((lead) => lead.status === 'Finalizado'),
-				cancelados: allLeads.filter((lead) => lead.status === 'Sem Sucesso')
+				pagos: allLeads.filter((lead) => lead.status === 'Pago'),
+				cancelados: allLeads.filter((lead) => lead.status === 'Cancelado')
 			}
 		};
 	} catch (err) {
@@ -40,7 +40,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			leads: {
 				pendentes: [],
 				emAtendimento: [],
-				finalizados: [],
+				pagos: [],
 				cancelados: []
 			},
 			message: 'Erro interno do servidor'
@@ -60,14 +60,9 @@ export const actions: Actions = {
 		try {
 			const formData = await request.formData();
 			const id = formData.get('id') as string;
-			const status = formData.get('status') as
-				| 'Pendente'
-				| 'Sendo Atendido'
-				| 'Finalizado'
-				| 'Pago'
-				| 'Sem Sucesso';
+			const status = formData.get('status') as 'Pendente' | 'Sendo Atendido' | 'Pago' | 'Cancelado';
 
-			if (!['Pendente', 'Sendo Atendido', 'Finalizado', 'Pago', 'Sem Sucesso'].includes(status)) {
+			if (!['Pendente', 'Sendo Atendido', 'Finalizado', 'Pago', 'Cancelado'].includes(status)) {
 				return fail(400, {
 					success: false,
 					message: 'Status inválido'

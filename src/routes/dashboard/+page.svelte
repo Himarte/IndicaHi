@@ -1,8 +1,5 @@
 <script lang="ts">
-	import DataTablePendentes from '$lib/components/tables_externo/TablePendentes-externo.svelte';
-	import DataTableAtendimento from '$lib/components/tables_externo/TableAtendimento-externo.svelte';
-	import DataTableFinalizados from '$lib/components/tables_externo/TableFinalizado-externo.svelte';
-	import DataTableCancelados from '$lib/components/tables_externo/TableCancelado-externo.svelte';
+	import TableBase from '$lib/components/tables_externo/TableBase.svelte';
 	import type { PageData } from './$types';
 	import * as Tabs from '$lib/components/ui/tabs';
 
@@ -14,28 +11,36 @@
 		{data.message}
 	</div>
 {:else}
-	<Tabs.Root value="pendentes" class="relative h-full w-full px-[3.5rem]">
-		<Tabs.List class="absolute top-2 flex w-min gap-1 border border-secondary bg-background">
-			<Tabs.Trigger value="pendentes">Pendentes</Tabs.Trigger>
-			<Tabs.Trigger value="atendimento">Em Atendimento</Tabs.Trigger>
-			<Tabs.Trigger value="finalizados">Finalizados</Tabs.Trigger>
-			<Tabs.Trigger value="cancelados">Cancelados</Tabs.Trigger>
+	<Tabs.Root value="pendentes" class="relative flex h-full w-full justify-center pt-5 ">
+		<Tabs.List class="absolute top-3 flex w-min gap-1  border border-secondary bg-background">
+			<Tabs.Trigger value="pendentes" class="data-[state=active]:bg-zinc-800"
+				>Pendentes</Tabs.Trigger
+			>
+			<Tabs.Trigger value="atendimento" class="data-[state=active]:bg-zinc-800"
+				>Em Atendimento</Tabs.Trigger
+			>
+			<Tabs.Trigger value="finalizados" class="data-[state=active]:bg-zinc-800"
+				>Finalizados</Tabs.Trigger
+			>
+			<Tabs.Trigger value="cancelados" class="data-[state=active]:bg-zinc-800"
+				>Cancelados</Tabs.Trigger
+			>
 		</Tabs.List>
 
-		<Tabs.Content class="pt-10" value="pendentes">
-			<DataTablePendentes leads={data.leads.pendentes} />
+		<Tabs.Content class="w-full pt-10" value="pendentes">
+			<TableBase leads={data.leads.pendentes} status="Pendente" />
 		</Tabs.Content>
 
-		<Tabs.Content class="pt-10" value="atendimento">
-			<DataTableAtendimento leads={data.leads.emAtendimento} />
+		<Tabs.Content class="w-full pt-10" value="atendimento">
+			<TableBase leads={data.leads.emAtendimento} status="Sendo Atendido" />
 		</Tabs.Content>
 
-		<Tabs.Content class="pt-10" value="finalizados">
-			<DataTableFinalizados leads={data.leads.finalizados} />
+		<Tabs.Content class="w-full pt-10" value="finalizados">
+			<TableBase leads={data.leads.pagos} status="Pago" />
 		</Tabs.Content>
 
-		<Tabs.Content class="pt-10" value="cancelados">
-			<DataTableCancelados leads={data.leads.cancelados} />
+		<Tabs.Content class="w-full pt-10" value="cancelados">
+			<TableBase leads={data.leads.cancelados} status="Cancelado" />
 		</Tabs.Content>
 	</Tabs.Root>
 {/if}
