@@ -1,10 +1,14 @@
 export function maskCPF(value: string): string {
-	return value
-		.replace(/\D/g, '')
+	// Primeiro limpa todos os caracteres não numéricos
+	const cleanValue = value.replace(/\D/g, '');
+
+	// Limita para apenas 11 dígitos
+	const cpf = cleanValue.slice(0, 11);
+
+	return cpf
 		.replace(/(\d{3})(\d)/, '$1.$2')
 		.replace(/(\d{3})(\d)/, '$1.$2')
-		.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
-		.slice(0, 14);
+		.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
 }
 
 export function maskCellPhone(value: string): string {
@@ -17,6 +21,7 @@ export function maskCellPhone(value: string): string {
 
 export const formatarTelefone = maskCellPhone;
 export const formatarCPF = maskCPF;
+export const formatarCNPJ = maskCNPJ;
 
 export function maskCNPJ(value: string): string {
 	return value

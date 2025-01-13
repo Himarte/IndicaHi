@@ -2,7 +2,7 @@
 	import { Badge } from '../ui/badge';
 	import Separator from '../ui/separator/separator.svelte';
 	import type { LeadsSchema } from '$lib/server/database/schema';
-	import { formatarData } from '$lib/uteis/masks';
+	import { formatarData, formatarCPF, formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 	import Dropdown from '$lib/components/StatusDropdown/Dropdown-dashboard.svelte';
@@ -60,6 +60,21 @@
 	}
 	// Gera array com números das páginas
 	$: pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+	// Configuração para os textos de data
+	const dateConfig = {
+		Pendente: {
+			label: 'Criado em:'
+		},
+		'Sendo Atendido': {
+			label: 'Atendido em:'
+		},
+		Finalizado: {
+			label: 'Finalizado em:'
+		},
+		Cancelado: {
+			label: 'Cancelado em:'
+		}
+	};
 </script>
 
 {#await leads}
@@ -96,26 +111,30 @@
 					<div class="flex w-1/3 flex-col gap-2 p-3">
 						<div>
 							<h2 class="text-sm font-bold text-orange-400">Telefone:</h2>
-							<h2 class="text-sm">{paginatedLeads[0].telefone}</h2>
+							<h2 class="text-sm">
+								{paginatedLeads[0].telefone
+									? formatarTelefone(paginatedLeads[0].telefone)
+									: 'Não cadastrado'}
+							</h2>
 						</div>
 
 						<div>
 							<h2 class="text-sm font-bold text-orange-400">CPF:</h2>
 							<h2 class="text-sm">
-								{paginatedLeads[0].cpf ? paginatedLeads[0].cpf : 'Não cadastrado'}
+								{paginatedLeads[0].cpf ? formatarCPF(paginatedLeads[0].cpf) : 'Não cadastrado'}
 							</h2>
 						</div>
 						<div>
 							<h2 class="text-sm font-bold text-orange-400">CNPJ:</h2>
 							<h2 class="text-sm">
-								{paginatedLeads[0].cnpj ? paginatedLeads[0].cnpj : 'Não cadastrado'}
+								{paginatedLeads[0].cnpj ? formatarCNPJ(paginatedLeads[0].cnpj) : 'Não cadastrado'}
 							</h2>
 						</div>
 					</div>
 					<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
 					<div class="flex w-1/3 flex-col gap-2 p-3">
 						<div class="flex flex-col text-sm">
-							<span class="font-bold text-orange-400">Criado em:</span>
+							<span class="font-bold text-orange-400">{dateConfig[status].label}</span>
 							{paginatedLeads[0]?.atendidoEm
 								? formatarData(paginatedLeads[0].atendidoEm)
 								: 'Data não disponível'}
@@ -154,22 +173,28 @@
 						<div class="flex w-1/3 flex-col gap-2 p-3">
 							<div>
 								<h2 class="text-sm font-bold text-orange-400">Telefone:</h2>
-								<h2 class="text-sm">{lead.telefone}</h2>
+								<h2 class="text-sm">
+									{lead.telefone ? formatarTelefone(lead.telefone) : 'Não cadastrado'}
+								</h2>
 							</div>
 
 							<div>
 								<h2 class="text-sm font-bold text-orange-400">CPF:</h2>
-								<h2 class="text-sm">{lead.cpf ? lead.cpf : 'Não cadastrado'}</h2>
+								<h2 class="text-sm">
+									{lead.cpf ? formatarCPF(lead.cpf) : 'Não cadastrado'}
+								</h2>
 							</div>
 							<div>
 								<h2 class="text-sm font-bold text-orange-400">CNPJ:</h2>
-								<h2 class="text-sm">{lead.cnpj ? lead.cnpj : 'Não cadastrado'}</h2>
+								<h2 class="text-sm">
+									{lead.cnpj ? formatarCNPJ(lead.cnpj) : 'Não cadastrado'}
+								</h2>
 							</div>
 						</div>
 						<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
 						<div class="flex w-1/3 flex-col gap-2 p-3">
 							<div class="flex flex-col text-sm">
-								<span class="font-bold text-orange-400">Criado em:</span>
+								<span class="font-bold text-orange-400">{dateConfig[status].label}</span>
 								{lead?.criadoEm ? formatarData(lead.criadoEm) : 'Data não disponível'}
 							</div>
 							<div class="flex flex-col text-sm">
