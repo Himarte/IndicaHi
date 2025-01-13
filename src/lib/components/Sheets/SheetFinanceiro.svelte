@@ -55,12 +55,18 @@
 
 <Sheet.Root bind:open={isOpen}>
 	<Sheet.Trigger asChild let:builder>
-		<Button builders={[builder]} variant="outline">Alterar informações</Button>
+		<Button
+			builders={[builder]}
+			variant="outline"
+			class="text-orange-400 hover:bg-stone-900 hover:text-orange-400"
+		>
+			Alterar Dados
+		</Button>
 	</Sheet.Trigger>
 
 	<Sheet.Content side="right" class="border-border">
 		<Sheet.Header>
-			<Sheet.Title class="text-orange-400">Alterar informações</Sheet.Title>
+			<Sheet.Title class="text-orange-400">Informações do Vendedor</Sheet.Title>
 			<Sheet.Description>
 				Preencha os dados e anexe o comprovante para atualizar o status
 			</Sheet.Description>
@@ -92,20 +98,6 @@
 						id="cpf"
 						name="cpf"
 						value={lead.vendedor ? lead.vendedor.id : 'Nenhum ID informado'}
-						class="col-span-3"
-						readonly
-					/>
-				</div>
-				<div class="flex flex-col items-start gap-2">
-					<Label for="aguardandoPagamentoEm" class="text-right text-orange-400"
-						>Aguardando pagamento desde:</Label
-					>
-					<Input
-						id="aguardandoPagamentoEm"
-						name="aguardandoPagamentoEm"
-						value={lead.aguardandoPagamentoEm
-							? formatarData(lead.aguardandoPagamentoEm)
-							: 'Nenhuma data informada'}
 						class="col-span-3"
 						readonly
 					/>
@@ -160,13 +152,13 @@
 					<Dropdown {lead} {cargo} />
 				</div>
 
-				<div class="flex flex-col items-start gap-2">
+				<div class=" flex flex-col items-start gap-2">
 					<Label for="comprovante" class="text-right text-orange-400">Anexar comprovante:</Label>
 					<input
 						type="file"
 						id="comprovante"
 						name="comprovante"
-						class="mt-2 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600 placeholder-gray-400/70 file:rounded-full file:border-none file:bg-gray-200 file:px-4 file:py-1 file:text-sm file:text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+						class=" block w-full rounded-lg bg-border px-3 py-2 text-sm text-gray-200 placeholder-gray-200 file:rounded-full file:border-none file:bg-gray-200 file:px-4 file:py-1 file:text-sm file:text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
 						accept=".jpg,.jpeg,.png,.pdf,.webp"
 						required
 					/>
