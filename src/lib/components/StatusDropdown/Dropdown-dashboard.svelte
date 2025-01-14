@@ -18,7 +18,6 @@
 	class="flex min-w-full gap-2"
 	use:enhance={() => {
 		return async ({ result, update }) => {
-			console.log('result', result);
 			if (result.type === 'failure') {
 				toast.error('Erro ao atualizar status');
 			} else if (result.type === 'success') {

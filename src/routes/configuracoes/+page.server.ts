@@ -19,7 +19,6 @@ export const actions: Actions = {
 		let cpf: any = dados.get('cpf') || locals.user?.cpf;
 		const promoCode: any = dados.get('promoCode') || locals.user?.promoCode;
 
-		console.log(`Dados da edição de dados pessoais: ${cpf}, ${promoCode}`);
 
 		function limparCPF(cpf: string): string {
 			return cpf.replace(/\.|-|\s/g, '');
@@ -100,7 +99,6 @@ export const actions: Actions = {
 				.set({ cep, rua, numeroCasa, complemento, cidade, estado, bairro })
 				.where(eq(userTable.id, locals.user?.id || ''));
 		} catch (e) {
-			console.log(e);
 			return fail(500, {
 				status: 500,
 				message: 'Erro ao atualizar os dados'

@@ -7,10 +7,28 @@
 	import Dropdown from '$lib/components/StatusDropdown/Dropdown-financeiro.svelte';
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
-	import { formatarCPF, formatarData, formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
+	import { formatarCPF,  formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
+	import Separator from '../ui/separator/separator.svelte';
+	import BotaoBaixar from './BotaoBaixarFinanceiro.svelte';
+	import { onMount } from 'svelte';
+
+
 
 	export let lead: LeadFinanceiro;
 	export let cargo: string;
+
+
+	if (lead.status === 'Pago') {
+		// fazer um onmout para pegar o comprovante para colocar um #await no botaoBaixar e passar o comprovante para o botaoBaixar
+		onMount(async () => {
+			const response = await fetch(`/api/indicacoes/financeiro/${lead.id}`, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+		});
+	}
 
 	let isOpen = false;
 	let isSubmitting = false;
@@ -50,7 +68,6 @@
 		};
 	};
 
-	// console.log('lead', lead);
 </script>
 
 <Sheet.Root bind:open={isOpen}>
@@ -146,7 +163,7 @@
 						readonly
 					/>
 				</div>
-
+				<Separator class="mb-3 mt-4" />
 				<div class="flex flex-col items-start gap-2">
 					<Label for="status" class="text-right text-orange-400		">Alterar status:</Label>
 					<Dropdown {lead} {cargo} />
@@ -160,10 +177,14 @@
 						name="comprovante"
 						class=" block w-full rounded-lg bg-border px-3 py-2 text-sm text-gray-200 placeholder-gray-200 file:rounded-full file:border-none file:bg-gray-200 file:px-4 file:py-1 file:text-sm file:text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
 						accept=".jpg,.jpeg,.png,.pdf,.webp"
-						required
 					/>
 				</div>
 			</div>
+			{#if lead.status === 'Pago'}
+				<div class="flex w-full justify-center">
+					<BotaoBaixar {lead} />
+				</div>
+			{/if}
 			<Sheet.Footer>
 				<div class="flex w-full justify-end gap-2">
 					<Sheet.Close asChild let:builder>

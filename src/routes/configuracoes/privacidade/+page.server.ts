@@ -41,7 +41,6 @@ export const actions: Actions = {
 				.set({ pixType, pixCode })
 				.where(eq(userTable.id, locals.user?.id || ''));
 		} catch (e) {
-			console.log(e);
 			return fail(500, {
 				status: 500,
 				message: 'Erro ao atualizar os dados'
@@ -103,7 +102,6 @@ export const actions: Actions = {
 				.set({ email: newEmail })
 				.where(eq(userTable.id, locals.user?.id || ''));
 		} catch (e) {
-			console.log(e);
 			return fail(500, {
 				status: 500,
 				message: 'Erro ao atualizar os dados'

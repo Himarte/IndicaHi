@@ -17,7 +17,6 @@
 	export let cargo: string;
 	export let status: 'Aguardando Pagamento' | 'Pago';
 
-	// console.log(leads);
 	// Configuração visual por status
 	const statusConfig = {
 		'Aguardando Pagamento': {

@@ -97,9 +97,13 @@ export const leadsTable = pgTable('leads', {
 		precision: 6,
 		mode: 'string'
 	}),
-	comprovantePagamento: text('comprovante_pagamento'),
-
 	userIdPromoCode: text('user_id_promocode').references(() => userTable.id)
+});
+
+export const leadsComprovanteTable = pgTable('leads_comprovante', {
+	id: varchar('id').primaryKey().notNull(),
+	leadsId: varchar('leads_id').references(() => leadsTable.id),
+	comprovante: text('comprovante').notNull(),
 });
 
 // Define types for insert schemas

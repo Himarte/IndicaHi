@@ -21,8 +21,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	try {
+		// Select all leads from the user without the comprovante
 		const allLeads = await db
-			.select()
+			.select(
+			)
 			.from(leadsTable)
 			.where(eq(leadsTable.promoCode, userPromoCode));
 

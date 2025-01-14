@@ -75,7 +75,6 @@ export const POST: RequestHandler = async ({ url, request }) => {
 		// Se o promoCode estiver presente e válido, adicionamos ao commonValues
 		if (promoCode) {
 			const userIdPromoCode = await getUserIdByPromoCode(promoCode);
-			console.log('userIdPromoCode:', userIdPromoCode);
 
 			if (!userIdPromoCode) {
 				return new Response(JSON.stringify({ message: 'Código promocional inválido' }), {

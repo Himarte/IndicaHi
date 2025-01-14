@@ -5,9 +5,7 @@
 	import { formatarData } from '$lib/uteis/masks';
 	import { CircleArrowLeftIcon, CircleArrowRight, DownloadIcon } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
-	import { toast } from 'svelte-sonner';
-	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
-
+	import BotaoBaixarExterno from './BotaoBaixarExterno.svelte';
 	export let leads: LeadsSchema[];
 	export let status: 'Pendente' | 'Sendo Atendido' | 'Pago' | 'Cancelado';
 
@@ -70,52 +68,7 @@
 	// Gera array com números das páginas
 	$: pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
-	function handleDownloadComprovante(comprovantePagamento: string | null) {
-		if (!comprovantePagamento) {
-			toast.error('Comprovante não disponível');
-			return;
-		}
 
-		try {
-			// Extrai o tipo do arquivo e os dados do base64
-			const [, tipo, base64] = comprovantePagamento.match(/data:(.*);base64,(.*)/) || [];
-
-			if (!tipo || !base64) {
-				toast.error('Formato do comprovante inválido');
-				return;
-			}
-
-			// Converte o base64 para Blob
-			const byteCharacters = atob(base64);
-			const byteNumbers = new Array(byteCharacters.length);
-
-			for (let i = 0; i < byteCharacters.length; i++) {
-				byteNumbers[i] = byteCharacters.charCodeAt(i);
-			}
-
-			const byteArray = new Uint8Array(byteNumbers);
-			const blob = new Blob([byteArray], { type: tipo });
-
-			// Cria URL do blob e link para download
-			const url = window.URL.createObjectURL(blob);
-			const link = document.createElement('a');
-			link.href = url;
-			link.download = `comprovante_${leads[0].fullName.replace(/\s+/g, '_')}.${tipo.split('/')[1]}`;
-
-			// Simula o clique no link
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-
-			// Libera a URL
-			window.URL.revokeObjectURL(url);
-
-			toast.success('Download iniciado com sucesso!');
-		} catch (error) {
-			console.error('Erro ao baixar comprovante:', error);
-			toast.error('Erro ao baixar o comprovante');
-		}
-	}
 </script>
 
 <div class="flex w-full flex-wrap justify-center gap-10 pt-4">
@@ -184,21 +137,7 @@
 							{lead.planoModelo}
 						</h2>
 						{#if status === 'Pago'}
-							<Tooltip.Root>
-								<Tooltip.Trigger asChild let:builder>
-									<Button
-										builders={[builder]}
-										variant="ghost"
-										class="absolute bottom-2 right-2 flex items-center text-orange-400"
-										on:click={() => handleDownloadComprovante(lead.comprovantePagamento ?? null)}
-									>
-										<DownloadIcon />
-									</Button>
-								</Tooltip.Trigger>
-								<Tooltip.Content side="bottom">
-									<p>Baixar Comprovante</p>
-								</Tooltip.Content>
-							</Tooltip.Root>
+							<BotaoBaixarExterno {lead} />
 						{/if}
 					</div>
 				</div>

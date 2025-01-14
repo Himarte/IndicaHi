@@ -18,7 +18,6 @@
 
 	let userProfile = data.user as userDataFromCookies;
 
-	console.log('Resposta do backend', data);
 </script>
 
 <form

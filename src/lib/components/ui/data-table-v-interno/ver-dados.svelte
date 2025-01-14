@@ -17,7 +17,6 @@
 
 	const { data, hora } = separarDataHora(dataCriado);
 
-	console.log(id);
 </script>
 
 <Sheet.Root>

@@ -10,7 +10,6 @@
 	export let cnpj: string;
 	export let dataCriado: string;
 	export let status: string;
-	console.log(dataCriado);
 </script>
 
 <Sheet.Root>
