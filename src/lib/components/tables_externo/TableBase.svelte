@@ -1,14 +1,15 @@
 <script lang="ts">
+	import Time from '$lib/components/ui/time/index.svelte';
 	import { Badge } from '../ui/badge';
 	import Separator from '../ui/separator/separator.svelte';
 	import type { LeadsSchema } from '$lib/server/database/schema';
-	import { formatarData } from '$lib/uteis/masks';
-	import { CircleArrowLeftIcon, CircleArrowRight, DownloadIcon } from 'lucide-svelte';
+	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 	import BotaoBaixarExterno from './BotaoBaixarExterno.svelte';
 	export let leads: LeadsSchema[];
 	export let status: 'Pendente' | 'Sendo Atendido' | 'Pago' | 'Cancelado';
 
+	console.log(leads);
 	// Configuração visual por status
 	const statusConfig = {
 		Pendente: {
@@ -67,8 +68,6 @@
 
 	// Gera array com números das páginas
 	$: pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-
-
 </script>
 
 <div class="flex w-full flex-wrap justify-center gap-10 pt-4">
@@ -94,34 +93,16 @@
 				<div class="flex w-full justify-between">
 					<div class="flex w-1/2 flex-col gap-2 p-4">
 						<h2>
-							<span class="font-bold text-orange-400">
-								{status === 'Sendo Atendido'
-									? 'Atendido em:'
-									: status === 'Pago'
-										? 'Finalizado em:'
-										: status === 'Cancelado'
-											? 'Cancelado em:'
-											: 'Criado em:'}
-							</span>
-							{status === 'Sendo Atendido'
-								? lead?.atendidoEm
-									? formatarData(lead.atendidoEm)
-									: 'Data não disponível'
-								: status === 'Pago'
-									? lead?.pagoEm
-										? formatarData(lead.pagoEm)
-										: 'Data não disponível'
-									: status === 'Cancelado'
-										? lead?.canceladoEm
-											? formatarData(lead.canceladoEm)
-											: 'Data não disponível'
-										: lead?.criadoEm
-											? formatarData(lead.criadoEm)
-											: 'Data não disponível'}
-						</h2>
-						<h2>
 							<span class="font-bold text-orange-400">Código Promocional:</span>
 							{lead.promoCode}
+						</h2>
+						<h2>
+							<span class="font-bold text-orange-400">Plano de interesse:</span>
+							{lead.planoNome} - {lead.planoMegas} MB
+						</h2>
+						<h2>
+							<span class="font-bold text-orange-400">Tipo de plano:</span>
+							{lead.planoModelo}
 						</h2>
 					</div>
 
@@ -129,17 +110,83 @@
 
 					<div class="flex w-1/2 flex-col items-start gap-2 p-4">
 						<h2>
-							<span class="font-bold text-orange-400">Plano:</span>
-							{lead.planoNome} - {lead.planoMegas} MB
+							<span class="font-bold text-orange-400">
+								{status === 'Sendo Atendido'
+									? 'Atendido:'
+									: status === 'Pago'
+										? 'Finalizado:'
+										: status === 'Cancelado'
+											? 'Cancelado:'
+											: 'Aguardando:'}
+							</span>
+							{#if status === 'Sendo Atendido'}
+								{#if lead?.atendidoEm}
+									<Time relative timestamp={lead.atendidoEm} live />
+								{:else}
+									<span>Data não disponível</span>
+								{/if}
+							{:else if status === 'Pago'}
+								{#if lead?.pagoEm}
+									<Time relative timestamp={lead.pagoEm} live />
+								{:else}
+									<span>Data não disponível</span>
+								{/if}
+							{:else if status === 'Cancelado'}
+								{#if lead?.canceladoEm}
+									<Time relative timestamp={lead.canceladoEm} live />
+								{:else}
+									<span>Data não disponível</span>
+								{/if}
+							{:else if lead?.criadoEm}
+								<Time relative timestamp={lead.criadoEm} live />
+							{:else}
+								<span>Data não disponível</span>
+							{/if}
 						</h2>
-						<h2>
-							<span class="font-bold text-orange-400">Tipo de plano:</span>
-							{lead.planoModelo}
-						</h2>
+
 						{#if status === 'Pago'}
 							<BotaoBaixarExterno {lead} />
 						{/if}
 					</div>
+				</div>
+				<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
+				<div class="flex w-full justify-between">
+					<h2 class="w-1/2 py-2 text-center">ushaiudh</h2>
+					<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
+					<h2 class="w-1/2 py-2 text-center">
+						<span class="font-bold text-orange-400">
+							{status === 'Sendo Atendido'
+								? 'Atendido:'
+								: status === 'Pago'
+									? 'Finalizado:'
+									: status === 'Cancelado'
+										? 'Cancelado:'
+										: 'Aguardando:'}
+						</span>
+						{#if status === 'Sendo Atendido'}
+							{#if lead?.atendidoEm}
+								<Time relative timestamp={lead.atendidoEm} live />
+							{:else}
+								<span>Data não disponível</span>
+							{/if}
+						{:else if status === 'Pago'}
+							{#if lead?.pagoEm}
+								<Time relative timestamp={lead.pagoEm} live />
+							{:else}
+								<span>Data não disponível</span>
+							{/if}
+						{:else if status === 'Cancelado'}
+							{#if lead?.canceladoEm}
+								<Time relative timestamp={lead.canceladoEm} live />
+							{:else}
+								<span>Data não disponível</span>
+							{/if}
+						{:else if lead?.criadoEm}
+							<Time relative timestamp={lead.criadoEm} live />
+						{:else}
+							<span>Data não disponível</span>
+						{/if}
+					</h2>
 				</div>
 			</div>
 		{/each}
