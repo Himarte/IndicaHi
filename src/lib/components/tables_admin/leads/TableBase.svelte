@@ -49,7 +49,7 @@
 
 	// Configuração da paginação
 	let currentPage = 1;
-	let itemsPerPage = 6;
+	let itemsPerPage = 4;
 
 	// Calcula o número total de páginas
 	$: totalPages = Math.ceil(leads.length / itemsPerPage);
@@ -90,23 +90,25 @@
 					{statusConfig[lead.status].label}
 				</Badge>
 
-				<h1 class="p-2 text-xl font-semibold">{lead.fullName}</h1>
-				<Separator orientation="horizontal" class="bg-zinc-600 text-center" />
+				<h1 class=" p-4 text-xl font-semibold">{lead.fullName}</h1>
+				<Separator orientation="horizontal" class="bg-zinc-600 " />
 
 				<div class="flex w-full items-center">
-					<div class="flex w-1/3 flex-col p-2">
-						<h2 class="flex flex-col text-orange-400">
-							Telefone: <span class="text-white"
+					<div class="flex w-1/3 flex-col">
+						<h2 class=" flex flex-col px-2 py-1 font-semibold text-orange-400">
+							Telefone: <span class="font-normal text-white"
 								>{lead.telefone ? formatarTelefone(lead.telefone) : 'Não informado'}</span
 							>
 						</h2>
-						<h2 class="flex flex-col text-orange-400">
-							CPF: <span class="text-white"
+
+						<h2 class=" flex flex-col px-2 py-1 font-semibold text-orange-400">
+							CPF: <span class="font-normal text-white"
 								>{lead.cpf ? formatarCPF(lead.cpf) : 'Não informado'}</span
 							>
 						</h2>
-						<h2 class="flex flex-col text-orange-400">
-							CNPJ: <span class="text-white"
+
+						<h2 class=" flex flex-col px-2 py-1 font-semibold text-orange-400">
+							CNPJ: <span class="font-normal text-white"
 								>{lead.cnpj ? formatarCNPJ(lead.cnpj) : 'Não informado'}</span
 							>
 						</h2>
@@ -114,33 +116,41 @@
 
 					<Separator orientation="vertical" class="bg-zinc-600 text-center" />
 
-					<div class="flex w-1/3 flex-col p-2">
-						<h2 class="flex flex-col text-orange-400">
-							Modelo: <span class="text-white">{lead.planoModelo || 'Não definido'}</span>
+					<div class="flex w-1/3 flex-col">
+						<h2 class=" flex flex-col px-2 py-1 font-semibold text-orange-400">
+							Modelo: <span class="font-normal text-white"
+								>{lead.planoModelo || 'Não definido'}</span
+							>
 						</h2>
 
-						<h2 class="flex flex-col text-orange-400">
-							Plano: <span class="text-white">{lead.planoNome} - {lead.planoMegas}MB</span>
+						<h2 class=" flex flex-col px-2 py-1 font-semibold text-orange-400">
+							Plano: <span class="font-normal text-white"
+								>{lead.planoNome} - {lead.planoMegas}MB</span
+							>
 						</h2>
-						<h2 class="flex flex-col text-orange-400">
-							Código Promocional: <span class="text-white">{lead.promoCode || 'Não informado'}</span
+
+						<h2 class=" flex flex-col px-2 py-1 font-semibold text-orange-400">
+							Código Promocional: <span class="font-normal text-white"
+								>{lead.promoCode || 'Não informado'}</span
 							>
 						</h2>
 					</div>
 
-					<Separator orientation="vertical" class="bg-zinc-600 text-center" />
-
-					<div class="flex w-1/3 flex-col p-2">
-						<h2 class="flex flex-col text-orange-400">
-							Criado em: <span class="text-white">
+					<div class="flex w-1/3 flex-col">
+						<h2 class=" flex flex-col px-2 py-1 font-semibold text-orange-400">
+							Criado em: <span class="font-normal text-white">
 								{lead.criadoEm ? formatarData(lead.criadoEm) : 'Data não disponível'}
 							</span>
 						</h2>
-						<h2 class="flex flex-col text-orange-400">
-							Atendido por: <span class="text-white">{lead.atendidoPor || 'Não atendido'}</span>
+
+						<h2 class=" flex flex-col px-2 py-1 font-semibold text-orange-400">
+							Atendido por: <span class="font-normal text-white"
+								>{lead.atendidoPor || 'Não atendido'}</span
+							>
 						</h2>
-						<h2 class="flex flex-col text-orange-400">
-							Pago por: <span class="text-white">{lead.pagoPor || 'Não pago'}</span>
+
+						<h2 class=" flex flex-col px-2 py-1 font-semibold text-orange-400">
+							Pago por: <span class="font-normal text-white">{lead.pagoPor || 'Não pago'}</span>
 						</h2>
 					</div>
 				</div>
@@ -150,7 +160,7 @@
 </div>
 
 {#if paginatedLeads.length > 0}
-	<div class="fixed bottom-0 left-0 right-0 my-4 flex items-center justify-center gap-2">
+	<div class=" fixed bottom-0 left-0 right-0 my-4 flex items-center justify-center">
 		<Button
 			variant="ghost"
 			class="hover:bg-transparent"

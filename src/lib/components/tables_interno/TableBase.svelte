@@ -10,7 +10,7 @@
 	export let leads: LeadsSchema[];
 	export let cargo: string;
 	export let status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Cancelado';
-	// Configuração visual por status
+
 	const statusConfig = {
 		Pendente: {
 			badgeColor: 'bg-red-600 hover:bg-red-600',

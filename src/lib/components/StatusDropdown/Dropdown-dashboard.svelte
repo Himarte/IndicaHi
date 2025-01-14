@@ -29,7 +29,7 @@
 >
 	<input type="hidden" name="id" value={lead.id} />
 	<Select.Root portal={null}>
-		<Select.Trigger class="w-full border border-stone-700">
+		<Select.Trigger class="w-full border bg-background text-orange-400  focus:ring-border">
 			<Select.Value placeholder="Alterar Status" />
 		</Select.Trigger>
 		<Select.Content class=" border border-stone-700">
