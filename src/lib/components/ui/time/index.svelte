@@ -8,8 +8,13 @@
 	dayjs.locale('pt-br');
 
 	export let timestamp: string | Date;
+	export let format: string = '';
 	export let relative = false;
 	export let live = false;
 </script>
 
-<Time {timestamp} {relative} {live} />
+{#if format}
+	<Time {timestamp} {relative} {live} {format} />
+{:else}
+	<Time {timestamp} {relative} {live} />
+{/if}

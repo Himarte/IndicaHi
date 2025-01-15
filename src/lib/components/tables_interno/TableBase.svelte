@@ -2,11 +2,12 @@
 	import { Badge } from '../ui/badge';
 	import Separator from '../ui/separator/separator.svelte';
 	import type { LeadsSchema } from '$lib/server/database/schema';
-	import { formatarData, formatarCPF, formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
+	import { formatarCPF, formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 	import Dropdown from '$lib/components/StatusDropdown/Dropdown-dashboard.svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
+	import Time from '$lib/components/ui/time/index.svelte';
 	export let leads: LeadsSchema[];
 	export let cargo: string;
 	export let status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Cancelado';
@@ -60,21 +61,6 @@
 	}
 	// Gera array com números das páginas
 	$: pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-	// Configuração para os textos de data
-	const dateConfig = {
-		Pendente: {
-			label: 'Criado em:'
-		},
-		'Sendo Atendido': {
-			label: 'Atendido em:'
-		},
-		Finalizado: {
-			label: 'Finalizado em:'
-		},
-		Cancelado: {
-			label: 'Cancelado em:'
-		}
-	};
 </script>
 
 {#await leads}
@@ -95,6 +81,7 @@
 					{statusConfig[status].emptyMessage}
 				</div>
 			{:else if paginatedLeads.length === 1}
+				<!-- Caso tenha apenas um lead -->
 				<div
 					class="relative flex w-1/2 flex-col items-center justify-center rounded-lg bg-zinc-800 text-white"
 				>
@@ -133,26 +120,71 @@
 							</div>
 						</div>
 						<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
-						<div class="flex w-1/3 flex-col gap-2 p-3">
-							<div class="flex flex-col text-sm">
-								<span class="font-bold text-orange-400">{dateConfig[status].label}</span>
-								{paginatedLeads[0]?.atendidoEm
-									? formatarData(paginatedLeads[0].atendidoEm)
-									: 'Data não disponível'}
+						<div class="flex w-2/3 gap-2 p-3">
+							<div class="flex w-1/2 flex-col gap-2">
+								<div class="flex flex-col text-sm">
+									<span class="text-sm font-bold text-orange-400">Tipo de Plano:</span>
+									{paginatedLeads[0].planoModelo}
+								</div>
+								<div class="flex flex-col text-sm">
+									<span class="text-sm font-bold text-orange-400">Plano:</span>
+									{paginatedLeads[0].planoNome} - {paginatedLeads[0].planoMegas} MB
+								</div>
+								<div class="flex flex-col text-sm">
+									<span class="font-bold text-orange-400">Código Promocional:</span>
+									{paginatedLeads[0].promoCode ? paginatedLeads[0].promoCode : 'Sem código'}
+								</div>
 							</div>
-							<div class="flex flex-col text-sm">
-								<span class="font-bold text-orange-400">Código Promocional:</span>
-								{paginatedLeads[0].promoCode ? paginatedLeads[0].promoCode : 'Não cadastrado'}
-							</div>
-							<div class="flex flex-col text-sm">
-								<span class="text-sm font-bold text-orange-400">Plano:</span>
-								{paginatedLeads[0].planoNome}
+							<div class="flex w-1/2 items-center justify-center">
+								<Dropdown lead={paginatedLeads[0]} {cargo} />
 							</div>
 						</div>
-
-						<div class="flex w-1/4 items-center justify-center pr-2">
-							<Dropdown lead={paginatedLeads[0]} {cargo} />
-						</div>
+					</div>
+					<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
+					<div class="flex w-full justify-between">
+						<h2 class="w-1/3 py-2 text-center text-sm">
+							<span class="font-bold text-orange-400"> Criado em: </span>
+							{#if paginatedLeads[0]?.criadoEm}
+								<Time timestamp={paginatedLeads[0].criadoEm} format="DD/MM/YYYY" />
+							{:else}
+								<span>Data não disponível</span>
+							{/if}
+						</h2>
+						<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
+						<h2 class="w-2/3 py-2 text-center text-sm">
+							<span class="font-bold text-orange-400">
+								{status === 'Sendo Atendido'
+									? 'Atendido:'
+									: status === 'Finalizado'
+										? 'Finalizado:'
+										: status === 'Cancelado'
+											? 'Cancelado:'
+											: 'Aguardando:'}
+							</span>
+							{#if status === 'Sendo Atendido'}
+								{#if paginatedLeads[0]?.atendidoEm}
+									<Time relative timestamp={paginatedLeads[0].atendidoEm} live />
+								{:else}
+									<span>Data não disponível</span>
+								{/if}
+							{:else if status === 'Finalizado'}
+								{#if paginatedLeads[0]?.pagoEm}
+									<Time relative timestamp={paginatedLeads[0].pagoEm} live />
+								{:else}
+									<span>Data não disponível</span>
+								{/if}
+							{:else if status === 'Cancelado'}
+								{#if paginatedLeads[0]?.canceladoEm}
+									<Time relative timestamp={paginatedLeads[0].canceladoEm} live />
+								{:else}
+									<span>Data não disponível</span>
+								{/if}
+							{:else if leads[0]?.criadoEm}
+								<Time relative timestamp={leads[0].criadoEm} live />
+							{:else}
+								<span>Data não disponível</span>
+							{/if}
+						</h2>
 					</div>
 				</div>
 			{:else}
@@ -193,24 +225,71 @@
 								</div>
 							</div>
 							<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
-							<div class="flex w-1/3 flex-col gap-2 p-3">
-								<div class="flex flex-col text-sm">
-									<span class="font-bold text-orange-400">{dateConfig[status].label}</span>
-									{lead?.criadoEm ? formatarData(lead.criadoEm) : 'Data não disponível'}
+							<div class="flex w-2/3 gap-2 p-3">
+								<div class="flex w-1/2 flex-col gap-2">
+									<div class="flex flex-col text-sm">
+										<span class="text-sm font-bold text-orange-400">Tipo de Plano:</span>
+										{lead.planoModelo}
+									</div>
+									<div class="flex flex-col text-sm">
+										<span class="text-sm font-bold text-orange-400">Plano:</span>
+										{lead.planoNome} - {lead.planoMegas} MB
+									</div>
+									<div class="flex flex-col text-sm">
+										<span class="font-bold text-orange-400">Código Promocional:</span>
+										{lead.promoCode ? lead.promoCode : 'Sem código'}
+									</div>
 								</div>
-								<div class="flex flex-col text-sm">
-									<span class="font-bold text-orange-400">Código Promocional:</span>
-									{lead.promoCode ? lead.promoCode : 'Não cadastrado'}
-								</div>
-								<div class="flex flex-col text-sm">
-									<span class="text-sm font-bold text-orange-400">Plano:</span>
-									{lead.planoNome}
+								<div class="flex w-1/2 items-center justify-center">
+									<Dropdown {lead} {cargo} />
 								</div>
 							</div>
-
-							<div class="flex w-1/4 items-center justify-center pr-2">
-								<Dropdown {lead} {cargo} />
-							</div>
+						</div>
+						<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
+						<div class="flex w-full justify-between">
+							<h2 class="w-1/3 py-2 text-center text-sm">
+								<span class="font-bold text-orange-400"> Criado em: </span>
+								{#if lead?.criadoEm}
+									<Time timestamp={lead.criadoEm} format="DD/MM/YYYY" />
+								{:else}
+									<span>Data não disponível</span>
+								{/if}
+							</h2>
+							<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
+							<h2 class="w-2/3 py-2 text-center text-sm">
+								<span class="font-bold text-orange-400">
+									{status === 'Sendo Atendido'
+										? 'Atendido:'
+										: status === 'Finalizado'
+											? 'Finalizado:'
+											: status === 'Cancelado'
+												? 'Cancelado:'
+												: 'Aguardando:'}
+								</span>
+								{#if status === 'Sendo Atendido'}
+									{#if lead?.atendidoEm}
+										<Time relative timestamp={lead.atendidoEm} live />
+									{:else}
+										<span>Data não disponível</span>
+									{/if}
+								{:else if status === 'Finalizado'}
+									{#if lead?.pagoEm}
+										<Time relative timestamp={lead.pagoEm} live />
+									{:else}
+										<span>Data não disponível</span>
+									{/if}
+								{:else if status === 'Cancelado'}
+									{#if lead?.canceladoEm}
+										<Time relative timestamp={lead.canceladoEm} live />
+									{:else}
+										<span>Data não disponível</span>
+									{/if}
+								{:else if lead?.criadoEm}
+									<Time relative timestamp={lead.criadoEm} live />
+								{:else}
+									<span>Data não disponível</span>
+								{/if}
+							</h2>
 						</div>
 					</div>
 				{/each}

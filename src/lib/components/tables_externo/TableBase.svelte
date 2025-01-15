@@ -90,19 +90,11 @@
 				<h1 class="py-2 text-xl font-semibold">{lead.fullName}</h1>
 				<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
 
-				<div class="flex w-full justify-between">
+				<div class="flex w-full items-center justify-between">
 					<div class="flex w-1/2 flex-col gap-2 p-4">
-						<h2>
-							<span class="font-bold text-orange-400">Código Promocional:</span>
-							{lead.promoCode}
-						</h2>
-						<h2>
+						<h2 class="flex flex-col">
 							<span class="font-bold text-orange-400">Plano de interesse:</span>
 							{lead.planoNome} - {lead.planoMegas} MB
-						</h2>
-						<h2>
-							<span class="font-bold text-orange-400">Tipo de plano:</span>
-							{lead.planoModelo}
 						</h2>
 					</div>
 
@@ -110,48 +102,25 @@
 
 					<div class="flex w-1/2 flex-col items-start gap-2 p-4">
 						<h2>
-							<span class="font-bold text-orange-400">
-								{status === 'Sendo Atendido'
-									? 'Atendido:'
-									: status === 'Pago'
-										? 'Finalizado:'
-										: status === 'Cancelado'
-											? 'Cancelado:'
-											: 'Aguardando:'}
-							</span>
-							{#if status === 'Sendo Atendido'}
-								{#if lead?.atendidoEm}
-									<Time relative timestamp={lead.atendidoEm} live />
-								{:else}
-									<span>Data não disponível</span>
-								{/if}
-							{:else if status === 'Pago'}
-								{#if lead?.pagoEm}
-									<Time relative timestamp={lead.pagoEm} live />
-								{:else}
-									<span>Data não disponível</span>
-								{/if}
-							{:else if status === 'Cancelado'}
-								{#if lead?.canceladoEm}
-									<Time relative timestamp={lead.canceladoEm} live />
-								{:else}
-									<span>Data não disponível</span>
-								{/if}
-							{:else if lead?.criadoEm}
-								<Time relative timestamp={lead.criadoEm} live />
-							{:else}
-								<span>Data não disponível</span>
-							{/if}
+							<span class="font-bold text-orange-400">Tipo de plano:</span>
+							{lead.planoModelo}
 						</h2>
-
-						{#if status === 'Pago'}
-							<BotaoBaixarExterno {lead} />
-						{/if}
+						<h2>
+							<span class="font-bold text-orange-400">Código de Promoção:</span>
+							{lead.promoCode}
+						</h2>
 					</div>
 				</div>
 				<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
 				<div class="flex w-full justify-between">
-					<h2 class="w-1/2 py-2 text-center">ushaiudh</h2>
+					<h2 class="w-1/2 py-2 text-center">
+						<span class="font-bold text-orange-400"> Criado em: </span>
+						{#if lead?.criadoEm}
+							<Time timestamp={lead.criadoEm} format="DD/MM/YYYY" />
+						{:else}
+							<span>Data não disponível</span>
+						{/if}
+					</h2>
 					<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
 					<h2 class="w-1/2 py-2 text-center">
 						<span class="font-bold text-orange-400">
@@ -188,6 +157,10 @@
 						{/if}
 					</h2>
 				</div>
+
+				{#if status === 'Pago'}
+					<BotaoBaixarExterno {lead} />
+				{/if}
 			</div>
 		{/each}
 	{/if}
