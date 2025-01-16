@@ -24,13 +24,14 @@ export const formatarCPF = maskCPF;
 export const formatarCNPJ = maskCNPJ;
 
 export function maskCNPJ(value: string): string {
-	return value
-		.replace(/\D/g, '')
-		.replace(/(\d{2})(\d)/, '$1.$2')
-		.replace(/(\d{3})(\d)/, '$1.$2')
-		.replace(/(\d{3})(\d)/, '$1/$2')
-		.replace(/(\d{4})(\d{1,2})$/, '$1-$2')
-		.slice(0, 18);
+	const cleanValue = value.replace(/\D/g, '');
+	const cnpj = cleanValue.slice(0, 14);
+
+	return cnpj
+		.replace(/^(\d{2})(\d)/, '$1.$2')
+		.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+		.replace(/\.(\d{3})(\d)/, '.$1/$2')
+		.replace(/(\d{4})(\d)/, '$1-$2');
 }
 
 export function applyMask(value: string, maskType: string): string {
