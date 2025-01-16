@@ -7,6 +7,7 @@
 	import { Circle3 } from 'svelte-loading-spinners';
 	import SheetFinanceiro from '$lib/components/Sheets/SheetFinanceiro.svelte';
 	import type { LeadFinanceiro } from '$lib/types/financeiro';
+	import Time from '$lib/components/ui/time/index.svelte';
 
 	interface LeadsFinanceiro {
 		success: boolean;
@@ -164,6 +165,44 @@
 						<div class="flex w-1/3 items-center justify-center pr-2">
 							<SheetFinanceiro {lead} {cargo} />
 						</div>
+					</div>
+					<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
+					<div class="flex w-full justify-between">
+						<h2 class="w-1/3 py-2 text-center text-sm">
+							<span class="font-bold text-orange-400"> Criado em: </span>
+							{#if lead?.criadoEm}
+								<Time timestamp={lead.criadoEm} format="DD/MM/YYYY" />
+							{:else}
+								<span>Data não disponível</span>
+							{/if}
+						</h2>
+						<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
+						<h2 class="w-2/3 py-2 text-center text-sm">
+							<span class="font-bold text-orange-400">
+								{status === 'Aguardando Pagamento'
+									? 'Atendido:'
+									: status === 'Pago'
+										? 'Pagamento realizado:'
+										: 'Aguardando:'}
+							</span>
+							{#if status === 'Aguardando Pagamento'}
+								{#if lead?.atendidoEm}
+									<Time relative timestamp={lead.atendidoEm} live />
+								{:else}
+									<span>Data não disponível</span>
+								{/if}
+							{:else if status === 'Pago'}
+								{#if lead?.pagoEm}
+									<Time relative timestamp={lead.pagoEm} live />
+								{:else}
+									<span>Data não disponível</span>
+								{/if}
+							{:else if lead?.criadoEm}
+								<Time relative timestamp={lead.criadoEm} live />
+							{:else}
+								<span>Data não disponível</span>
+							{/if}
+						</h2>
 					</div>
 				</div>
 			{/each}

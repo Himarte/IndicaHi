@@ -20,5 +20,7 @@ export interface LeadFinanceiro {
 	planoMegas: number;
 	aguardandoPagamentoEm: string | null;
 	pagoEm: string | null;
+	atendidoEm: string | null;
+	criadoEm: string | null;
 	vendedor: Vendedor | null;
 }
