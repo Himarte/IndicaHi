@@ -12,7 +12,7 @@
 
 	onMount(async () => {
 		try {
-			const response = await fetch(`/api/indicacoes/externo/comprovante/${lead.id}`, {
+			const response = await fetch(`/api/indicacoes/dashboard/comprovante/${lead.id}`, {
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json'
@@ -45,7 +45,6 @@
 				return;
 			}
 
-			// Cria o blob e faz download
 			const byteCharacters = atob(base64);
 			const byteArray = new Uint8Array(byteCharacters.split('').map((char) => char.charCodeAt(0)));
 			const blob = new Blob([byteArray], { type: tipo });
@@ -53,7 +52,7 @@
 			const url = URL.createObjectURL(blob);
 			const a = document.createElement('a');
 			a.href = url;
-			a.download = `comprovante_${lead.fullName.replace(/\s+/g, '_')}.${tipo.split('/')[1]}`;
+			a.download = `comprovante_${lead.id.replace(/\s+/g, '_')}.${tipo.split('/')[1]}`;
 			document.body.appendChild(a);
 			a.click();
 			document.body.removeChild(a);
@@ -74,8 +73,9 @@
 		<Button
 			builders={[builder]}
 			variant="ghost"
-			class="absolute bottom-16 right-5 flex  items-center  text-orange-400"
+			class="absolute bottom-16 right-2 flex items-center text-orange-400"
 			on:click={handleDownload}
+			disabled={isLoading || !comprovante}
 		>
 			<Download size={28} />
 		</Button>

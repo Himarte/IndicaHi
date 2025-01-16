@@ -5,7 +5,7 @@
 	import type { LeadsSchema } from '$lib/server/database/schema';
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
-	import BotaoBaixarExterno from './BotaoBaixarExterno.svelte';
+	import BotaoBaixarDashboard from './BotaoBaixarDashboard.svelte';
 	export let leads: LeadsSchema[];
 	export let status: 'Pendente' | 'Sendo Atendido' | 'Pago' | 'Cancelado';
 
@@ -159,7 +159,7 @@
 				</div>
 
 				{#if status === 'Pago'}
-					<BotaoBaixarExterno {lead} />
+					<BotaoBaixarDashboard {lead} />
 				{/if}
 			</div>
 		{/each}
