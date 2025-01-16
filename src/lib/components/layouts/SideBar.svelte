@@ -40,7 +40,7 @@
 			icon: Table2,
 			label: 'Financeiro',
 			roles: ['Financeiro'],
-			activePatterns: ['/financeiro', '/financeiro/pagamentos']
+			activePatterns: ['/financeiro$']
 		},
 		{
 			href: '/financeiro/pagamentos',
@@ -93,7 +93,12 @@
 	$: filteredNavItems = navItems.filter((item) => item.roles.includes(userRole));
 
 	const isActiveRoute = (href: string, activePatterns: string[]) => {
-		return activePatterns.some((pattern) => $page.url.pathname.startsWith(pattern));
+		return activePatterns.some((pattern) => {
+			if (pattern.endsWith('$')) {
+				return $page.url.pathname === pattern.slice(0, -1);
+			}
+			return $page.url.pathname.startsWith(pattern);
+		});
 	};
 
 	// Store derivado para monitorar a rota ativa

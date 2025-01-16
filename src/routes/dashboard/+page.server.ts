@@ -13,6 +13,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			leads: {
 				pendentes: [],
 				emAtendimento: [],
+				aguardandoPagamento: [],
 				pagos: [],
 				cancelados: []
 			},
@@ -23,8 +24,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	try {
 		// Select all leads from the user without the comprovante
 		const allLeads = await db
-			.select(
-			)
+			.select()
 			.from(leadsTable)
 			.where(eq(leadsTable.promoCode, userPromoCode));
 
@@ -32,6 +32,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			leads: {
 				pendentes: allLeads.filter((lead) => lead.status === 'Pendente'),
 				emAtendimento: allLeads.filter((lead) => lead.status === 'Sendo Atendido'),
+				aguardandoPagamento: allLeads.filter((lead) => lead.status === 'Aguardando Pagamento'),
 				pagos: allLeads.filter((lead) => lead.status === 'Pago'),
 				cancelados: allLeads.filter((lead) => lead.status === 'Cancelado')
 			}
@@ -42,6 +43,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			leads: {
 				pendentes: [],
 				emAtendimento: [],
+				aguardandoPagamento: [],
 				pagos: [],
 				cancelados: []
 			},
@@ -62,9 +64,18 @@ export const actions: Actions = {
 		try {
 			const formData = await request.formData();
 			const id = formData.get('id') as string;
-			const status = formData.get('status') as 'Pendente' | 'Sendo Atendido' | 'Pago' | 'Cancelado';
+			const status = formData.get('status') as
+				| 'Pendente'
+				| 'Sendo Atendido'
+				| 'Aguardando Pagamento'
+				| 'Pago'
+				| 'Cancelado';
 
-			if (!['Pendente', 'Sendo Atendido', 'Finalizado', 'Pago', 'Cancelado'].includes(status)) {
+			if (
+				!['Pendente', 'Sendo Atendido', 'Aguardando Pagamento', 'Pago', 'Cancelado'].includes(
+					status
+				)
+			) {
 				return fail(400, {
 					success: false,
 					message: 'Status inválido'

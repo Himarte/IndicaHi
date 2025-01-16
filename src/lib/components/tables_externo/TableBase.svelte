@@ -1,16 +1,15 @@
 <script lang="ts">
-	import Time from '$lib/components/ui/time/index.svelte';
-	import { Badge } from '../ui/badge';
-	import Separator from '../ui/separator/separator.svelte';
-	import type { LeadsSchema } from '$lib/server/database/schema';
+	import { Badge } from '$lib/components/ui/badge';
+	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
-	import Button from '../ui/button/button.svelte';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import Time from '$lib/components/ui/time/index.svelte';
 	import BotaoBaixarDashboard from './BotaoBaixarDashboard.svelte';
-	export let leads: LeadsSchema[];
-	export let status: 'Pendente' | 'Sendo Atendido' | 'Pago' | 'Cancelado';
+	import type { LeadsSchema } from '$lib/server/database/schema';
 
-	console.log(leads);
-	// Configuração visual por status
+	export let leads: LeadsSchema[];
+	export let status: 'Pendente' | 'Sendo Atendido' | 'Aguardando Pagamento' | 'Pago' | 'Cancelado';
+
 	const statusConfig = {
 		Pendente: {
 			badgeColor: 'bg-red-600 hover:bg-red-600',
@@ -24,11 +23,17 @@
 			label: 'Atendimento',
 			emptyMessage: 'Nenhuma indicação em atendimento encontrada'
 		},
+		'Aguardando Pagamento': {
+			badgeColor: 'bg-yellow-600 hover:bg-yellow-600',
+			badgeWidth: 'w-44',
+			label: 'Aguardando Pagamento',
+			emptyMessage: 'Nenhuma indicação aguardando pagamento encontrada'
+		},
 		Pago: {
 			badgeColor: 'bg-green-600 hover:bg-green-600',
 			badgeWidth: 'w-20',
-			label: 'Finalizado',
-			emptyMessage: 'Nenhuma indicação finalizada encontrada'
+			label: 'Pago',
+			emptyMessage: 'Nenhuma indicação paga encontrada'
 		},
 		Cancelado: {
 			badgeColor: 'bg-gray-500 hover:bg-gray-500',
@@ -127,10 +132,12 @@
 							{status === 'Sendo Atendido'
 								? 'Atendido:'
 								: status === 'Pago'
-									? 'Finalizado:'
+									? 'Pagamento realizado:'
 									: status === 'Cancelado'
 										? 'Cancelado:'
-										: 'Aguardando:'}
+										: status === 'Aguardando Pagamento'
+											? 'Aguardando desde:'
+											: 'Aguardando:'}
 						</span>
 						{#if status === 'Sendo Atendido'}
 							{#if lead?.atendidoEm}
@@ -147,6 +154,12 @@
 						{:else if status === 'Cancelado'}
 							{#if lead?.canceladoEm}
 								<Time relative timestamp={lead.canceladoEm} live />
+							{:else}
+								<span>Data não disponível</span>
+							{/if}
+						{:else if status === 'Aguardando Pagamento'}
+							{#if lead?.aguardandoPagamentoEm}
+								<Time relative timestamp={lead.aguardandoPagamentoEm} live />
 							{:else}
 								<span>Data não disponível</span>
 							{/if}
