@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Badge } from '../ui/badge';
 	import Separator from '../ui/separator/separator.svelte';
-	import { formatarData, formatarCPF, formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
+	import { formatarCPF, formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
@@ -100,20 +100,14 @@
 					<div class="flex w-full justify-between">
 						<div class="flex w-1/3 flex-col gap-2 p-3">
 							<div class="flex flex-col text-sm">
-								<span class="select-none font-bold text-orange-400">
-									{status === 'Aguardando Pagamento' ? 'Aguardando desde:' : 'Data de pagamento:'}
-								</span>
-								{status === 'Aguardando Pagamento'
-									? lead?.aguardandoPagamentoEm
-										? formatarData(lead.aguardandoPagamentoEm)
-										: 'Data não disponível'
-									: lead?.pagoEm
-										? formatarData(lead.pagoEm)
-										: 'Data não disponível'}
+								<span class="font-bold text-orange-400">Vendedor:</span>
+								{lead.vendedor?.nome}
 							</div>
 							<div>
-								<h2 class="select-none text-sm font-bold text-orange-400">Telefone do lead:</h2>
-								<h2 class="text-sm">{formatarTelefone(lead.telefone)}</h2>
+								<h2 class="select-none text-sm font-bold text-orange-400">Contato do vendedor:</h2>
+								<h2 class="text-sm">
+									{formatarTelefone(lead.vendedor?.telefone ?? 'Sem telefone')}
+								</h2>
 							</div>
 
 							<div>
@@ -134,12 +128,8 @@
 
 						<Separator orientation="vertical" class="bg-zinc-600 text-center" />
 
-						<div class="flex w-1/3 flex-col gap-2 p-3">
+						<div class="flex w-1/3 flex-col items-start justify-center gap-2 p-3">
 							{#if lead.vendedor}
-								<div class="flex flex-col text-sm">
-									<span class="font-bold text-orange-400">Vendedor:</span>
-									{lead.vendedor.nome}
-								</div>
 								<div class="flex flex-col text-sm">
 									<span class="font-bold text-orange-400">Código Promocional:</span>
 									{lead.promoCode}
