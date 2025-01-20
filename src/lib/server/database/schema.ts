@@ -103,7 +103,15 @@ export const leadsTable = pgTable('leads', {
 export const leadsComprovanteTable = pgTable('leads_comprovante', {
 	id: varchar('id').primaryKey().notNull(),
 	leadsId: varchar('leads_id').references(() => leadsTable.id),
-	comprovante: text('comprovante').notNull(),
+	comprovante: text('comprovante').notNull()
+});
+
+export const motivoCancelado = pgTable('motivo_cancelado', {
+	id: varchar('id').primaryKey().notNull(),
+	motivo: text('motivo').notNull(),
+	leadId: varchar('lead_id')
+		.notNull()
+		.references(() => leadsTable.id, { onDelete: 'cascade' })
 });
 
 // Define types for insert schemas
