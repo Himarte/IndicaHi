@@ -93,7 +93,7 @@ export const actions: Actions = {
 				.update(leadsTable)
 				.set({
 					status,
-					atendidoPor: locals.user.email,
+					atendidoPor: locals.user.name,
 					...(status === 'Aguardando Pagamento'
 						? { aguardandoPagamentoEm: new Date().toISOString() }
 						: status === 'Sendo Atendido'

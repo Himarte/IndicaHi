@@ -130,6 +130,12 @@
 
 						<div class="flex w-1/3 flex-col items-start justify-center gap-2 p-3">
 							{#if lead.vendedor}
+								{#if status === 'Pago'}
+									<div class="flex flex-col text-sm">
+										<span class="font-bold text-orange-400">Pago Por:</span>
+										{lead.pagoPor}
+									</div>
+								{/if}
 								<div class="flex flex-col text-sm">
 									<span class="font-bold text-orange-400">Código Promocional:</span>
 									{lead.promoCode}

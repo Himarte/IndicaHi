@@ -83,9 +83,9 @@
 				class="relative flex w-[40%] flex-col items-center justify-between rounded-lg bg-zinc-800 text-white"
 			>
 				<Badge
-					class="absolute -top-3 right-2 {statusConfig[lead.status].badgeWidth} {statusConfig[
+					class="absolute -top-3 right-2 flex items-center justify-center  {statusConfig[
 						lead.status
-					].badgeColor} text-white"
+					].badgeWidth} {statusConfig[lead.status].badgeColor} text-white"
 				>
 					{statusConfig[lead.status].label}
 				</Badge>

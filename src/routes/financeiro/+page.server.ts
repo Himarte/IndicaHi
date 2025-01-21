@@ -110,7 +110,7 @@ export const actions: Actions = {
 					.update(leadsTable)
 					.set({
 						status: status as 'Aguardando Pagamento' | 'Pago',
-						pagoPor: locals.user?.email,
+						pagoPor: locals.user?.name,
 						pagoEm: status === 'Pago' ? new Date().toISOString() : null,
 						aguardandoPagamentoEm:
 							status === 'Aguardando Pagamento' ? new Date().toISOString() : null
