@@ -13,7 +13,7 @@ const statusMap = {
 	atendimento: 'Sendo Atendido',
 	finalizados: 'Finalizado',
 	cancelados: 'Cancelado',
-	aguardandoPagamento: 'Aguardando Pagamento'
+	pagos: 'Pago'
 };
 
 export const GET: RequestHandler = async ({ request, locals, params }) => {

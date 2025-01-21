@@ -27,10 +27,11 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		}
 	};
 
-	const [pendentes, emAtendimento, finalizados, cancelados] = await Promise.all([
+	const [pendentes, emAtendimento, finalizados, pagos, cancelados] = await Promise.all([
 		fetchLeadsByStatus('pendentes'),
 		fetchLeadsByStatus('atendimento'),
 		fetchLeadsByStatus('finalizados'),
+		fetchLeadsByStatus('pagos'),
 		fetchLeadsByStatus('cancelados')
 	]);
 
@@ -38,7 +39,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		leads: {
 			pendentes,
 			emAtendimento,
-			finalizados,
+			finalizados: [...finalizados, ...pagos],
 			cancelados
 		}
 	};

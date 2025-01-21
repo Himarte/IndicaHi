@@ -10,7 +10,7 @@
 	import Time from '$lib/components/ui/time/index.svelte';
 	export let leads: LeadsSchema[];
 	export let cargo: string;
-	export let status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Cancelado';
+	export let status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Pago' | 'Cancelado';
 
 	const statusConfig = {
 		Pendente: {
@@ -27,9 +27,15 @@
 		},
 		Finalizado: {
 			badgeColor: 'bg-green-600 hover:bg-green-600',
-			badgeWidth: 'w-20',
+			badgeWidth: 'w-24',
 			label: 'Finalizado',
-			emptyMessage: 'Nenhum lead finalizado encontrado'
+			emptyMessage: 'Nenhum lead finalizado ou pago encontrado'
+		},
+		Pago: {
+			badgeColor: 'bg-green-600 hover:bg-green-600',
+			badgeWidth: 'w-20',
+			label: 'Pago',
+			emptyMessage: 'Nenhum lead pago encontrado'
 		},
 		Cancelado: {
 			badgeColor: 'bg-gray-500 hover:bg-gray-500',
@@ -41,7 +47,12 @@
 	// Configuração da paginação
 	let currentPage = 1;
 	let itemsPerPage = 4;
-	$: filteredLeads = leads?.filter((lead) => lead.status === status) || [];
+	$: filteredLeads =
+		leads?.filter((lead) =>
+			status === 'Finalizado'
+				? lead.status === 'Finalizado' || lead.status === 'Pago'
+				: lead.status === status
+		) || [];
 	// Calcula o número total de páginas
 	$: totalPages = Math.ceil(filteredLeads.length / itemsPerPage);
 	// Obtém os leads da página atual
@@ -74,7 +85,7 @@
 		/>
 	</div>
 {:then}
-	<div class="flex h-full items-start justify-center">
+	<div class="flex h-[80vh] items-start justify-center">
 		<div class="flex w-full flex-wrap justify-center gap-12 pt-4">
 			{#if paginatedLeads.length === 0}
 				<div class="flex w-full justify-center p-8 text-lg text-gray-500">
@@ -86,10 +97,10 @@
 						class="relative flex w-[40%] flex-col items-center justify-center rounded-lg bg-zinc-800 text-white"
 					>
 						<Badge
-							class="absolute -top-3 right-2 {statusConfig[status].badgeWidth} {statusConfig[status]
-								.badgeColor} text-white"
+							class="absolute -top-3 right-2 flex items-center justify-center {statusConfig[status]
+								.badgeWidth} {statusConfig[status].badgeColor} text-white"
 						>
-							{statusConfig[status].label}
+							{lead.status === 'Pago' ? 'Pago' : statusConfig[status].label}
 						</Badge>
 
 						<h1 class="py-2 text-xl font-semibold">{lead.fullName}</h1>
@@ -175,7 +186,9 @@
 										<span>Data não disponível</span>
 									{/if}
 								{:else if status === 'Finalizado'}
-									{#if lead?.pagoEm}
+									{#if lead?.finalizadoEm}
+										<Time relative timestamp={lead.finalizadoEm} live />
+									{:else if lead?.pagoEm}
 										<Time relative timestamp={lead.pagoEm} live />
 									{:else}
 										<span>Data não disponível</span>
