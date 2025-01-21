@@ -2,7 +2,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { SITE_CHAVE_API } from '$env/static/private';
 import { fail } from '@sveltejs/kit';
 import { db } from '$lib/server/database/db.server';
-import { leadsTable } from '$lib/server/database/schema';
+import { leadsTable, motivoCancelado } from '$lib/server/database/schema';
 import { eq } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({ fetch }) => {
@@ -55,32 +55,21 @@ export const actions: Actions = {
 		}
 
 		try {
+			// Obtém os dados do formulário
 			const formData = await request.formData();
 			const id = formData.get('id') as string;
-			const status = formData.get('status') as
-				| 'Pendente'
-				| 'Sendo Atendido'
-				| 'Finalizado'
-				| 'Pago'
-				| 'Cancelado'
-				| 'Aguardando Pagamento';
+			const status = formData.get('status') as string;
+			const motivo = formData.get('motivo') as string;
 
-			if (
-				![
-					'Pendente',
-					'Sendo Atendido',
-					'Finalizado',
-					'Pago',
-					'Cancelado',
-					'Aguardando Pagamento'
-				].includes(status)
-			) {
+			// Valida os campos recebidos
+			if (!id || !status) {
 				return fail(400, {
 					success: false,
-					message: 'Status inválido'
+					message: 'ID ou status ausente.'
 				});
 			}
 
+			// Busca o lead no banco de dados
 			const lead = await db.select().from(leadsTable).where(eq(leadsTable.id, id));
 
 			if (!lead || lead.length === 0) {
@@ -90,32 +79,51 @@ export const actions: Actions = {
 				});
 			}
 
+			// Atualiza o status do lead
+			const validStatuses = [
+				'Cancelado',
+				'Pendente',
+				'Sendo Atendido',
+				'Finalizado',
+				'Pago',
+				'Aguardando Pagamento'
+			] as const;
+
+			if (!validStatuses.includes(status as (typeof validStatuses)[number])) {
+				return fail(400, {
+					success: false,
+					message: 'Status inválido.'
+				});
+			}
+
+			// Atualiza o status do lead
 			await db
 				.update(leadsTable)
 				.set({
-					status,
+					status: status as (typeof validStatuses)[number], // Garantir que é um valor válido
 					atendidoPor: locals.user.name,
-					...(status === 'Aguardando Pagamento'
-						? { aguardandoPagamentoEm: new Date().toISOString() }
-						: status === 'Sendo Atendido'
-							? { atendidoEm: new Date().toISOString() }
-							: status === 'Finalizado'
-								? { finalizadoEm: new Date().toISOString() }
-								: status === 'Cancelado'
-									? { canceladoEm: new Date().toISOString() }
-									: {})
+					canceladoEm: status === 'Cancelado' ? new Date().toISOString() : null
 				})
 				.where(eq(leadsTable.id, id));
 
+			// Se o status for "Cancelado", salva o motivo na tabela `motivo_cancelado`
+			if (status === 'Cancelado' && motivo) {
+				await db.insert(motivoCancelado).values({
+					id: crypto.randomUUID(), // Gera um UUID para o registro
+					motivo,
+					leadId: id // Relaciona o motivo com o lead
+				});
+			}
+
 			return {
 				success: true,
-				message: 'Status atualizado com sucesso'
+				message: `Status atualizado para ${status} com sucesso.`
 			};
 		} catch (error) {
 			console.error('Erro ao atualizar status:', error);
 			return fail(500, {
 				success: false,
-				message: 'Erro ao atualizar status'
+				message: 'Erro ao atualizar status.'
 			});
 		}
 	}

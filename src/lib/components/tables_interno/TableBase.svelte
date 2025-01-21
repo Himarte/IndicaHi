@@ -8,6 +8,8 @@
 	import Dropdown from '$lib/components/StatusDropdown/Dropdown-dashboard.svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
 	import Time from '$lib/components/ui/time/index.svelte';
+	import { writable } from 'svelte/store';
+
 	export let leads: LeadsSchema[];
 	export let cargo: string;
 	export let status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Pago' | 'Cancelado';
@@ -47,13 +49,17 @@
 	// Configuração da paginação
 	let currentPage = 1;
 	let itemsPerPage = 4;
-	$: filteredLeads =
-		leads?.filter((lead) =>
-			status === 'Finalizado'
-				? lead.status === 'Finalizado' || lead.status === 'Pago'
-				: lead.status === status
-		) || [];
+	$: {
+		$refreshTrigger;
+		filteredLeads =
+			leads?.filter((lead) =>
+				status === 'Finalizado'
+					? lead.status === 'Finalizado' || lead.status === 'Pago'
+					: lead.status === status
+			) || [];
+	}
 	// Calcula o número total de páginas
+	let filteredLeads: LeadsSchema[] = [];
 	$: totalPages = Math.ceil(filteredLeads.length / itemsPerPage);
 	// Obtém os leads da página atual
 	$: paginatedLeads = filteredLeads.slice(
@@ -72,6 +78,13 @@
 	}
 	// Gera array com números das páginas
 	$: pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+	const refreshTrigger = writable(0);
+
+	// Função para forçar atualização
+	const forceRefresh = () => {
+		refreshTrigger.update((n) => n + 1);
+	};
 </script>
 
 {#await leads}
