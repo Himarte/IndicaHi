@@ -9,6 +9,7 @@
 	import { Circle3 } from 'svelte-loading-spinners';
 	import Time from '$lib/components/ui/time/index.svelte';
 	import { writable } from 'svelte/store';
+	import PopoverCancelado from '$lib/components/PopoverCancelado.svelte';
 
 	export let leads: LeadsSchema[];
 	export let cargo: string;
@@ -166,8 +167,15 @@
 										{lead.promoCode ? lead.promoCode : 'Sem código'}
 									</div>
 								</div>
-								<div class="flex w-1/2 items-center justify-center">
-									<Dropdown {lead} {cargo} />
+								<div class="flex w-1/2 flex-col items-center justify-center">
+									<div class="flex w-full justify-center">
+										<Dropdown {lead} {cargo} />
+									</div>
+									{#if status === 'Cancelado'}
+										<div class=" flex w-full justify-start">
+											<PopoverCancelado leadId={lead.id} />
+										</div>
+									{/if}
 								</div>
 							</div>
 						</div>
