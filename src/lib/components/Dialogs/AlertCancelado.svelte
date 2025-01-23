@@ -48,11 +48,15 @@
 </script>
 
 <AlertDialog.Root bind:open>
-	<AlertDialog.Content>
+	<AlertDialog.Content class="border-border">
 		<AlertDialog.Header>
-			<AlertDialog.Title>Informe o motivo do cancelamento</AlertDialog.Title>
+			<AlertDialog.Title class="text-lg font-bold text-orange-400"
+				>Informe o motivo do cancelamento</AlertDialog.Title
+			>
 			<AlertDialog.Description>
 				<Textarea
+					class="resize-none border-border focus-visible:ring-0"
+					rows={4}
 					id="motivo"
 					name="motivo"
 					placeholder="Digite o motivo do cancelamento"

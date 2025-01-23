@@ -172,7 +172,7 @@
 										<Dropdown {lead} {cargo} />
 									</div>
 									{#if status === 'Cancelado'}
-										<div class=" flex w-full justify-start">
+										<div class=" flex w-full justify-end">
 											<PopoverCancelado leadId={lead.id} />
 										</div>
 									{/if}

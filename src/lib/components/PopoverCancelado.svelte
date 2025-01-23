@@ -33,7 +33,7 @@
 	<Popover.Trigger asChild let:builder>
 		<Button builders={[builder]} class="text-xs" variant="link">Ver Motivo</Button>
 	</Popover.Trigger>
-	<Popover.Content class="w-80">
+	<Popover.Content class="w-80 pt-2">
 		<div class="flex flex-col items-center justify-center gap-2">
 			<p class="text-sm font-bold text-orange-400">Motivo do Cancelamento</p>
 			{#if loading}
@@ -41,7 +41,11 @@
 			{:else if error}
 				<p class="text-sm text-red-500">{error}</p>
 			{:else if motivo}
-				<Textarea class="min-h-[100px] border-orange-400" value={motivo} readonly />
+				<Textarea
+					class="min-h-[100px]  resize-none border-orange-400 focus-visible:ring-0"
+					value={motivo}
+					readonly
+				/>
 			{:else}
 				<p class="text-sm text-gray-500">Nenhum motivo registrado</p>
 			{/if}
