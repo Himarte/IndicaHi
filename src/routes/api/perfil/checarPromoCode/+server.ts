@@ -20,7 +20,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		const promoCodeUsed = await promoCodeIsUsed(promoCode);
-		console.log('Código promocional usado?', promoCodeUsed);
 
 		if (promoCodeUsed) {
 			return createResponse('Código promocional inválido', 400);

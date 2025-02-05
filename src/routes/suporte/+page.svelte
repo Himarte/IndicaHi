@@ -5,7 +5,7 @@
 </script>
 
 <div class="flex h-full w-full flex-col items-center">
-	<img class="w-[30%]" src={suporte} alt="Suporte" />
+	<img class="w-[30%]" src={suporte} alt="Suporte" loading="eager" />
 	<div class="flex flex-col items-center gap-4">
 		<h1 class="text-7xl font-bold">Precisa de ajuda?</h1>
 		<p class="text-xl text-muted-foreground">

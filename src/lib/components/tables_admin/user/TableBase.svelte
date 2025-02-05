@@ -38,7 +38,7 @@
 
 	// Configuração da paginação
 	let currentPage = 1;
-	let itemsPerPage = 6;
+	let itemsPerPage = 4;
 
 	// Calcula o número total de páginas
 	$: totalPages = Math.ceil(usuarios.length / itemsPerPage);
@@ -75,7 +75,7 @@
 			>
 				<Badge
 					class="{tipoConfig[tipo].badgeWidth} {tipoConfig[tipo]
-						.badgeColor} absolute -top-3 right-2 text-white"
+						.badgeColor} absolute -top-3 right-2 flex items-center justify-center  text-white"
 				>
 					{tipoConfig[tipo].label}
 				</Badge>
@@ -84,11 +84,11 @@
 				<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
 				<div class="flex w-full items-center">
 					<div class="flex w-1/2 flex-col p-2">
-						<h2 class=" flex flex-col text-orange-400">
-							Email: <span class="text-white">{usuario.email}</span>
+						<h2 class=" flex flex-col font-semibold text-orange-400">
+							Email: <span class="font-normal text-white">{usuario.email}</span>
 						</h2>
-						<h1 class="flex flex-col text-orange-400">
-							Celular: <span class="text-white"
+						<h1 class="flex flex-col font-semibold text-orange-400">
+							Celular: <span class="font-normal text-white"
 								>{usuario.telefone ? formatarTelefone(usuario.telefone) : 'Não informado'}</span
 							>
 						</h1>
@@ -97,13 +97,13 @@
 					<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
 
 					<div class="flex w-1/2 flex-col p-2">
-						<h2 class=" flex flex-col text-orange-400">
-							Criado em: <span class=" text-white">
+						<h2 class=" flex flex-col font-semibold text-orange-400">
+							Criado em: <span class="font-normal text-white">
 								{usuario?.criadoEm ? formatarData(usuario.criadoEm) : 'Data não disponível'}
 							</span>
 						</h2>
-						<h2 class="flex flex-col text-orange-400">
-							Cargo: <span class=" text-white">{usuario.job}</span>
+						<h2 class="flex flex-col font-semibold text-orange-400">
+							Cargo: <span class="font-normal text-white">{usuario.job}</span>
 						</h2>
 					</div>
 				</div>

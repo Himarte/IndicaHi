@@ -97,9 +97,21 @@ export const leadsTable = pgTable('leads', {
 		precision: 6,
 		mode: 'string'
 	}),
-	comprovantePagamento: text('comprovante_pagamento'),
-
 	userIdPromoCode: text('user_id_promocode').references(() => userTable.id)
+});
+
+export const leadsComprovanteTable = pgTable('leads_comprovante', {
+	id: varchar('id').primaryKey().notNull(),
+	leadsId: varchar('leads_id').references(() => leadsTable.id),
+	comprovante: text('comprovante').notNull()
+});
+
+export const motivoCancelado = pgTable('motivo_cancelado', {
+	id: varchar('id').primaryKey().notNull(),
+	motivo: text('motivo').notNull(),
+	leadId: varchar('lead_id')
+		.notNull()
+		.references(() => leadsTable.id, { onDelete: 'cascade' })
 });
 
 // Define types for insert schemas

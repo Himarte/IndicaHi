@@ -2,10 +2,17 @@ import type { Actions, PageServerLoad } from './$types';
 import { SITE_CHAVE_API } from '$env/static/private';
 import { fail } from '@sveltejs/kit';
 import { db } from '$lib/server/database/db.server';
-import { leadsTable } from '$lib/server/database/schema';
+import { leadsComprovanteTable, leadsTable } from '$lib/server/database/schema';
 import { eq } from 'drizzle-orm';
 
-export const load: PageServerLoad = async ({ fetch }) => {
+export const load: PageServerLoad = async ({ fetch, locals }) => {
+	if (!locals.user) {
+		return fail(401, {
+			success: false,
+			message: 'Não autorizado'
+		});
+	}
+
 	const fetchLeadsByStatus = async (status: string) => {
 		try {
 			const response = await fetch(`/api/indicacoes/financeiro/${status}`, {
@@ -52,41 +59,28 @@ export const actions: Actions = {
 		try {
 			const formData = await request.formData();
 			const id = formData.get('id') as string;
-
-			const status = formData.get('status') as
-				| 'Pendente'
-				| 'Sendo Atendido'
-				| 'Finalizado'
-				| 'Pago'
-				| 'Cancelado'
-				| 'Aguardando Pagamento';
+			const status = formData.get('status') as string;
 			const comprovante = formData.get('comprovante') as File;
-			if (
-				![
-					'Pendente',
-					'Sendo Atendido',
-					'Finalizado',
-					'Pago',
-					'Cancelado',
-					'Aguardando Pagamento'
-				].includes(status)
-			) {
+
+			// Validação do status
+			if (!['Aguardando Pagamento', 'Pago', 'Cancelado'].includes(status)) {
 				return fail(400, {
 					success: false,
-					message: 'Status inválido'
+					message: 'Status inválido para operação financeira'
 				});
 			}
 
-			const ValidarComprovante = (comprovante: File) => {
-				if (!comprovante) return 'Comprovante é obrigatório';
+			// Validação do comprovante
+			const validarComprovante = (arquivo: File) => {
+				if (!arquivo) return 'Comprovante é obrigatório';
 				const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
-				if (!tiposPermitidos.includes(comprovante.type)) return 'Formato de imagem inválido';
-
-				const maxSize = 5 * 1024 * 1024;
-				if (comprovante.size > maxSize) return 'Comprovante deve ter no máximo 5MB';
+				if (!tiposPermitidos.includes(arquivo.type)) return 'Formato de arquivo inválido';
+				const maxSize = 5 * 1024 * 1024; // 5MB
+				if (arquivo.size > maxSize) return 'Arquivo deve ter no máximo 5MB';
 				return null;
 			};
-			const erroComprovante = ValidarComprovante(comprovante);
+
+			const erroComprovante = validarComprovante(comprovante);
 			if (erroComprovante) {
 				return fail(400, {
 					success: false,
@@ -94,31 +88,45 @@ export const actions: Actions = {
 				});
 			}
 
+			// Processamento do comprovante
 			const processarComprovante = async (arquivo: File) => {
 				const buffer = await arquivo.arrayBuffer();
 				const base64 = Buffer.from(buffer).toString('base64');
 				return `data:${arquivo.type};base64,${base64}`;
 			};
 
-			const comprovanteBase64 = await processarComprovante(comprovante);
-
+			// Busca o lead
 			const lead = await db.select().from(leadsTable).where(eq(leadsTable.id, id));
 			if (!lead || lead.length === 0) {
 				return fail(404, {
 					success: false,
-					message: 'Lead não encontrado ou não autorizado'
+					message: 'Lead não encontrado'
 				});
 			}
 
-			await db
-				.update(leadsTable)
-				.set({
-					status,
-					pagoPor: locals.user.email,
-					pagoEm: new Date().toISOString(),
-					comprovantePagamento: comprovanteBase64
-				})
-				.where(eq(leadsTable.id, id));
+			// Atualiza o status do lead
+			await db.transaction(async (tx) => {
+				await tx
+					.update(leadsTable)
+					.set({
+						status: status as 'Aguardando Pagamento' | 'Pago',
+						pagoPor: locals.user?.name,
+						pagoEm: status === 'Pago' ? new Date().toISOString() : null,
+						aguardandoPagamentoEm:
+							status === 'Aguardando Pagamento' ? new Date().toISOString() : null
+					})
+					.where(eq(leadsTable.id, id));
+
+				// Salva o comprovante em tabela separada
+				if (status === 'Pago') {
+					const comprovanteBase64 = await processarComprovante(comprovante);
+					await tx.insert(leadsComprovanteTable).values({
+						id: crypto.randomUUID(),
+						leadsId: id,
+						comprovante: comprovanteBase64
+					});
+				}
+			});
 
 			return {
 				success: true,

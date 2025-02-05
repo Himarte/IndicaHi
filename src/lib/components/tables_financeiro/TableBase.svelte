@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { Badge } from '../ui/badge';
 	import Separator from '../ui/separator/separator.svelte';
-	import { formatarData, formatarCPF, formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
+	import { formatarCPF, formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
 	import SheetFinanceiro from '$lib/components/Sheets/SheetFinanceiro.svelte';
 	import type { LeadFinanceiro } from '$lib/types/financeiro';
+	import Time from '$lib/components/ui/time/index.svelte';
 
 	interface LeadsFinanceiro {
 		success: boolean;
@@ -17,7 +18,6 @@
 	export let cargo: string;
 	export let status: 'Aguardando Pagamento' | 'Pago';
 
-	// console.log(leads);
 	// Configuração visual por status
 	const statusConfig = {
 		'Aguardando Pagamento': {
@@ -100,20 +100,14 @@
 					<div class="flex w-full justify-between">
 						<div class="flex w-1/3 flex-col gap-2 p-3">
 							<div class="flex flex-col text-sm">
-								<span class="select-none font-bold text-orange-400">
-									{status === 'Aguardando Pagamento' ? 'Aguardando desde:' : 'Data de pagamento:'}
-								</span>
-								{status === 'Aguardando Pagamento'
-									? lead?.aguardandoPagamentoEm
-										? formatarData(lead.aguardandoPagamentoEm)
-										: 'Data não disponível'
-									: lead?.pagoEm
-										? formatarData(lead.pagoEm)
-										: 'Data não disponível'}
+								<span class="font-bold text-orange-400">Vendedor:</span>
+								{lead.vendedor?.nome}
 							</div>
 							<div>
-								<h2 class="select-none text-sm font-bold text-orange-400">Telefone do lead:</h2>
-								<h2 class="text-sm">{formatarTelefone(lead.telefone)}</h2>
+								<h2 class="select-none text-sm font-bold text-orange-400">Contato do vendedor:</h2>
+								<h2 class="text-sm">
+									{formatarTelefone(lead.vendedor?.telefone ?? 'Sem telefone')}
+								</h2>
 							</div>
 
 							<div>
@@ -134,12 +128,14 @@
 
 						<Separator orientation="vertical" class="bg-zinc-600 text-center" />
 
-						<div class="flex w-1/3 flex-col gap-2 p-3">
+						<div class="flex w-1/3 flex-col items-start justify-center gap-2 p-3">
 							{#if lead.vendedor}
-								<div class="flex flex-col text-sm">
-									<span class="font-bold text-orange-400">Vendedor:</span>
-									{lead.vendedor.nome}
-								</div>
+								{#if status === 'Pago'}
+									<div class="flex flex-col text-sm">
+										<span class="font-bold text-orange-400">Pago Por:</span>
+										{lead.pagoPor}
+									</div>
+								{/if}
 								<div class="flex flex-col text-sm">
 									<span class="font-bold text-orange-400">Código Promocional:</span>
 									{lead.promoCode}
@@ -165,6 +161,44 @@
 						<div class="flex w-1/3 items-center justify-center pr-2">
 							<SheetFinanceiro {lead} {cargo} />
 						</div>
+					</div>
+					<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
+					<div class="flex w-full justify-between">
+						<h2 class="w-1/3 py-2 text-center text-sm">
+							<span class="font-bold text-orange-400"> Criado em: </span>
+							{#if lead?.criadoEm}
+								<Time timestamp={lead.criadoEm} format="DD/MM/YYYY" />
+							{:else}
+								<span>Data não disponível</span>
+							{/if}
+						</h2>
+						<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
+						<h2 class="w-2/3 py-2 text-center text-sm">
+							<span class="font-bold text-orange-400">
+								{status === 'Aguardando Pagamento'
+									? 'Atendido:'
+									: status === 'Pago'
+										? 'Pagamento realizado:'
+										: 'Aguardando:'}
+							</span>
+							{#if status === 'Aguardando Pagamento'}
+								{#if lead?.atendidoEm}
+									<Time relative timestamp={lead.atendidoEm} live />
+								{:else}
+									<span>Data não disponível</span>
+								{/if}
+							{:else if status === 'Pago'}
+								{#if lead?.pagoEm}
+									<Time relative timestamp={lead.pagoEm} live />
+								{:else}
+									<span>Data não disponível</span>
+								{/if}
+							{:else if lead?.criadoEm}
+								<Time relative timestamp={lead.criadoEm} live />
+							{:else}
+								<span>Data não disponível</span>
+							{/if}
+						</h2>
 					</div>
 				</div>
 			{/each}

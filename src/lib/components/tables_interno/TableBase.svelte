@@ -2,15 +2,19 @@
 	import { Badge } from '../ui/badge';
 	import Separator from '../ui/separator/separator.svelte';
 	import type { LeadsSchema } from '$lib/server/database/schema';
-	import { formatarData, formatarCPF, formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
+	import { formatarCPF, formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 	import Dropdown from '$lib/components/StatusDropdown/Dropdown-dashboard.svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
+	import Time from '$lib/components/ui/time/index.svelte';
+	import { writable } from 'svelte/store';
+	import PopoverCancelado from '$lib/components/PopoverCancelado.svelte';
+
 	export let leads: LeadsSchema[];
 	export let cargo: string;
-	export let status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Cancelado';
-	// Configuração visual por status
+	export let status: 'Pendente' | 'Sendo Atendido' | 'Finalizado' | 'Pago' | 'Cancelado';
+
 	const statusConfig = {
 		Pendente: {
 			badgeColor: 'bg-red-600 hover:bg-red-600',
@@ -26,9 +30,15 @@
 		},
 		Finalizado: {
 			badgeColor: 'bg-green-600 hover:bg-green-600',
-			badgeWidth: 'w-20',
+			badgeWidth: 'w-24',
 			label: 'Finalizado',
-			emptyMessage: 'Nenhum lead finalizado encontrado'
+			emptyMessage: 'Nenhum lead finalizado ou pago encontrado'
+		},
+		Pago: {
+			badgeColor: 'bg-green-600 hover:bg-green-600',
+			badgeWidth: 'w-20',
+			label: 'Pago',
+			emptyMessage: 'Nenhum lead pago encontrado'
 		},
 		Cancelado: {
 			badgeColor: 'bg-gray-500 hover:bg-gray-500',
@@ -40,8 +50,17 @@
 	// Configuração da paginação
 	let currentPage = 1;
 	let itemsPerPage = 4;
-	$: filteredLeads = leads?.filter((lead) => lead.status === status) || [];
+	$: {
+		$refreshTrigger;
+		filteredLeads =
+			leads?.filter((lead) =>
+				status === 'Finalizado'
+					? lead.status === 'Finalizado' || lead.status === 'Pago'
+					: lead.status === status
+			) || [];
+	}
 	// Calcula o número total de páginas
+	let filteredLeads: LeadsSchema[] = [];
 	$: totalPages = Math.ceil(filteredLeads.length / itemsPerPage);
 	// Obtém os leads da página atual
 	$: paginatedLeads = filteredLeads.slice(
@@ -60,20 +79,12 @@
 	}
 	// Gera array com números das páginas
 	$: pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-	// Configuração para os textos de data
-	const dateConfig = {
-		Pendente: {
-			label: 'Criado em:'
-		},
-		'Sendo Atendido': {
-			label: 'Atendido em:'
-		},
-		Finalizado: {
-			label: 'Finalizado em:'
-		},
-		Cancelado: {
-			label: 'Cancelado em:'
-		}
+
+	const refreshTrigger = writable(0);
+
+	// Função para forçar atualização
+	const forceRefresh = () => {
+		refreshTrigger.update((n) => n + 1);
 	};
 </script>
 
@@ -88,72 +99,11 @@
 		/>
 	</div>
 {:then}
-	<div class="flex h-full items-start justify-center">
+	<div class="flex h-[80vh] items-start justify-center">
 		<div class="flex w-full flex-wrap justify-center gap-12 pt-4">
 			{#if paginatedLeads.length === 0}
 				<div class="flex w-full justify-center p-8 text-lg text-gray-500">
 					{statusConfig[status].emptyMessage}
-				</div>
-			{:else if paginatedLeads.length === 1}
-				<div
-					class="relative flex w-1/2 flex-col items-center justify-center rounded-lg bg-zinc-800 text-white"
-				>
-					<Badge
-						class="absolute -top-3 right-2 {statusConfig[status].badgeWidth} {statusConfig[status]
-							.badgeColor} text-white"
-					>
-						{statusConfig[status].label}
-					</Badge>
-
-					<h1 class="py-2 text-xl font-semibold">{paginatedLeads[0].fullName}</h1>
-					<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
-
-					<div class="flex w-full justify-between">
-						<div class="flex w-1/3 flex-col gap-2 p-3">
-							<div>
-								<h2 class="text-sm font-bold text-orange-400">Telefone:</h2>
-								<h2 class="text-sm">
-									{paginatedLeads[0].telefone
-										? formatarTelefone(paginatedLeads[0].telefone)
-										: 'Não cadastrado'}
-								</h2>
-							</div>
-
-							<div>
-								<h2 class="text-sm font-bold text-orange-400">CPF:</h2>
-								<h2 class="text-sm">
-									{paginatedLeads[0].cpf ? formatarCPF(paginatedLeads[0].cpf) : 'Não cadastrado'}
-								</h2>
-							</div>
-							<div>
-								<h2 class="text-sm font-bold text-orange-400">CNPJ:</h2>
-								<h2 class="text-sm">
-									{paginatedLeads[0].cnpj ? formatarCNPJ(paginatedLeads[0].cnpj) : 'Não cadastrado'}
-								</h2>
-							</div>
-						</div>
-						<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
-						<div class="flex w-1/3 flex-col gap-2 p-3">
-							<div class="flex flex-col text-sm">
-								<span class="font-bold text-orange-400">{dateConfig[status].label}</span>
-								{paginatedLeads[0]?.atendidoEm
-									? formatarData(paginatedLeads[0].atendidoEm)
-									: 'Data não disponível'}
-							</div>
-							<div class="flex flex-col text-sm">
-								<span class="font-bold text-orange-400">Código Promocional:</span>
-								{paginatedLeads[0].promoCode ? paginatedLeads[0].promoCode : 'Não cadastrado'}
-							</div>
-							<div class="flex flex-col text-sm">
-								<span class="text-sm font-bold text-orange-400">Plano:</span>
-								{paginatedLeads[0].planoNome}
-							</div>
-						</div>
-
-						<div class="flex w-1/4 items-center justify-center pr-2">
-							<Dropdown lead={paginatedLeads[0]} {cargo} />
-						</div>
-					</div>
 				</div>
 			{:else}
 				{#each paginatedLeads as lead}
@@ -161,10 +111,10 @@
 						class="relative flex w-[40%] flex-col items-center justify-center rounded-lg bg-zinc-800 text-white"
 					>
 						<Badge
-							class="absolute -top-3 right-2 {statusConfig[status].badgeWidth} {statusConfig[status]
-								.badgeColor} text-white"
+							class="absolute -top-3 right-2 flex items-center justify-center {statusConfig[status]
+								.badgeWidth} {statusConfig[status].badgeColor} text-white"
 						>
-							{statusConfig[status].label}
+							{lead.status === 'Pago' ? 'Pago' : statusConfig[status].label}
 						</Badge>
 
 						<h1 class="py-2 text-xl font-semibold">{lead.fullName}</h1>
@@ -193,24 +143,89 @@
 								</div>
 							</div>
 							<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
-							<div class="flex w-1/3 flex-col gap-2 p-3">
-								<div class="flex flex-col text-sm">
-									<span class="font-bold text-orange-400">{dateConfig[status].label}</span>
-									{lead?.criadoEm ? formatarData(lead.criadoEm) : 'Data não disponível'}
+							<div class="flex w-2/3 gap-2 p-3">
+								<div class="flex w-1/2 flex-col gap-2">
+									<div>
+										{#if status !== 'Pendente'}
+											<div class="flex flex-col text-sm">
+												<span class="text-sm font-bold text-orange-400">Atendido por:</span>
+												{lead.atendidoPor}
+											</div>
+										{:else}
+											<div class="flex flex-col text-sm">
+												<span class="text-sm font-bold text-orange-400">Tipo de Plano:</span>
+												{lead.planoModelo}
+											</div>
+										{/if}
+									</div>
+									<div class="flex flex-col text-sm">
+										<span class="text-sm font-bold text-orange-400">Plano:</span>
+										{lead.planoNome} - {lead.planoMegas} MB
+									</div>
+									<div class="flex flex-col text-sm">
+										<span class="font-bold text-orange-400">Código Promocional:</span>
+										{lead.promoCode ? lead.promoCode : 'Sem código'}
+									</div>
 								</div>
-								<div class="flex flex-col text-sm">
-									<span class="font-bold text-orange-400">Código Promocional:</span>
-									{lead.promoCode ? lead.promoCode : 'Não cadastrado'}
-								</div>
-								<div class="flex flex-col text-sm">
-									<span class="text-sm font-bold text-orange-400">Plano:</span>
-									{lead.planoNome}
+								<div class="flex w-1/2 flex-col items-center justify-center">
+									<div class="flex w-full justify-center">
+										<Dropdown {lead} {cargo} />
+									</div>
+									{#if status === 'Cancelado'}
+										<div class=" flex w-full justify-end">
+											<PopoverCancelado leadId={lead.id} />
+										</div>
+									{/if}
 								</div>
 							</div>
-
-							<div class="flex w-1/4 items-center justify-center pr-2">
-								<Dropdown {lead} {cargo} />
-							</div>
+						</div>
+						<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
+						<div class="flex w-full justify-between">
+							<h2 class="w-1/3 py-2 text-center text-sm">
+								<span class="font-bold text-orange-400"> Criado em: </span>
+								{#if lead?.criadoEm}
+									<Time timestamp={lead.criadoEm} format="DD/MM/YYYY" />
+								{:else}
+									<span>Data não disponível</span>
+								{/if}
+							</h2>
+							<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
+							<h2 class="w-2/3 py-2 text-center text-sm">
+								<span class="font-bold text-orange-400">
+									{status === 'Sendo Atendido'
+										? 'Atendido:'
+										: status === 'Finalizado'
+											? 'Finalizado:'
+											: status === 'Cancelado'
+												? 'Cancelado:'
+												: 'Aguardando:'}
+								</span>
+								{#if status === 'Sendo Atendido'}
+									{#if lead?.atendidoEm}
+										<Time relative timestamp={lead.atendidoEm} live />
+									{:else}
+										<span>Data não disponível</span>
+									{/if}
+								{:else if status === 'Finalizado'}
+									{#if lead?.finalizadoEm}
+										<Time relative timestamp={lead.finalizadoEm} live />
+									{:else if lead?.pagoEm}
+										<Time relative timestamp={lead.pagoEm} live />
+									{:else}
+										<span>Data não disponível</span>
+									{/if}
+								{:else if status === 'Cancelado'}
+									{#if lead?.canceladoEm}
+										<Time relative timestamp={lead.canceladoEm} live />
+									{:else}
+										<span>Data não disponível</span>
+									{/if}
+								{:else if lead?.criadoEm}
+									<Time relative timestamp={lead.criadoEm} live />
+								{:else}
+									<span>Data não disponível</span>
+								{/if}
+							</h2>
 						</div>
 					</div>
 				{/each}

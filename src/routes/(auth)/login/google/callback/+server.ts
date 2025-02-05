@@ -76,7 +76,6 @@ export const GET: RequestHandler = async (event) => {
 						eq(userTable.provider_user_id, googleUser.sub)
 					)
 				);
-			console.log('Existing User caso o email esteja cadastrado', existeEmailEOauth);
 
 			if (!existeEmailEOauth) {
 				// Create a new user and their OAuth account

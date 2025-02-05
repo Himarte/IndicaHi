@@ -19,6 +19,9 @@
 			<Tabs.Trigger value="atendimento" class="data-[state=active]:bg-zinc-800"
 				>Em Atendimento</Tabs.Trigger
 			>
+			<Tabs.Trigger value="aguardandoPagamento" class="data-[state=active]:bg-zinc-800"
+				>Aguardando Pagamento</Tabs.Trigger
+			>
 			<Tabs.Trigger value="finalizados" class="data-[state=active]:bg-zinc-800"
 				>Finalizados</Tabs.Trigger
 			>
@@ -33,6 +36,10 @@
 
 		<Tabs.Content class="w-full pt-10" value="atendimento">
 			<TableBase leads={data.leads.emAtendimento} status="Sendo Atendido" />
+		</Tabs.Content>
+
+		<Tabs.Content class="w-full pt-10" value="aguardandoPagamento">
+			<TableBase leads={data.leads.aguardandoPagamento} status="Aguardando Pagamento" />
 		</Tabs.Content>
 
 		<Tabs.Content class="w-full pt-10" value="finalizados">

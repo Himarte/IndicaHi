@@ -18,7 +18,10 @@ export interface LeadFinanceiro {
 	planoNome: string;
 	planoModelo: 'CPF' | 'CNPJ';
 	planoMegas: number;
+	pagoPor: string | null;
 	aguardandoPagamentoEm: string | null;
 	pagoEm: string | null;
+	atendidoEm: string | null;
+	criadoEm: string | null;
 	vendedor: Vendedor | null;
 }

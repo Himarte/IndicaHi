@@ -32,6 +32,19 @@ const isValidCpfCnpj = async (cpf: string | null, cnpj: string | null): Promise<
 	return true; // CPF/CNPJ válido (não está em uso)
 };
 
+const validateRequiredFields = (data: {
+	fullName: string | null;
+	telefone: string | null;
+	planoNome?: string | null;
+	planoModelo?: string | null;
+	planoMegas?: number;
+}) => {
+	if (!data.fullName || !data.telefone) {
+		return 'Nome e telefone são obrigatórios';
+	}
+	return null;
+};
+
 export const POST: RequestHandler = async ({ url, request }) => {
 	if (!validateApiKey(request)) {
 		return new Response(JSON.stringify({ message: 'Chave de API inválida' }), { status: 401 });
@@ -48,9 +61,16 @@ export const POST: RequestHandler = async ({ url, request }) => {
 		const planoModelo = url.searchParams.get('planoModelo');
 		const planoMegas = parseInt(url.searchParams.get('planoMegas') || '0', 10);
 
-		// Valida parâmetros obrigatórios
-		if (!fullName || !telefone) {
-			return new Response(JSON.stringify({ message: 'Parâmetros inválidos' }), { status: 400 });
+		const validationError = validateRequiredFields({
+			fullName,
+			telefone,
+			planoNome,
+			planoModelo,
+			planoMegas
+		});
+
+		if (validationError) {
+			return new Response(JSON.stringify({ message: validationError }), { status: 400 });
 		}
 
 		// Valida formato de CPF/CNPJ
@@ -69,13 +89,15 @@ export const POST: RequestHandler = async ({ url, request }) => {
 			planoNome,
 			planoModelo,
 			planoMegas,
-			criadoEm: new Date().toISOString()
+			criadoEm: new Date().toISOString(),
+			atendidoEm: null,
+			pagoEm: null,
+			canceladoEm: null
 		};
 
 		// Se o promoCode estiver presente e válido, adicionamos ao commonValues
 		if (promoCode) {
 			const userIdPromoCode = await getUserIdByPromoCode(promoCode);
-			console.log('userIdPromoCode:', userIdPromoCode);
 
 			if (!userIdPromoCode) {
 				return new Response(JSON.stringify({ message: 'Código promocional inválido' }), {

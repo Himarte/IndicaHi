@@ -60,7 +60,10 @@ export const GET: RequestHandler = async ({ request, params }) => {
 					planoModelo: leadsTable.planoModelo,
 					planoMegas: leadsTable.planoMegas,
 					aguardandoPagamentoEm: leadsTable.aguardandoPagamentoEm,
-					pagoEm: leadsTable.pagoEm
+					pagoPor: leadsTable.pagoPor,
+					pagoEm: leadsTable.pagoEm,
+					atendidoEm: leadsTable.atendidoEm,
+					criadoEm: leadsTable.criadoEm
 				},
 				vendedor: {
 					id: userTable.id,

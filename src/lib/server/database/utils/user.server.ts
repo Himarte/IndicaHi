@@ -31,7 +31,6 @@ export const cpfIsUsed = async (cpf: string): Promise<boolean> => {
 		.from(leadsTable)
 		.where(and(eq(leadsTable.status, 'Pendente'), eq(leadsTable.cpf, cpf)));
 
-	console.log('queryResult:', queryResult);
 
 	return queryResult.length > 0;
 };

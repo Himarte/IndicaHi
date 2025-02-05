@@ -46,7 +46,6 @@ export const POST: RequestHandler = async ({ request }) => {
 			userId: formData.get('userId') as string
 		};
 
-		console.log('Dados recebidos:', formData);
 
 		const { cleanedCPF, cleanedCellPhone, pixType, pixCode, promoCode, userId } =
 			await validateData(data);

@@ -14,12 +14,11 @@
 		</Tabs.Trigger>
 		<Tabs.Trigger value="pagos" class="data-[state=active]:bg-zinc-800">Pagos</Tabs.Trigger>
 	</Tabs.List>
-
 	<Tabs.Content class="w-full pt-10" value="aguardandoPagamento">
-		<TableBase leads={data.leads.aguardandoPagamento} {cargo} status="Aguardando Pagamento" />
+		<TableBase leads={data.leads?.aguardandoPagamento} {cargo} status="Aguardando Pagamento" />
 	</Tabs.Content>
 
 	<Tabs.Content class="w-full pt-10" value="pagos">
-		<TableBase leads={data.leads.pagos} {cargo} status="Pago" />
+		<TableBase leads={data.leads?.pagos} {cargo} status="Pago" />
 	</Tabs.Content>
 </Tabs.Root>

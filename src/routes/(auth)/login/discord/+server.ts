@@ -6,12 +6,10 @@ import type { RequestEvent } from '@sveltejs/kit';
 
 export async function GET(event: RequestEvent): Promise<Response> {
 	const state = generateState();
-	console.log('AQUI STATE', state);
 
 	const url: URL = await discord.createAuthorizationURL(state, {
 		scopes: ['identify', 'email']
 	});
-	console.log('AQUI URL', url);
 
 	event.cookies.set('discord_oauth_state', state, {
 		path: '/',

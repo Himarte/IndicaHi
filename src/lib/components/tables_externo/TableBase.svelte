@@ -1,17 +1,15 @@
 <script lang="ts">
-	import { Badge } from '../ui/badge';
-	import Separator from '../ui/separator/separator.svelte';
+	import { Badge } from '$lib/components/ui/badge';
+	import Separator from '$lib/components/ui/separator/separator.svelte';
+	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import Time from '$lib/components/ui/time/index.svelte';
+	import BotaoBaixarDashboard from './BotaoBaixarDashboard.svelte';
 	import type { LeadsSchema } from '$lib/server/database/schema';
-	import { formatarData } from '$lib/uteis/masks';
-	import { CircleArrowLeftIcon, CircleArrowRight, DownloadIcon } from 'lucide-svelte';
-	import Button from '../ui/button/button.svelte';
-	import { toast } from 'svelte-sonner';
-	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 
 	export let leads: LeadsSchema[];
-	export let status: 'Pendente' | 'Sendo Atendido' | 'Pago' | 'Cancelado';
+	export let status: 'Pendente' | 'Sendo Atendido' | 'Aguardando Pagamento' | 'Pago' | 'Cancelado';
 
-	// Configuração visual por status
 	const statusConfig = {
 		Pendente: {
 			badgeColor: 'bg-red-600 hover:bg-red-600',
@@ -25,11 +23,17 @@
 			label: 'Atendimento',
 			emptyMessage: 'Nenhuma indicação em atendimento encontrada'
 		},
+		'Aguardando Pagamento': {
+			badgeColor: 'bg-yellow-600 hover:bg-yellow-600',
+			badgeWidth: 'w-44',
+			label: 'Aguardando Pagamento',
+			emptyMessage: 'Nenhuma indicação aguardando pagamento encontrada'
+		},
 		Pago: {
 			badgeColor: 'bg-green-600 hover:bg-green-600',
 			badgeWidth: 'w-20',
-			label: 'Finalizado',
-			emptyMessage: 'Nenhuma indicação finalizada encontrada'
+			label: 'Pago',
+			emptyMessage: 'Nenhuma indicação paga encontrada'
 		},
 		Cancelado: {
 			badgeColor: 'bg-gray-500 hover:bg-gray-500',
@@ -69,53 +73,6 @@
 
 	// Gera array com números das páginas
 	$: pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-
-	function handleDownloadComprovante(comprovantePagamento: string | null) {
-		if (!comprovantePagamento) {
-			toast.error('Comprovante não disponível');
-			return;
-		}
-
-		try {
-			// Extrai o tipo do arquivo e os dados do base64
-			const [, tipo, base64] = comprovantePagamento.match(/data:(.*);base64,(.*)/) || [];
-
-			if (!tipo || !base64) {
-				toast.error('Formato do comprovante inválido');
-				return;
-			}
-
-			// Converte o base64 para Blob
-			const byteCharacters = atob(base64);
-			const byteNumbers = new Array(byteCharacters.length);
-
-			for (let i = 0; i < byteCharacters.length; i++) {
-				byteNumbers[i] = byteCharacters.charCodeAt(i);
-			}
-
-			const byteArray = new Uint8Array(byteNumbers);
-			const blob = new Blob([byteArray], { type: tipo });
-
-			// Cria URL do blob e link para download
-			const url = window.URL.createObjectURL(blob);
-			const link = document.createElement('a');
-			link.href = url;
-			link.download = `comprovante_${leads[0].fullName.replace(/\s+/g, '_')}.${tipo.split('/')[1]}`;
-
-			// Simula o clique no link
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-
-			// Libera a URL
-			window.URL.revokeObjectURL(url);
-
-			toast.success('Download iniciado com sucesso!');
-		} catch (error) {
-			console.error('Erro ao baixar comprovante:', error);
-			toast.error('Erro ao baixar o comprovante');
-		}
-	}
 </script>
 
 <div class="flex w-full flex-wrap justify-center gap-10 pt-4">
@@ -129,8 +86,8 @@
 				class=" relative flex w-[40%] flex-col items-center justify-between rounded-lg bg-zinc-800 text-white"
 			>
 				<Badge
-					class="absolute -top-3 right-2 {statusConfig[status].badgeWidth} {statusConfig[status]
-						.badgeColor} text-white"
+					class="absolute -top-3 right-2 flex items-center justify-center {statusConfig[status]
+						.badgeWidth} {statusConfig[status].badgeColor} text-white"
 				>
 					{statusConfig[status].label}
 				</Badge>
@@ -138,37 +95,17 @@
 				<h1 class="py-2 text-xl font-semibold">{lead.fullName}</h1>
 				<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
 
-				<div class="flex w-full justify-between">
-					<div class="flex w-1/2 flex-col gap-2 p-4">
+				<div class="flex w-full items-center justify-between">
+					<div class="flex w-1/2 flex-col items-start gap-2 p-4">
+						{#if status != 'Pendente'}
+							<h2>
+								<span class="font-bold text-orange-400">Atendido por:</span>
+								{lead.atendidoPor}
+							</h2>
+						{/if}
 						<h2>
-							<span class="font-bold text-orange-400">
-								{status === 'Sendo Atendido'
-									? 'Atendido em:'
-									: status === 'Pago'
-										? 'Finalizado em:'
-										: status === 'Cancelado'
-											? 'Cancelado em:'
-											: 'Criado em:'}
-							</span>
-							{status === 'Sendo Atendido'
-								? lead?.atendidoEm
-									? formatarData(lead.atendidoEm)
-									: 'Data não disponível'
-								: status === 'Pago'
-									? lead?.pagoEm
-										? formatarData(lead.pagoEm)
-										: 'Data não disponível'
-									: status === 'Cancelado'
-										? lead?.canceladoEm
-											? formatarData(lead.canceladoEm)
-											: 'Data não disponível'
-										: lead?.criadoEm
-											? formatarData(lead.criadoEm)
-											: 'Data não disponível'}
-						</h2>
-						<h2>
-							<span class="font-bold text-orange-400">Código Promocional:</span>
-							{lead.promoCode}
+							<span class="flex font-bold text-orange-400">Plano de interesse:</span>
+							{lead.planoNome} - {lead.planoMegas} MB
 						</h2>
 					</div>
 
@@ -176,32 +113,73 @@
 
 					<div class="flex w-1/2 flex-col items-start gap-2 p-4">
 						<h2>
-							<span class="font-bold text-orange-400">Plano:</span>
-							{lead.planoNome} - {lead.planoMegas} MB
-						</h2>
-						<h2>
 							<span class="font-bold text-orange-400">Tipo de plano:</span>
 							{lead.planoModelo}
 						</h2>
-						{#if status === 'Pago'}
-							<Tooltip.Root>
-								<Tooltip.Trigger asChild let:builder>
-									<Button
-										builders={[builder]}
-										variant="ghost"
-										class="absolute bottom-2 right-2 flex items-center text-orange-400"
-										on:click={() => handleDownloadComprovante(lead.comprovantePagamento ?? null)}
-									>
-										<DownloadIcon />
-									</Button>
-								</Tooltip.Trigger>
-								<Tooltip.Content side="bottom">
-									<p>Baixar Comprovante</p>
-								</Tooltip.Content>
-							</Tooltip.Root>
-						{/if}
+						<h2>
+							<span class="font-bold text-orange-400">Código de Promoção:</span>
+							{lead.promoCode}
+						</h2>
 					</div>
 				</div>
+				<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
+				<div class="flex w-full justify-between">
+					<h2 class="w-1/2 py-2 text-center">
+						<span class="font-bold text-orange-400"> Criado em: </span>
+						{#if lead?.criadoEm}
+							<Time timestamp={lead.criadoEm} format="DD/MM/YYYY" />
+						{:else}
+							<span>Data não disponível</span>
+						{/if}
+					</h2>
+					<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
+					<h2 class="w-1/2 py-2 text-center">
+						<span class="font-bold text-orange-400">
+							{status === 'Sendo Atendido'
+								? 'Atendido:'
+								: status === 'Pago'
+									? 'Pagamento realizado:'
+									: status === 'Cancelado'
+										? 'Cancelado:'
+										: status === 'Aguardando Pagamento'
+											? 'Aguardando desde:'
+											: 'Aguardando:'}
+						</span>
+						{#if status === 'Sendo Atendido'}
+							{#if lead?.atendidoEm}
+								<Time relative timestamp={lead.atendidoEm} live />
+							{:else}
+								<span>Data não disponível</span>
+							{/if}
+						{:else if status === 'Pago'}
+							{#if lead?.pagoEm}
+								<Time relative timestamp={lead.pagoEm} live />
+							{:else}
+								<span>Data não disponível</span>
+							{/if}
+						{:else if status === 'Cancelado'}
+							{#if lead?.canceladoEm}
+								<Time relative timestamp={lead.canceladoEm} live />
+							{:else}
+								<span>Data não disponível</span>
+							{/if}
+						{:else if status === 'Aguardando Pagamento'}
+							{#if lead?.aguardandoPagamentoEm}
+								<Time relative timestamp={lead.aguardandoPagamentoEm} live />
+							{:else}
+								<span>Data não disponível</span>
+							{/if}
+						{:else if lead?.criadoEm}
+							<Time relative timestamp={lead.criadoEm} live />
+						{:else}
+							<span>Data não disponível</span>
+						{/if}
+					</h2>
+				</div>
+
+				{#if status === 'Pago'}
+					<BotaoBaixarDashboard {lead} />
+				{/if}
 			</div>
 		{/each}
 	{/if}
