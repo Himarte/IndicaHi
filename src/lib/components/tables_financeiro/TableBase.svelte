@@ -88,8 +88,9 @@
 					class="relative flex w-[40%] flex-col items-center justify-center rounded-lg bg-zinc-800 text-white"
 				>
 					<Badge
-						class="absolute -top-3 right-2 flex items-center justify-center {statusConfig[status]
-							.badgeWidth} {statusConfig[status].badgeColor} text-white"
+						class="absolute -top-3 right-2 flex items-center justify-center text-nowrap {statusConfig[
+							status
+						].badgeWidth} {statusConfig[status].badgeColor} text-white"
 					>
 						{statusConfig[status].label}
 					</Badge>
