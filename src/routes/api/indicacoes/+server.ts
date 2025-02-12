@@ -4,32 +4,11 @@ import { SITE_CHAVE_API } from '$env/static/private';
 import { generateId } from 'lucia';
 import { db } from '$lib/server/database/db.server';
 import { leadsTable } from '$lib/server/database/schema';
-import {
-	cnpjIsUsed,
-	cpfIsUsed,
-	getUserIdByPromoCode
-} from '$lib/server/database/utils/user.server';
+import { getUserIdByPromoCode } from '$lib/server/database/utils/user.server';
 
 // Função para validar a chave da API
 const validateApiKey = (request: Request): boolean => {
 	return request.headers.get('API-KEY') === SITE_CHAVE_API;
-};
-
-// Função para validar formato de CPF/CNPJ
-const isValidCpfCnpj = async (cpf: string | null, cnpj: string | null): Promise<boolean> => {
-	if (!cpf && !cnpj) return false; // Ambos não podem ser nulos
-
-	if (cpf && cpf.length === 11) {
-		const isUsed = await cpfIsUsed(cpf);
-		if (isUsed) return false; // CPF já está em uso
-	}
-
-	if (cnpj && cnpj.length === 14) {
-		const isUsed = await cnpjIsUsed(cnpj);
-		if (isUsed) return false; // CNPJ já está em uso
-	}
-
-	return true; // CPF/CNPJ válido (não está em uso)
 };
 
 const validateRequiredFields = (data: {
@@ -44,6 +23,26 @@ const validateRequiredFields = (data: {
 	}
 	return null;
 };
+
+// Função para validar dígitos verificadores do CPF
+function validarCPF(cpf: string): boolean {
+	// Remove caracteres não numéricos tipo . e - e espacoes e verifica se o cpf tem 11 digitos
+	cpf = cpf.replace(/[.-]/g, '').replace(/\s/g, '');
+
+	if (cpf.length !== 11) return false;
+
+	return true;
+}
+
+// Função para validar dígitos verificadores do CNPJ
+function validarCNPJ(cnpj: string): boolean {
+	// Remove caracteres não numéricos tipo . e - e espacoes e verifica se o cnpj tem 14 digitos
+	cnpj = cnpj.replace(/[.-]/g, '').replace(/\s/g, '');
+
+	if (cnpj.length !== 14) return false;
+
+	return true;
+}
 
 export const POST: RequestHandler = async ({ url, request }) => {
 	if (!validateApiKey(request)) {
@@ -61,6 +60,25 @@ export const POST: RequestHandler = async ({ url, request }) => {
 		const planoModelo = url.searchParams.get('planoModelo');
 		const planoMegas = parseInt(url.searchParams.get('planoMegas') || '0', 10);
 
+		console.log(
+			'fullName',
+			fullName,
+			'telefone',
+			telefone,
+			'planoNome',
+			planoNome,
+			'planoModelo',
+			planoModelo,
+			'planoMegas',
+			planoMegas,
+			'promoCode',
+			promoCode,
+			'cpf',
+			cpf,
+			'cnpj',
+			cnpj
+		);
+
 		const validationError = validateRequiredFields({
 			fullName,
 			telefone,
@@ -73,9 +91,57 @@ export const POST: RequestHandler = async ({ url, request }) => {
 			return new Response(JSON.stringify({ message: validationError }), { status: 400 });
 		}
 
-		// Valida formato de CPF/CNPJ
-		if (!(await isValidCpfCnpj(cpf, cnpj))) {
-			return new Response(JSON.stringify({ message: 'CPF/CNPJ inválido' }), { status: 400 });
+		// Implementação da validação
+		const cpfLimpo = cpf?.replace(/\D/g, '');
+		const cnpjLimpo = cnpj?.replace(/\D/g, '');
+
+		// Verifica se pelo menos um dos documentos foi fornecido
+		if (!cpfLimpo && !cnpjLimpo) {
+			return new Response(JSON.stringify({ message: 'É necessário fornecer CPF ou CNPJ' }), {
+				status: 400
+			});
+		}
+
+		// Valida CPF se fornecido
+		if (cpfLimpo) {
+			if (cpfLimpo.length !== 11) {
+				return new Response(JSON.stringify({ message: 'CPF inválido: deve conter 11 dígitos' }), {
+					status: 400
+				});
+			}
+			if (!validarCPF(cpfLimpo)) {
+				return new Response(
+					JSON.stringify({ message: 'CPF inválido: dígitos verificadores incorretos' }),
+					{ status: 400 }
+				);
+			}
+		}
+
+		// Valida CNPJ se fornecido
+		if (cnpjLimpo) {
+			if (cnpjLimpo.length !== 14) {
+				return new Response(JSON.stringify({ message: 'CNPJ inválido: deve conter 14 dígitos' }), {
+					status: 400
+				});
+			}
+			if (!validarCNPJ(cnpjLimpo)) {
+				return new Response(
+					JSON.stringify({ message: 'CNPJ inválido: dígitos verificadores incorretos' }),
+					{ status: 400 }
+				);
+			}
+		}
+
+		// Se chegou até aqui, pelo menos um documento é válido
+		const documentoValido = {
+			cpf: cpfLimpo || null,
+			cnpj: cnpjLimpo || null
+		};
+
+		// Validar o telefone, limpando os caracteres especiais tipo () - . e espaços
+		const telefoneLimpo = telefone?.replace(/[()\-.\s]/g, '');
+		if (!telefoneLimpo || telefoneLimpo.length !== 11) {
+			return new Response(JSON.stringify({ message: 'Telefone inválido' }), { status: 400 });
 		}
 
 		// Construção de commonValues
@@ -83,9 +149,9 @@ export const POST: RequestHandler = async ({ url, request }) => {
 		const commonValues: any = {
 			id,
 			fullName,
-			cpf,
-			cnpj,
-			telefone,
+			cpf: documentoValido.cpf,
+			cnpj: documentoValido.cnpj,
+			telefone: telefoneLimpo,
 			planoNome,
 			planoModelo,
 			planoMegas,

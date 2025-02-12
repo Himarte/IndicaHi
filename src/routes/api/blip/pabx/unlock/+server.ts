@@ -16,7 +16,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		return new Response('Parâmetros inválidos', { status: 400 });
 	}
 
-
 	// Faz a requisição para obter o access token
 	const autentificacao = await fetch(`${VOALLE_URL}/pbx/pbx/events/new/CLIENT_VALIDATE`, {
 		method: 'POST',
@@ -37,7 +36,6 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	// Obtém a lista de IDs de contratos do cliente
 	const contractsIds = autentificacao.clients[0].contracts_id;
-
 
 	// Verifica se há mais de um contrato
 	if (contractsIds.length > 1) {
@@ -82,7 +80,6 @@ export const POST: RequestHandler = async ({ request }) => {
 				token: TOKEN_PABX
 			})
 		}).then((res) => res.json());
-
 
 		// Verifica o resultado da tentativa de desbloqueio
 		if (unlockContrato.return === true) {
