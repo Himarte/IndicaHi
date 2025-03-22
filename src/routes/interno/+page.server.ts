@@ -108,11 +108,23 @@ export const actions: Actions = {
 
 			// Se o status for "Cancelado", salva o motivo na tabela `motivo_cancelado`
 			if (status === 'Cancelado' && motivo) {
-				await db.insert(motivoCancelado).values({
-					id: crypto.randomUUID(), // Gera um UUID para o registro
-					motivo,
-					leadId: id // Relaciona o motivo com o lead
-				});
+				// Verificar se já existe um motivo para este lead
+				const motivoExistente = await db
+					.select()
+					.from(motivoCancelado)
+					.where(eq(motivoCancelado.leadId, id));
+
+				if (motivoExistente.length > 0) {
+					// Se já existe um motivo, atualiza
+					await db.update(motivoCancelado).set({ motivo }).where(eq(motivoCancelado.leadId, id));
+				} else {
+					// Se não existe, insere um novo
+					await db.insert(motivoCancelado).values({
+						id: crypto.randomUUID(), // Gera um UUID para o registro
+						motivo,
+						leadId: id // Relaciona o motivo com o lead
+					});
+				}
 			}
 
 			return {
