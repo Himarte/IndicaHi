@@ -37,7 +37,9 @@
 				: 'flex'} border border-border px-4 py-1 text-lg font-bold text-orange-500"
 		>
 			<span class="mr-2 select-none text-white">Código de indicação: </span>
-			{userData?.promoCode || 'Não possui'}
+			<a href="/configuracoes" class="text-orange-500">
+				{userData?.promoCode || 'Não possui'}
+			</a>
 		</div>
 	{/if}
 	{#if isLoggedIn && userData}

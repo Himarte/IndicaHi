@@ -75,7 +75,7 @@
 			>
 				<Badge
 					class="{tipoConfig[tipo].badgeWidth} {tipoConfig[tipo]
-						.badgeColor} absolute -top-3 right-2 flex items-center justify-center  text-white"
+						.badgeColor} absolute -top-3 right-2 flex items-center justify-center text-nowrap  text-white"
 				>
 					{tipoConfig[tipo].label}
 				</Badge>

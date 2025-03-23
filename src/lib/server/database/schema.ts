@@ -76,7 +76,6 @@ export const leadsTable = pgTable('leads', {
 		precision: 6,
 		mode: 'string'
 	}),
-
 	aguardandoPagamentoEm: timestamp('aguardando_pagamento_em', {
 		withTimezone: true,
 		precision: 6,
@@ -112,9 +111,12 @@ export const motivoCancelado = pgTable('motivo_cancelado', {
 	leadId: varchar('lead_id')
 		.notNull()
 		.references(() => leadsTable.id, { onDelete: 'cascade' })
+		.unique()
 });
 
 // Define types for insert schemas
 export type UserInsertSchema = typeof userTable.$inferInsert;
 export type UserSchema = typeof userTable.$inferSelect;
 export type LeadsSchema = typeof leadsTable.$inferSelect;
+export type MotivoCanceladoSchema = typeof motivoCancelado.$inferSelect;
+export type LeadsComprovanteSchema = typeof leadsComprovanteTable.$inferSelect;

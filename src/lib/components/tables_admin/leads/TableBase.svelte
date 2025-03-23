@@ -83,7 +83,7 @@
 				class="relative flex w-[40%] flex-col items-center justify-between rounded-lg bg-zinc-800 text-white"
 			>
 				<Badge
-					class="absolute -top-3 right-2 flex items-center justify-center  {statusConfig[
+					class="absolute -top-3 right-2 flex items-center justify-center text-nowrap {statusConfig[
 						lead.status
 					].badgeWidth} {statusConfig[lead.status].badgeColor} text-white"
 				>
@@ -94,7 +94,7 @@
 				<Separator orientation="horizontal" class="bg-zinc-600 " />
 
 				<div class="flex w-full items-center">
-					<div class="flex w-1/3 flex-col">
+					<div class="flex w-1/3 flex-col py-2 pl-2">
 						<h2 class=" flex flex-col px-2 py-1 font-semibold text-orange-400">
 							Telefone: <span class="font-normal text-white"
 								>{lead.telefone ? formatarTelefone(lead.telefone) : 'Não informado'}</span
@@ -116,7 +116,7 @@
 
 					<Separator orientation="vertical" class="bg-zinc-600 text-center" />
 
-					<div class="flex w-1/3 flex-col">
+					<div class="flex w-1/3 flex-col py-2 pl-2">
 						<h2 class=" flex flex-col px-2 py-1 font-semibold text-orange-400">
 							Modelo: <span class="font-normal text-white"
 								>{lead.planoModelo || 'Não definido'}</span
@@ -135,8 +135,9 @@
 							>
 						</h2>
 					</div>
+					<Separator orientation="vertical" class="bg-zinc-600 text-center" />
 
-					<div class="flex w-1/3 flex-col">
+					<div class="flex w-1/3 flex-col py-2 pl-2">
 						<h2 class=" flex flex-col px-2 py-1 font-semibold text-orange-400">
 							Criado em: <span class="font-normal text-white">
 								{lead.criadoEm ? formatarData(lead.criadoEm) : 'Data não disponível'}
