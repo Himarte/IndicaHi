@@ -16,7 +16,6 @@ export const GET: RequestHandler = async ({ request }) => {
 		return new Response('Parâmetros inválidos', { status: 400 });
 	}
 
-
 	// Faz a requisição para para pegar o access token
 	const autentificacaoVoalle = await fetch(`${VOALLE_URL}:45700/connect/token`, {
 		method: 'POST',
