@@ -2,16 +2,25 @@
 	import * as Select from '$lib/components/ui/select';
 	import type { LeadFinanceiro } from '$lib/types/financeiro';
 	import { getStatusPorCargo } from '$lib/components/StatusDropdown/statusPorCargo';
+	import { createEventDispatcher } from 'svelte';
 
 	export let lead: LeadFinanceiro;
 	export let cargo: string;
+
+	const dispatch = createEventDispatcher<{ statusChange: string }>();
+
+	function handleStatusChange(value: any) {
+		if (value && value.value) {
+			dispatch('statusChange', value.value);
+		}
+	}
 
 	$: status = getStatusPorCargo(cargo);
 </script>
 
 <div class="flex min-w-full gap-2">
 	<input type="hidden" name="id" value={lead.id} />
-	<Select.Root portal={null}>
+	<Select.Root portal={null} onSelectedChange={handleStatusChange}>
 		<Select.Trigger class="w-full border border-stone-700">
 			<Select.Value placeholder="Alterar Status" />
 		</Select.Trigger>

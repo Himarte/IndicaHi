@@ -60,7 +60,7 @@ export const actions: Actions = {
 			const formData = await request.formData();
 			const id = formData.get('id') as string;
 			const status = formData.get('status') as string;
-			const comprovante = formData.get('comprovante') as File;
+			const comprovante = formData.get('comprovante') as File | null;
 
 			// Validação do status
 			if (!['Aguardando Pagamento', 'Pago', 'Cancelado'].includes(status)) {
@@ -70,25 +70,33 @@ export const actions: Actions = {
 				});
 			}
 
-			// Validação do comprovante
-			const validarComprovante = (arquivo: File) => {
-				if (!arquivo) return 'Comprovante é obrigatório';
-				const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
-				if (!tiposPermitidos.includes(arquivo.type)) return 'Formato de arquivo inválido';
-				const maxSize = 5 * 1024 * 1024; // 5MB
-				if (arquivo.size > maxSize) return 'Arquivo deve ter no máximo 5MB';
-				return null;
-			};
+			// Validação do comprovante apenas se não for cancelamento
+			if (status !== 'Cancelado') {
+				if (!comprovante) {
+					return fail(400, {
+						success: false,
+						message: 'Comprovante é obrigatório para pagamentos'
+					});
+				}
 
-			const erroComprovante = validarComprovante(comprovante);
-			if (erroComprovante) {
-				return fail(400, {
-					success: false,
-					message: erroComprovante
-				});
+				const validarComprovante = (arquivo: File) => {
+					const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+					if (!tiposPermitidos.includes(arquivo.type)) return 'Formato de arquivo inválido';
+					const maxSize = 5 * 1024 * 1024; // 5MB
+					if (arquivo.size > maxSize) return 'Arquivo deve ter no máximo 5MB';
+					return null;
+				};
+
+				const erroComprovante = validarComprovante(comprovante);
+				if (erroComprovante) {
+					return fail(400, {
+						success: false,
+						message: erroComprovante
+					});
+				}
 			}
 
-			// Processamento do comprovante
+			// Processamento do comprovante se existir
 			const processarComprovante = async (arquivo: File) => {
 				const buffer = await arquivo.arrayBuffer();
 				const base64 = Buffer.from(buffer).toString('base64');
@@ -104,21 +112,34 @@ export const actions: Actions = {
 				});
 			}
 
+			// Prepara os dados para atualização com os timestamps apropriados
+			const now = new Date().toISOString();
+			const updateData: {
+				status: 'Aguardando Pagamento' | 'Pago' | 'Cancelado';
+				pagoPor?: string;
+				pagoEm?: string | null;
+				aguardandoPagamentoEm?: string | null;
+				canceladoEm?: string | null;
+			} = {
+				status: status as 'Aguardando Pagamento' | 'Pago' | 'Cancelado'
+			};
+
+			// Define o timestamp correspondente ao status
+			if (status === 'Pago') {
+				updateData.pagoPor = locals.user?.name;
+				updateData.pagoEm = now;
+			} else if (status === 'Aguardando Pagamento') {
+				updateData.aguardandoPagamentoEm = now;
+			} else if (status === 'Cancelado') {
+				updateData.canceladoEm = now;
+			}
+
 			// Atualiza o status do lead
 			await db.transaction(async (tx) => {
-				await tx
-					.update(leadsTable)
-					.set({
-						status: status as 'Aguardando Pagamento' | 'Pago',
-						pagoPor: locals.user?.name,
-						pagoEm: status === 'Pago' ? new Date().toISOString() : null,
-						aguardandoPagamentoEm:
-							status === 'Aguardando Pagamento' ? new Date().toISOString() : null
-					})
-					.where(eq(leadsTable.id, id));
+				await tx.update(leadsTable).set(updateData).where(eq(leadsTable.id, id));
 
-				// Salva o comprovante em tabela separada
-				if (status === 'Pago') {
+				// Salva o comprovante em tabela separada apenas se for pago e tiver comprovante
+				if (status === 'Pago' && comprovante) {
 					const comprovanteBase64 = await processarComprovante(comprovante);
 					await tx.insert(leadsComprovanteTable).values({
 						id: crypto.randomUUID(),
@@ -130,7 +151,8 @@ export const actions: Actions = {
 
 			return {
 				success: true,
-				message: 'Status atualizado com sucesso'
+				message: `Status atualizado para ${status} com sucesso`,
+				newStatus: status
 			};
 		} catch (error) {
 			console.error('Erro ao atualizar status:', error);

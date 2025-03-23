@@ -96,15 +96,36 @@ export const actions: Actions = {
 				});
 			}
 
+			// Preparar os dados para atualização com os timestamps apropriados
+			const updateData: {
+				status: (typeof validStatuses)[number];
+				atendidoPor: string;
+				atendidoEm?: string;
+				finalizadoEm?: string;
+				pagoEm?: string;
+				aguardandoPagamentoEm?: string;
+				canceladoEm?: string | null;
+			} = {
+				status: status as (typeof validStatuses)[number],
+				atendidoPor: locals.user.name
+			};
+
+			// Atualizar o timestamp correspondente ao status atual
+			const now = new Date().toISOString();
+			if (status === 'Sendo Atendido') {
+				updateData.atendidoEm = now;
+			} else if (status === 'Finalizado') {
+				updateData.finalizadoEm = now;
+			} else if (status === 'Pago') {
+				updateData.pagoEm = now;
+			} else if (status === 'Aguardando Pagamento') {
+				updateData.aguardandoPagamentoEm = now;
+			} else if (status === 'Cancelado') {
+				updateData.canceladoEm = now;
+			}
+
 			// Atualiza o status do lead
-			await db
-				.update(leadsTable)
-				.set({
-					status: status as (typeof validStatuses)[number], // Garantir que é um valor válido
-					atendidoPor: locals.user.name,
-					canceladoEm: status === 'Cancelado' ? new Date().toISOString() : null
-				})
-				.where(eq(leadsTable.id, id));
+			await db.update(leadsTable).set(updateData).where(eq(leadsTable.id, id));
 
 			// Se o status for "Cancelado", salva o motivo na tabela `motivo_cancelado`
 			if (status === 'Cancelado' && motivo) {
@@ -129,7 +150,8 @@ export const actions: Actions = {
 
 			return {
 				success: true,
-				message: `Status atualizado para ${status} com sucesso.`
+				message: `Status atualizado para ${status} com sucesso.`,
+				newStatus: status
 			};
 		} catch (error) {
 			console.error('Erro ao atualizar status:', error);
