@@ -18,11 +18,13 @@
 
 	export let userData: userDataFromCookies;
 
+	// Constantes e tipos
 	const pixTypes = [
 		{ value: 'cpf', label: 'CPF' },
 		{ value: 'cnpj', label: 'CNPJ' }
 	];
 
+	// Estado do formulário
 	let promoCode = '';
 	let promoCodeValid = false;
 	let cpf = '';
@@ -42,104 +44,20 @@
 	let buscandoCep = false;
 	let cepDigitado = false;
 	let formValido = false;
+	let submitting = false;
 
 	// Validações
 	let erros = {
 		cpf: '',
 		celular: '',
 		pixCode: '',
-		numero: ''
+		numero: '',
+		cep: ''
 	};
-	// Função para validar formulário
-	$: formValido = Boolean(
-		!erros.cpf &&
-			!erros.celular &&
-			!erros.pixCode &&
-			!erros.numero &&
-			promoCodeValid &&
-			cpf &&
-			celular &&
-			pixCode &&
-			selectedPixType
-	);
 
-	// Função para validar CPF
-	$: {
-		if (cpf) {
-			const cpfLimpo = cleanCPF(cpf);
-			if (cpfLimpo.length !== 11) {
-				erros.cpf = 'CPF deve ter 11 dígitos';
-			} else {
-				erros.cpf = '';
-			}
-		} else {
-			erros.cpf = '';
-		}
-	}
-
-	// Função para validar celular
-	$: {
-		if (celular) {
-			const celularLimpo = cleanCellPhone(celular);
-			if (celularLimpo.length < 10 || celularLimpo.length > 11) {
-				erros.celular = 'Celular deve ter entre 10 e 11 dígitos';
-			} else {
-				erros.celular = '';
-			}
-		} else {
-			erros.celular = '';
-		}
-	}
-
-	// Função para validar PIX
-	$: {
-		if (pixCode && selectedPixType) {
-			if (selectedPixType === 'cpf' && cleanCPF(pixCode).length !== 11) {
-				erros.pixCode = 'CPF deve ter 11 dígitos';
-			} else if (selectedPixType === 'cnpj' && cleanCPF(pixCode).length !== 14) {
-				erros.pixCode = 'CNPJ deve ter 14 dígitos';
-			} else {
-				erros.pixCode = '';
-			}
-		} else {
-			erros.pixCode = '';
-		}
-	}
-
-	// Validar número
-	$: {
-		if (endereco.numero) {
-			const numero = parseInt(endereco.numero);
-			if (isNaN(numero) || numero <= 0) {
-				erros.numero = 'Digite um número válido';
-			} else {
-				erros.numero = '';
-			}
-		} else {
-			erros.numero = '';
-		}
-	}
-
-	// Função para aplicar máscara conforme o tipo de PIX selecionado
-	$: if (pixCode && selectedPixType) {
-		pixCode = applyMask(pixCode, selectedPixType);
-	}
-
-	$: {
-		// React automaticamente quando o CEP é digitado
-		if (cep) {
-			const cepLimpo = cep.replace(/\D/g, '');
-			if (cepLimpo.length === 8 && cepLimpo !== ultimoCepConsultado) {
-				ultimoCepConsultado = cepLimpo;
-				buscarCep(cepLimpo);
-			}
-		}
-	}
-
+	// Função para buscar CEP
 	const buscarCep = async (cepLimpo: string) => {
-		if (cepLimpo.length !== 8) {
-			return;
-		}
+		if (cepLimpo.length !== 8) return;
 
 		cepDigitado = true;
 		buscandoCep = true;
@@ -164,12 +82,12 @@
 				cidade: data.localidade || '',
 				estado: data.uf || '',
 				complemento: data.complemento || '',
-				numero: ''
+				numero: endereco.numero || ''
 			};
 
 			toast.success('CEP encontrado');
 
-			// Foca no campo de número após um pequeno delay para garantir que o DOM foi atualizado
+			// Foca no campo de número após um pequeno delay
 			setTimeout(() => {
 				const inputNumero = document.querySelector('input[name="numero"]') as HTMLInputElement;
 				if (inputNumero) inputNumero.focus();
@@ -182,6 +100,99 @@
 		}
 	};
 
+	// Função para validar formulário - otimizada
+	$: formValido = Boolean(
+		!erros.cpf &&
+			!erros.celular &&
+			!erros.pixCode &&
+			!erros.numero &&
+			promoCodeValid &&
+			cpf &&
+			celular &&
+			pixCode &&
+			selectedPixType &&
+			cep &&
+			endereco.rua &&
+			endereco.bairro &&
+			endereco.cidade &&
+			endereco.estado
+	);
+
+	// Validação de CPF
+	$: {
+		if (cpf) {
+			const cpfLimpo = cleanCPF(cpf);
+			erros.cpf = cpfLimpo.length !== 11 ? 'CPF deve ter 11 dígitos' : '';
+		} else {
+			erros.cpf = '';
+		}
+	}
+
+	// Validação de celular
+	$: {
+		if (celular) {
+			const celularLimpo = cleanCellPhone(celular);
+			erros.celular =
+				celularLimpo.length < 10 || celularLimpo.length > 11
+					? 'Celular deve ter entre 10 e 11 dígitos'
+					: '';
+		} else {
+			erros.celular = '';
+		}
+	}
+
+	// Validação de PIX
+	$: {
+		if (pixCode && selectedPixType) {
+			if (selectedPixType === 'cpf') {
+				erros.pixCode = cleanCPF(pixCode).length !== 11 ? 'CPF deve ter 11 dígitos' : '';
+			} else if (selectedPixType === 'cnpj') {
+				erros.pixCode = cleanCPF(pixCode).length !== 14 ? 'CNPJ deve ter 14 dígitos' : '';
+			} else {
+				erros.pixCode = '';
+			}
+		} else {
+			erros.pixCode = '';
+		}
+	}
+
+	// Validação de CEP
+	$: {
+		if (cep) {
+			const cepLimpo = cep.replace(/\D/g, '');
+			erros.cep = cepLimpo.length !== 8 ? 'CEP deve ter 8 dígitos' : '';
+		} else {
+			erros.cep = '';
+		}
+	}
+
+	// Validação de número
+	$: {
+		if (endereco.numero) {
+			const numero = parseInt(endereco.numero);
+			erros.numero = isNaN(numero) || numero <= 0 ? 'Digite um número válido' : '';
+		} else {
+			erros.numero = '';
+		}
+	}
+
+	// Aplicar máscara conforme o tipo de PIX selecionado
+	$: if (pixCode && selectedPixType) {
+		pixCode = applyMask(pixCode, selectedPixType);
+	}
+
+	// Buscar CEP quando completo
+	$: {
+		if (cep) {
+			const cepLimpo = cep.replace(/\D/g, '');
+			if (cepLimpo.length === 8 && cepLimpo !== ultimoCepConsultado) {
+				ultimoCepConsultado = cepLimpo;
+				buscarCep(cepLimpo);
+			}
+		}
+	}
+
+	// Verificar código promocional
 	const handlePromoCodeSubmission = async (event: Event) => {
 		event.preventDefault();
 
@@ -214,22 +225,29 @@
 		}
 	};
 
+	// Enviar formulário
 	const submitDadosCadastro = async (event: Event) => {
 		event.preventDefault();
 
+		if (submitting) return;
+		submitting = true;
+
 		if (!selectedPixType) {
 			toast.error('Selecione um tipo de PIX');
+			submitting = false;
 			return;
 		}
 
 		if (!pixCode) {
 			toast.error('Informe uma chave PIX');
+			submitting = false;
 			return;
 		}
 
 		// Validar todos os campos obrigatórios
 		if (!formValido) {
 			toast.error('Preencha todos os campos obrigatórios corretamente');
+			submitting = false;
 			return;
 		}
 
@@ -248,13 +266,16 @@
 			const result = await response.json();
 
 			if (response.status === 200) {
-				location.reload();
 				toast.success(result.message);
+				setTimeout(() => location.reload(), 1000);
 			} else {
 				toast.warning(result.message);
 			}
 		} catch (error) {
 			toast.error('Erro ao cadastrar dados');
+			console.error(error);
+		} finally {
+			submitting = false;
 		}
 	};
 </script>
@@ -267,7 +288,7 @@
 		<Card.Header class="text-center">
 			<Card.Title class="text-2xl text-orange-500">Bem vindo!</Card.Title>
 			<Card.Description>
-				Preencha os campos abaixo para criarmos seu perfil e codigo de indicação, para que você
+				Preencha os campos abaixo para criarmos seu perfil e código de indicação, para que você
 				possa começar a lucrar com as suas indicações!
 			</Card.Description>
 		</Card.Header>
@@ -276,9 +297,10 @@
 			<!-- Dados pessoais -->
 			<div class="flex flex-col gap-4 md:flex-row">
 				<div class="flex flex-1 flex-col gap-2">
-					<Label>CPF do Usuário</Label>
+					<Label for="cpf">CPF do Usuário</Label>
 					<Input
 						type="text"
+						id="cpf"
 						name="cpf"
 						placeholder="CPF"
 						maxlength={14}
@@ -286,17 +308,20 @@
 						on:input={() => (cpf = applyMask(cpf, 'cpf'))}
 						required
 						class={erros.cpf ? 'border-red-500' : ''}
+						aria-invalid={!!erros.cpf}
+						aria-describedby={erros.cpf ? 'cpf-error' : 'cpf-hint'}
 					/>
 					{#if erros.cpf}
-						<p class="text-xs text-red-500">{erros.cpf}</p>
+						<p id="cpf-error" class="text-xs text-red-500">{erros.cpf}</p>
 					{:else}
-						<p class="text-xs text-muted-foreground">Ex. 123.456.789-10</p>
+						<p id="cpf-hint" class="text-xs text-muted-foreground">Ex. 123.456.789-10</p>
 					{/if}
 				</div>
 				<div class="flex flex-1 flex-col gap-2">
-					<Label>Celular</Label>
+					<Label for="celular">Celular</Label>
 					<Input
 						type="text"
+						id="celular"
 						name="celular"
 						placeholder="Celular"
 						maxlength={15}
@@ -304,11 +329,13 @@
 						on:input={() => (celular = formatarTelefone(celular))}
 						required
 						class={erros.celular ? 'border-red-500' : ''}
+						aria-invalid={!!erros.celular}
+						aria-describedby={erros.celular ? 'celular-error' : 'celular-hint'}
 					/>
 					{#if erros.celular}
-						<p class="text-xs text-red-500">{erros.celular}</p>
+						<p id="celular-error" class="text-xs text-red-500">{erros.celular}</p>
 					{:else}
-						<p class="text-xs text-muted-foreground">Ex. (DD) 99999-9999</p>
+						<p id="celular-hint" class="text-xs text-muted-foreground">Ex. (DD) 99999-9999</p>
 					{/if}
 				</div>
 			</div>
@@ -333,17 +360,20 @@
 						<div class="flex flex-col gap-2">
 							<Input
 								type="text"
+								id="pixCode"
 								name="pixCode"
 								placeholder="Digite sua chave PIX"
 								bind:value={pixCode}
 								disabled={!selectedPixType}
 								required
 								class={erros.pixCode ? 'border-red-500' : ''}
+								aria-invalid={!!erros.pixCode}
+								aria-describedby={erros.pixCode ? 'pix-error' : 'pix-hint'}
 							/>
 							{#if erros.pixCode}
-								<p class="text-xs text-red-500">{erros.pixCode}</p>
+								<p id="pix-error" class="text-xs text-red-500">{erros.pixCode}</p>
 							{:else}
-								<p class="text-xs text-muted-foreground">
+								<p id="pix-hint" class="text-xs text-muted-foreground">
 									{#if selectedPixType === 'cpf'}
 										Ex. 123.456.789-10
 									{:else}
@@ -355,19 +385,28 @@
 					{/if}
 				</div>
 				<div class="mt-3 flex flex-col gap-2 md:mt-0 md:w-1/2">
-					<Label>Digite seu CEP</Label>
+					<Label for="cep">Digite seu CEP</Label>
 					<Input
 						type="text"
+						id="cep"
 						name="cep"
 						placeholder="Digite seu CEP"
 						maxlength={9}
-						autocomplete="off"
+						autocomplete="postal-code"
 						bind:value={cep}
 						on:input={() => {
 							cep = formatarCep(cep);
 						}}
+						required
+						class={erros.cep ? 'border-red-500' : ''}
+						aria-invalid={!!erros.cep}
+						aria-describedby={erros.cep ? 'cep-error' : 'cep-hint'}
 					/>
-					<p class="text-xs text-muted-foreground">Ex. 12345-678</p>
+					{#if erros.cep}
+						<p id="cep-error" class="text-xs text-red-500">{erros.cep}</p>
+					{:else}
+						<p id="cep-hint" class="text-xs text-muted-foreground">Ex. 12345-678</p>
+					{/if}
 				</div>
 			</div>
 
@@ -408,20 +447,23 @@
 						<!-- Normal input fields -->
 						<div class="flex flex-col gap-4 md:flex-row">
 							<div class="flex flex-1 flex-col gap-2">
-								<Label>Rua</Label>
+								<Label for="rua">Rua</Label>
 								<Input
 									type="text"
+									id="rua"
 									name="rua"
 									placeholder="Digite sua rua"
 									bind:value={endereco.rua}
 									maxlength={256}
 									required
+									autocomplete="street-address"
 								/>
 							</div>
 							<div class="flex flex-col gap-2 md:w-1/3">
-								<Label>Bairro</Label>
+								<Label for="bairro">Bairro</Label>
 								<Input
 									type="text"
+									id="bairro"
 									name="bairro"
 									placeholder="Digite seu bairro"
 									bind:value={endereco.bairro}
@@ -430,56 +472,61 @@
 								/>
 							</div>
 							<div class="flex flex-col gap-2 md:w-1/6">
-								<Label>Estado</Label>
+								<Label for="estado">Estado</Label>
 								<Input
 									type="text"
+									id="estado"
 									name="estado"
 									placeholder="ex. SP"
 									bind:value={endereco.estado}
 									maxlength={2}
 									minlength={2}
 									required
+									autocomplete="address-level1"
 								/>
 							</div>
 						</div>
 						<div class="flex flex-col gap-4 md:flex-row">
 							<div class="flex flex-1 flex-col gap-2">
-								<Label>Cidade</Label>
+								<Label for="cidade">Cidade</Label>
 								<Input
 									type="text"
+									id="cidade"
 									name="cidade"
 									placeholder="Digite sua cidade"
 									bind:value={endereco.cidade}
 									maxlength={256}
 									required
+									autocomplete="address-level2"
 								/>
 							</div>
 							<div class="flex flex-col gap-2 md:w-1/3">
-								<Label>Complemento</Label>
+								<Label for="complemento">Complemento</Label>
 								<Input
 									type="text"
+									id="complemento"
 									name="complemento"
 									placeholder="Opcional"
-									bind:value={endereco.complemento}
 									maxlength={256}
 								/>
 							</div>
 							<div class="flex flex-col gap-2 md:w-1/6">
-								<Label>Número</Label>
+								<Label for="numero">Número</Label>
 								<Input
 									type="number"
+									id="numero"
 									name="numero"
 									placeholder="ex. 123"
-									id="numero-input"
 									bind:value={endereco.numero}
 									min="1"
-									class={`!decoration-none !appearance-none !outline-none ${
-										erros.numero ? 'border-red-500' : ''
-									}`}
+									maxlength={8}
+									class={erros.numero ? '!appearance-none border-red-500' : '!appearance-none'}
 									required
+									aria-invalid={!!erros.numero}
+									aria-describedby={erros.numero ? 'numero-error' : null}
 								/>
 								{#if erros.numero}
-									<p class="text-xs text-red-500">{erros.numero}</p>
+									<p id="numero-error" class="text-xs text-red-500">{erros.numero}</p>
 								{/if}
 							</div>
 						</div>
@@ -500,6 +547,7 @@
 					<Input
 						class="w-full md:flex-1"
 						type="text"
+						id="promoCode"
 						bind:value={promoCode}
 						name="promoCode"
 						required
@@ -507,7 +555,13 @@
 						minlength={3}
 						placeholder="Seu Código Promocional"
 					/>
-					<Button variant="secondary" on:click={handlePromoCodeSubmission} class="w-full md:w-auto">
+					<Button
+						variant="secondary"
+						on:click={handlePromoCodeSubmission}
+						class="w-full md:w-auto"
+						type="button"
+						disabled={!promoCode || promoCode.length < 3}
+					>
 						Verificar
 					</Button>
 				</div>
@@ -515,7 +569,9 @@
 		</Card.Content>
 
 		<Card.Footer class="flex justify-end">
-			<Button type="submit" variant="secondary" disabled={!formValido}>Continuar</Button>
+			<Button type="submit" variant="secondary" disabled={!formValido || submitting}>
+				{submitting ? 'Enviando...' : 'Continuar'}
+			</Button>
 		</Card.Footer>
 	</Card.Root>
 </form>
