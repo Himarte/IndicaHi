@@ -252,9 +252,21 @@
 		}
 
 		const formData = new FormData(event.target as HTMLFormElement);
+
+		// Adiciona os dados que podem não estar sendo capturados pelo FormData
 		formData.append('userId', userData.id);
 		formData.append('pixType', selectedPixType);
-		formData.append('cepLimpo', cep.replace(/\D/g, ''));
+
+		// Adiciona dados de endereço
+		formData.append('cep', cep.replace(/\D/g, ''));
+		formData.append('rua', endereco.rua);
+		formData.append('numero', endereco.numero);
+		formData.append('complemento', endereco.complemento || '');
+		formData.append('bairro', endereco.bairro);
+		formData.append('cidade', endereco.cidade);
+		formData.append('estado', endereco.estado);
+
+		// Adiciona os dados limpos para facilitar a validação no servidor
 		formData.append('celularLimpo', cleanCellPhone(celular));
 		formData.append('cpfLimpo', cleanCPF(cpf));
 
