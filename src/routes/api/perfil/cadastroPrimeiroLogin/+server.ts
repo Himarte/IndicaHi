@@ -7,7 +7,7 @@ import { cpfIsUsed, promoCodeIsUsed, pixCodeIsUsed } from '$lib/server/database/
 
 const validateData = async (data: { [key: string]: string }) => {
 	const { cpf, celular, pixCode, promoCode, userId } = data;
-	const pixType = data.pixType as 'cpf' | 'cnpj' | 'email' | 'telefone';
+	const pixType = data.pixType as 'cpf' | 'cnpj';
 
 	if (!cpf || !celular || !pixType || !pixCode || !promoCode || !userId) {
 		throw new Error('Todos os campos são obrigatórios.');
@@ -45,7 +45,6 @@ export const POST: RequestHandler = async ({ request }) => {
 			promoCode: formData.get('promoCode') as string,
 			userId: formData.get('userId') as string
 		};
-
 
 		const { cleanedCPF, cleanedCellPhone, pixType, pixCode, promoCode, userId } =
 			await validateData(data);
