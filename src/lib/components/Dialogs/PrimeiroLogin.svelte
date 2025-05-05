@@ -6,7 +6,13 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { toast } from 'svelte-sonner';
-	import { applyMask, formatarTelefone, formatarCep } from '$lib/uteis/masks';
+	import {
+		applyMask,
+		formatarTelefone,
+		formatarCep,
+		cleanCPF,
+		cleanCellPhone
+	} from '$lib/uteis/masks';
 	import * as RadioGroup from '$lib/components/ui/radio-group';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 
@@ -35,6 +41,84 @@
 	};
 	let buscandoCep = false;
 	let cepDigitado = false;
+	let formValido = false;
+
+	// Validações
+	let erros = {
+		cpf: '',
+		celular: '',
+		pixCode: '',
+		numero: ''
+	};
+	// Função para validar formulário
+	$: formValido = Boolean(
+		!erros.cpf &&
+			!erros.celular &&
+			!erros.pixCode &&
+			!erros.numero &&
+			promoCodeValid &&
+			cpf &&
+			celular &&
+			pixCode &&
+			selectedPixType
+	);
+
+	// Função para validar CPF
+	$: {
+		if (cpf) {
+			const cpfLimpo = cleanCPF(cpf);
+			if (cpfLimpo.length !== 11) {
+				erros.cpf = 'CPF deve ter 11 dígitos';
+			} else {
+				erros.cpf = '';
+			}
+		} else {
+			erros.cpf = '';
+		}
+	}
+
+	// Função para validar celular
+	$: {
+		if (celular) {
+			const celularLimpo = cleanCellPhone(celular);
+			if (celularLimpo.length < 10 || celularLimpo.length > 11) {
+				erros.celular = 'Celular deve ter entre 10 e 11 dígitos';
+			} else {
+				erros.celular = '';
+			}
+		} else {
+			erros.celular = '';
+		}
+	}
+
+	// Função para validar PIX
+	$: {
+		if (pixCode && selectedPixType) {
+			if (selectedPixType === 'cpf' && cleanCPF(pixCode).length !== 11) {
+				erros.pixCode = 'CPF deve ter 11 dígitos';
+			} else if (selectedPixType === 'cnpj' && cleanCPF(pixCode).length !== 14) {
+				erros.pixCode = 'CNPJ deve ter 14 dígitos';
+			} else {
+				erros.pixCode = '';
+			}
+		} else {
+			erros.pixCode = '';
+		}
+	}
+
+	// Validar número
+	$: {
+		if (endereco.numero) {
+			const numero = parseInt(endereco.numero);
+			if (isNaN(numero) || numero <= 0) {
+				erros.numero = 'Digite um número válido';
+			} else {
+				erros.numero = '';
+			}
+		} else {
+			erros.numero = '';
+		}
+	}
 
 	// Função para aplicar máscara conforme o tipo de PIX selecionado
 	$: if (pixCode && selectedPixType) {
@@ -143,9 +227,18 @@
 			return;
 		}
 
+		// Validar todos os campos obrigatórios
+		if (!formValido) {
+			toast.error('Preencha todos os campos obrigatórios corretamente');
+			return;
+		}
+
 		const formData = new FormData(event.target as HTMLFormElement);
 		formData.append('userId', userData.id);
 		formData.append('pixType', selectedPixType);
+		formData.append('cepLimpo', cep.replace(/\D/g, ''));
+		formData.append('celularLimpo', cleanCellPhone(celular));
+		formData.append('cpfLimpo', cleanCPF(cpf));
 
 		try {
 			const response = await fetch('/api/perfil/cadastroPrimeiroLogin', {
@@ -173,7 +266,10 @@
 	<Card.Root class="flex h-fit w-full flex-col gap-4 md:w-2/5 md:p-6">
 		<Card.Header class="text-center">
 			<Card.Title class="text-2xl text-orange-500">Bem vindo!</Card.Title>
-			<Card.Description>Preencha algumas informações para podermos continuar</Card.Description>
+			<Card.Description>
+				Preencha os campos abaixo para criarmos seu perfil e codigo de indicação, para que você
+				possa começar a lucrar com as suas indicações!
+			</Card.Description>
 		</Card.Header>
 
 		<Card.Content class="flex h-full flex-col gap-4">
@@ -189,8 +285,13 @@
 						bind:value={cpf}
 						on:input={() => (cpf = applyMask(cpf, 'cpf'))}
 						required
+						class={erros.cpf ? 'border-red-500' : ''}
 					/>
-					<p class="text-xs text-muted-foreground">Ex. 123.456.789-10</p>
+					{#if erros.cpf}
+						<p class="text-xs text-red-500">{erros.cpf}</p>
+					{:else}
+						<p class="text-xs text-muted-foreground">Ex. 123.456.789-10</p>
+					{/if}
 				</div>
 				<div class="flex flex-1 flex-col gap-2">
 					<Label>Celular</Label>
@@ -202,8 +303,13 @@
 						bind:value={celular}
 						on:input={() => (celular = formatarTelefone(celular))}
 						required
+						class={erros.celular ? 'border-red-500' : ''}
 					/>
-					<p class="text-xs text-muted-foreground">Ex. (DD) 99999-9999</p>
+					{#if erros.celular}
+						<p class="text-xs text-red-500">{erros.celular}</p>
+					{:else}
+						<p class="text-xs text-muted-foreground">Ex. (DD) 99999-9999</p>
+					{/if}
 				</div>
 			</div>
 
@@ -232,18 +338,23 @@
 								bind:value={pixCode}
 								disabled={!selectedPixType}
 								required
+								class={erros.pixCode ? 'border-red-500' : ''}
 							/>
-							<p class="text-xs text-muted-foreground">
-								{#if selectedPixType === 'cpf'}
-									Ex. 123.456.789-10
-								{:else}
-									Ex. 12.345.678/0001-90
-								{/if}
-							</p>
+							{#if erros.pixCode}
+								<p class="text-xs text-red-500">{erros.pixCode}</p>
+							{:else}
+								<p class="text-xs text-muted-foreground">
+									{#if selectedPixType === 'cpf'}
+										Ex. 123.456.789-10
+									{:else}
+										Ex. 12.345.678/0001-90
+									{/if}
+								</p>
+							{/if}
 						</div>
 					{/if}
 				</div>
-				<div class="flex flex-col gap-2 md:w-1/2">
+				<div class="mt-3 flex flex-col gap-2 md:mt-0 md:w-1/2">
 					<Label>Digite seu CEP</Label>
 					<Input
 						type="text"
@@ -303,6 +414,8 @@
 									name="rua"
 									placeholder="Digite sua rua"
 									bind:value={endereco.rua}
+									maxlength={256}
+									required
 								/>
 							</div>
 							<div class="flex flex-col gap-2 md:w-1/3">
@@ -312,6 +425,8 @@
 									name="bairro"
 									placeholder="Digite seu bairro"
 									bind:value={endereco.bairro}
+									maxlength={256}
+									required
 								/>
 							</div>
 							<div class="flex flex-col gap-2 md:w-1/6">
@@ -321,6 +436,9 @@
 									name="estado"
 									placeholder="ex. SP"
 									bind:value={endereco.estado}
+									maxlength={2}
+									minlength={2}
+									required
 								/>
 							</div>
 						</div>
@@ -332,21 +450,37 @@
 									name="cidade"
 									placeholder="Digite sua cidade"
 									bind:value={endereco.cidade}
+									maxlength={256}
+									required
 								/>
 							</div>
 							<div class="flex flex-col gap-2 md:w-1/3">
 								<Label>Complemento</Label>
-								<Input type="text" name="complemento" placeholder="Opcional" />
+								<Input
+									type="text"
+									name="complemento"
+									placeholder="Opcional"
+									bind:value={endereco.complemento}
+									maxlength={256}
+								/>
 							</div>
 							<div class="flex flex-col gap-2 md:w-1/6">
 								<Label>Número</Label>
 								<Input
-									type="text"
+									type="number"
 									name="numero"
 									placeholder="ex. 123"
 									id="numero-input"
 									bind:value={endereco.numero}
+									min="1"
+									class={`!decoration-none !appearance-none !outline-none ${
+										erros.numero ? 'border-red-500' : ''
+									}`}
+									required
 								/>
+								{#if erros.numero}
+									<p class="text-xs text-red-500">{erros.numero}</p>
+								{/if}
 							</div>
 						</div>
 					{/if}
@@ -381,7 +515,7 @@
 		</Card.Content>
 
 		<Card.Footer class="flex justify-end">
-			<Button type="submit" variant="secondary" disabled={!promoCodeValid}>Continuar</Button>
+			<Button type="submit" variant="secondary" disabled={!formValido}>Continuar</Button>
 		</Card.Footer>
 	</Card.Root>
 </form>
