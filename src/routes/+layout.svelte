@@ -7,6 +7,7 @@
 	import { ModeWatcher } from 'mode-watcher';
 	import PrimeiroLogin from '$lib/components/Dialogs/PrimeiroLogin.svelte';
 	import { page } from '$app/stores';
+	import BonusIndicador from '$lib/components/layouts/BonusIndicador.svelte';
 
 	export let data: LayoutData;
 	export let isLoggedIn = data.isUserLoggedIn;
@@ -44,6 +45,14 @@
 					<a href="/configuracoes" class="text-orange-500">
 						{userData?.promoCode || 'Não possui'}
 					</a>
+				</div>
+				<div
+					class={$page.url.pathname === '/configuracoes' ||
+					$page.url.pathname === '/configuracoes/privacidade'
+						? 'hidden'
+						: ''}
+				>
+					<BonusIndicador {userData} />
 				</div>
 			{/if}
 			<NovoSide {userData} />

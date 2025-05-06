@@ -2,7 +2,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { SITE_CHAVE_API } from '$env/static/private';
 import { fail } from '@sveltejs/kit';
 import { db } from '$lib/server/database/db.server';
-import { leadsComprovanteTable, leadsTable } from '$lib/server/database/schema';
+import { leadsComprovanteTable, leadsTable, userTable } from '$lib/server/database/schema';
 import { eq } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({ fetch, locals }) => {
@@ -132,6 +132,28 @@ export const actions: Actions = {
 				updateData.aguardandoPagamentoEm = now;
 			} else if (status === 'Cancelado') {
 				updateData.canceladoEm = now;
+
+				// Decrementar o bônus de indicação do usuário indicador se o lead for cancelado
+				if (lead[0].userIdPromoCode) {
+					// Buscar o usuário indicador pelo ID
+					const usuarioIndicador = await db
+						.select()
+						.from(userTable)
+						.where(eq(userTable.id, lead[0].userIdPromoCode));
+
+					if (usuarioIndicador && usuarioIndicador.length > 0) {
+						// Decrementar o bônus de indicação, certificando que não fique negativo
+						const bonusAtual = usuarioIndicador[0].bonusIndicacao || 0;
+						const novoBonusIndicacao = Math.max(0, bonusAtual - 1);
+
+						await db
+							.update(userTable)
+							.set({
+								bonusIndicacao: novoBonusIndicacao
+							})
+							.where(eq(userTable.id, lead[0].userIdPromoCode));
+					}
+				}
 			}
 
 			// Atualiza o status do lead

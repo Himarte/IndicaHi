@@ -54,7 +54,10 @@ export const lucia = new Lucia(dbAdapter, {
 			bairro: userTable.bairro,
 			cidade: userTable.cidade,
 			estado: userTable.estado,
-			status: userTable.status
+			status: userTable.status,
+			bonusIndicacao: userTable.bonusIndicacao,
+			bonusIndicacaoResgatado: userTable.bonusIndicacaoResgatado,
+			bonusIndicacaoResgatadoEm: userTable.bonusIndicacaoResgatadoEm
 		};
 	}
 });
@@ -83,6 +86,9 @@ declare module 'lucia' {
 			cidade: string;
 			estado: string;
 			status: boolean;
+			bonusIndicacao: number;
+			bonusIndicacaoResgatado: number;
+			bonusIndicacaoResgatadoEm: string;
 		};
 	}
 }
@@ -105,4 +111,7 @@ export type userDataFromCookies = {
 	cidade: string;
 	estado: string;
 	status: boolean;
+	bonusIndicacao: number;
+	bonusIndicacaoResgatado: number;
+	bonusIndicacaoResgatadoEm: string;
 };
