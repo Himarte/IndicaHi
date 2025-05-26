@@ -7,7 +7,7 @@
 	let bonusIndicacao = userData.bonusIndicacao;
 </script>
 
-<a href="/dashboard/indicacoes">
+<a href="/dashboard/recompensa">
 	<div class="absolute left-24 top-1 z-50 flex w-fit flex-col items-center gap-1">
 		<div class="flex items-center justify-center gap-3">
 			<h1 class="text-xl font-bold">Bonus de indicação</h1>
