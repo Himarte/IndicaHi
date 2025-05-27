@@ -48,7 +48,8 @@
 				</div>
 				<div
 					class={$page.url.pathname === '/configuracoes' ||
-					$page.url.pathname === '/configuracoes/privacidade'
+					$page.url.pathname === '/configuracoes/privacidade' ||
+					$page.url.pathname === '/dashboard/recompensa'
 						? 'hidden'
 						: ''}
 				>
