@@ -3,372 +3,489 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Check, DollarSign, Star, Sparkles, Trophy, Gift } from 'lucide-svelte';
 	import type { PageData } from './$types';
-
+	import type { userDataFromCookies } from '$lib/server/lucia.server';
+	import { page } from '$app/stores';
+	import { navigating } from '$app/stores';
+	import IsLoading from './_components/IsLoading.svelte';
+	import AnimationBg from './_components/AnimationBg.svelte';
 	export let data: PageData;
 	export let foo: () => void = () => {}; // Callback prop for component events
 
-	let currentProgress = 2; // User has completed 2 milestones
+	// Estados de loading
+	$: isLoading = $navigating || !data.userData;
+	$: currentUserData = data.userData as userDataFromCookies;
 
+	// Progresso real do usuário baseado no bonusIndicacao (seguindo a lógica do BonusIndicador)
+	$: currentProgress = currentUserData?.bonusIndicacao || 0;
+
+	// Milestones baseados no BonusIndicador.svelte (a cada 5 indicações até 20)
 	const milestones = [
-		{ id: 1, referrals: 0, reward: 0, completed: true },
-		{ id: 2, referrals: 5, reward: 20, completed: true },
-		{ id: 3, referrals: 10, reward: 45, completed: true },
+		{ id: 1, referrals: 0, reward: 0, completed: false },
+		{ id: 2, referrals: 5, reward: 20, completed: false },
+		{ id: 3, referrals: 10, reward: 45, completed: false },
 		{ id: 4, referrals: 15, reward: 75, completed: false },
-		{ id: 5, referrals: 20, reward: 100, completed: false },
-		{ id: 6, referrals: 25, reward: 150, completed: false, special: true }
+		{ id: 5, referrals: 20, reward: 150, completed: false, special: true }
 	];
 
-	$: nextMilestone = milestones.find((m) => !m.completed);
-	$: completedMilestones = milestones.filter((m) => m.completed).length;
-	$: remainingReferrals = nextMilestone ? nextMilestone.referrals - currentProgress * 5 : 0;
+	// Calcular quais milestones foram completados baseado no progresso real
+	$: milestonesWithProgress = milestones.map((milestone) => ({
+		...milestone,
+		completed: currentProgress >= milestone.referrals
+	}));
+
+	$: nextMilestone = milestonesWithProgress.find((m) => !m.completed);
+	$: completedMilestones = milestonesWithProgress.filter((m) => m.completed).length;
+	$: remainingReferrals = nextMilestone ? nextMilestone.referrals - currentProgress : 0;
 </script>
 
 <!-- Background with animated particles -->
 <div class="relative flex min-h-screen w-full flex-col items-center justify-center">
-	<!-- Animated background elements -->
-	<div class="absolute inset-0 overflow-hidden">
-		<div
-			class="animate-float absolute -right-40 -top-40 h-80 w-80 rounded-full bg-gradient-to-br from-orange-400/20 to-pink-600/20 blur-3xl"
-		></div>
-		<div
-			class="animate-float-delayed absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-red-400/20 to-orange-600/20 blur-3xl"
-		></div>
-		<div
-			class="animate-pulse-slow absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-red-400/10 to-orange-600/10 blur-3xl"
-		></div>
-	</div>
-
+	<!-- Background Animado -->
+	<AnimationBg />
 	<div
-		class="relative z-10 flex h-full w-full max-w-6xl flex-col gap-12 px-4 py-16 sm:px-6 lg:px-8"
+		class="relative z-10 flex h-full w-full max-w-6xl flex-col gap-8 px-2 py-8 md:gap-12 md:px-6 md:py-16 lg:px-8"
 	>
 		<!-- Page Header -->
-		<header class="flex flex-col items-center gap-8 text-center">
-			<div class="flex items-center gap-4">
+		<header
+			class="flex flex-col items-center gap-4 px-2 pt-10 text-center md:gap-8 md:px-0 md:pt-0"
+		>
+			<div class="flex items-center gap-3 md:gap-6">
 				<div class="relative">
-					<Sparkles class="animate-spin-slow h-10 w-10 text-orange-500" />
-					<div class="absolute inset-0 h-10 w-10 animate-ping text-orange-300 opacity-20">
-						<Sparkles class="h-10 w-10" />
+					<Sparkles class="animate-spin-slow h-8 w-8 text-orange-400 md:h-12 md:w-12" />
+					<div
+						class="absolute inset-0 h-8 w-8 animate-ping text-orange-300 opacity-20 md:h-12 md:w-12"
+					>
+						<Sparkles class="h-8 w-8 md:h-12 md:w-12" />
 					</div>
 				</div>
 				<h1
-					class="animate-gradient bg-gradient-to-r from-red-400 via-orange-300 to-pink-400 bg-clip-text text-6xl font-black text-transparent drop-shadow-2xl"
+					class="bg-gradient-to-r from-orange-400 via-yellow-300 to-emerald-400 bg-clip-text text-4xl font-black text-transparent drop-shadow-2xl md:text-6xl"
 				>
-					Sistema de Recompensas
+					Recompensas Extras
 				</h1>
 				<div class="relative">
-					<Trophy class="animate-bounce-slow h-10 w-10 text-yellow-500" />
-					<div class="absolute inset-0 h-10 w-10 animate-ping text-yellow-300 opacity-20">
-						<Trophy class="h-10 w-10" />
+					<Trophy class="animate-bounce-slow h-8 w-8 text-yellow-400 md:h-12 md:w-12" />
+					<div
+						class="absolute inset-0 h-8 w-8 animate-ping text-yellow-300 opacity-20 md:h-12 md:w-12"
+					>
+						<Trophy class="h-8 w-8 md:h-12 md:w-12" />
 					</div>
 				</div>
 			</div>
 		</header>
 
-		<!-- Progress Card -->
-		<div
-			class="relative flex w-full flex-col rounded-3xl border-2 border-orange-500/30 bg-gradient-to-br from-slate-800/90 via-slate-900/95 to-slate-800/90 p-10 shadow-2xl backdrop-blur-xl"
-		>
-			<!-- Enhanced card glow effects -->
+		{#if isLoading}
+			<IsLoading />
+		{:else}
+			<!-- Content when loaded -->
+			<!-- Progress Card -->
 			<div
-				class="animate-pulse-glow absolute inset-0 rounded-3xl bg-gradient-to-r from-red-500/10 via-orange-400/15 to-pink-500/10 blur-2xl"
-			></div>
-			<div
-				class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-red-500/20 via-orange-400/20 to-pink-500/20 opacity-50 blur-xl"
-			></div>
+				class="relative flex w-full flex-col rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 p-4 shadow-2xl backdrop-blur-xl md:p-10"
+			>
+				<!-- Enhanced card glow effects -->
+				<div
+					class="animate-pulse-glow absolute inset-0 rounded-3xl bg-gradient-to-r from-emerald-500/10 via-orange-400/15 to-yellow-500/10 blur-2xl"
+				></div>
+				<div
+					class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-emerald-500/20 via-orange-400/20 to-yellow-500/20 opacity-50 blur-xl"
+				></div>
 
-			<div class="relative z-10 flex flex-col gap-10">
-				<!-- Header with enhanced styling -->
-				<div class="flex flex-col items-center gap-4 text-center">
-					<div class="mb-2 flex items-center gap-3">
-						<Gift class="h-8 w-8 animate-bounce text-orange-400" />
-						<h2
-							class="bg-gradient-to-r from-red-400 via-orange-300 to-pink-400 bg-clip-text text-4xl font-black text-transparent"
-						>
-							Seu Progresso
-						</h2>
-						<Gift class="h-8 w-8 animate-bounce text-orange-400" style="animation-delay: 0.5s;" />
-					</div>
-					<p class="text-lg font-medium text-slate-300">
-						Realize indicações e lucre mais ainda com nossas recompensas!
-					</p>
-				</div>
-
-				<!-- Enhanced Milestones -->
-				<div class="flex items-center justify-between gap-6 md:gap-8">
-					{#each milestones as milestone, index}
-						<div class="group relative flex flex-col items-center gap-5">
-							<!-- Enhanced connection line -->
-							{#if index < milestones.length - 1}
-								<Separator
-									class="absolute left-[70px] top-10 z-0 hidden h-1 w-[150%] transition-all duration-700 md:block {milestone.completed
-										? 'bg-gradient-to-r from-red-500 via-orange-400 to-pink-500 shadow-lg shadow-orange-500/50'
-										: 'bg-slate-600/50'}"
-								/>
-							{/if}
-
-							<!-- Enhanced milestone circle -->
-							<div
-								class="relative z-10 flex h-20 w-20 items-center justify-center rounded-full bg-slate-800 transition-all duration-500 group-hover:scale-125 {milestone.completed
-									? 'animate-glow bg-gradient-to-br from-red-500 via-orange-400 to-pink-500 shadow-2xl shadow-orange-500/50'
-									: milestone.special
-										? 'animate-pulse-rainbow bg-gradient-to-br from-red-500 via-orange-500 to-pink-500 shadow-2xl shadow-orange-500/50'
-										: 'border-3 border-slate-500 bg-slate-700/80 shadow-xl'}"
+				<div class="relative z-10 flex flex-col gap-6 md:gap-12">
+					<!-- Header with enhanced styling -->
+					<div class="flex flex-col items-center gap-2 text-center">
+						<div class="mb-3 flex items-center gap-2 md:gap-4">
+							<Gift class="h-6 w-6 animate-bounce text-orange-400 md:h-10 md:w-10" />
+							<h2
+								class="bg-gradient-to-r from-orange-400 via-yellow-300 to-emerald-400 bg-clip-text text-3xl font-black text-transparent md:text-5xl"
 							>
-								<!-- Enhanced icons -->
-								{#if milestone.completed}
-									<Check class="h-8 w-8 text-white drop-shadow-lg" />
-								{:else if milestone.special}
-									<Star class="h-8 w-8 text-white drop-shadow-lg" />
+								Seu Progresso
+							</h2>
+							<Gift
+								class="h-6 w-6 animate-bounce text-orange-400 md:h-10 md:w-10"
+								style="animation-delay: 0.5s;"
+							/>
+						</div>
+						<p class="text-base font-medium text-slate-200 md:text-xl">
+							Realize indicações e lucre mais ainda com nossas recompensas!
+						</p>
+					</div>
+
+					<!-- Enhanced Milestones -->
+					<div
+						class=" flex items-center justify-center gap-2 overflow-x-auto pb-4 md:gap-6 md:overflow-x-visible md:pb-0"
+					>
+						<!-- Representação visual das indicações (similar ao BonusIndicador) -->
+						<div class=" relative flex w-full min-w-max justify-center px-2 md:max-w-full md:px-0">
+							<!-- Marco inicial (0 indicações) -->
+							<div class="flex flex-col items-center gap-2 md:gap-3">
+								<div
+									class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30 md:h-14 md:w-14"
+								>
+									<Check class="h-5 w-5 text-white drop-shadow-sm md:h-7 md:w-7" />
+								</div>
+								<span class="text-xs font-bold text-emerald-400">Início</span>
+							</div>
+
+							<!-- Indicações 1-5 -->
+							{#each Array(5) as _, i}
+								{#if currentProgress > i}
+									<Separator
+										class="mt-4 h-1.5 w-4 bg-emerald-500 shadow-lg shadow-emerald-500/25 md:mt-6 md:h-2 md:w-8"
+									/>
 								{:else}
-									<DollarSign
-										class="h-8 w-8 text-slate-400 transition-colors duration-300 group-hover:text-orange-400"
+									<Separator
+										class="mt-4 h-1.5 w-4 border border-slate-600 bg-slate-700 md:mt-6 md:h-2 md:w-8"
 									/>
 								{/if}
+							{/each}
 
-								<!-- Enhanced pulse animation for next milestone -->
-								{#if !milestone.completed && milestone === nextMilestone}
+							<!-- Marco 5 indicações -->
+							<div class="flex flex-col items-center gap-2 md:gap-3">
+								{#if currentProgress >= 5}
 									<div
-										class="animate-ping-slow absolute inset-0 rounded-full bg-gradient-to-r from-red-500 via-orange-400 to-pink-500 opacity-40"
-									></div>
+										class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/40 md:h-14 md:w-14"
+									>
+										<Check class="h-5 w-5 text-white drop-shadow-sm md:h-7 md:w-7" />
+									</div>
+									<div class="relative flex justify-center text-nowrap pt-5">
+										<div class="absolute top-0 text-xs font-bold text-emerald-400">
+											5 Indicações
+										</div>
+										<div
+											class="rounded bg-slate-800/50 px-1.5 py-0.5 text-xs font-semibold text-yellow-400 md:px-2 md:py-1"
+										>
+											R$ 20
+										</div>
+									</div>
+								{:else}
 									<div
-										class="animate-pulse-ring absolute inset-0 rounded-full bg-gradient-to-r from-red-500 via-orange-400 to-pink-500 opacity-20"
-									></div>
+										class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-slate-600 bg-slate-800 shadow-lg md:h-14 md:w-14"
+									>
+										<DollarSign class="h-5 w-5 text-slate-400 md:h-7 md:w-7" />
+									</div>
+									<div class="relative flex justify-center text-nowrap pt-5">
+										<div class="absolute top-0 text-xs font-bold text-slate-400">5 Indicações</div>
+										<div
+											class="rounded bg-slate-800/50 px-1.5 py-0.5 text-xs font-semibold text-slate-500 md:px-2 md:py-1"
+										>
+											R$ 20
+										</div>
+									</div>
 								{/if}
 							</div>
 
-							<!-- Enhanced milestone info -->
-							<div class="flex flex-col items-center gap-2 text-center">
-								<div
-									class="text-xs font-bold uppercase tracking-widest text-slate-400 transition-colors duration-300 group-hover:text-orange-400"
-								>
-									Indicações
-								</div>
-								<div
-									class="text-2xl font-black transition-all duration-300 {milestone.completed
-										? 'text-orange-400 drop-shadow-lg'
-										: 'text-slate-400 group-hover:text-slate-300'}"
-								>
-									{milestone.referrals}
-								</div>
-								<div
-									class="rounded-full px-4 py-2 text-sm font-bold transition-all duration-300 {milestone.completed
-										? 'border-2 border-orange-400/50 bg-gradient-to-r from-red-500/30 to-orange-500/30 text-white shadow-lg shadow-orange-500/25'
-										: milestone.special
-											? 'border-2 border-pink-400/50 bg-gradient-to-r from-red-500/30 to-pink-500/30 text-white shadow-lg shadow-pink-500/25'
-											: 'bg-slate-600/50 text-slate-300 group-hover:bg-slate-500/50'}"
-								>
-									R$ {milestone.reward}
-								</div>
+							<!-- Indicações 6-10 -->
+							{#each Array(5) as _, i}
+								{#if currentProgress > i + 5}
+									<Separator
+										class="mt-4 h-1.5 w-4 bg-emerald-500 shadow-lg shadow-emerald-500/25 md:mt-6 md:h-2 md:w-8"
+									/>
+								{:else}
+									<Separator
+										class="mt-4 h-1.5 w-4 border border-slate-600 bg-slate-700 md:mt-6 md:h-2 md:w-8"
+									/>
+								{/if}
+							{/each}
+
+							<!-- Marco 10 indicações -->
+							<div class="flex flex-col items-center gap-2 md:gap-3">
+								{#if currentProgress >= 10}
+									<div
+										class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/40 md:h-14 md:w-14"
+									>
+										<Check class="h-5 w-5 text-white drop-shadow-sm md:h-7 md:w-7" />
+									</div>
+									<div class="relative flex justify-center text-nowrap pt-5">
+										<div class="absolute top-0 text-xs font-bold text-emerald-400">
+											10 Indicações
+										</div>
+										<div
+											class="rounded bg-slate-800/50 px-1.5 py-0.5 text-xs font-semibold text-yellow-400 md:px-2 md:py-1"
+										>
+											R$ 45
+										</div>
+									</div>
+								{:else}
+									<div
+										class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-slate-600 bg-slate-800 shadow-lg md:h-14 md:w-14"
+									>
+										<DollarSign class="h-5 w-5 text-slate-400 md:h-7 md:w-7" />
+									</div>
+									<div class="relative flex justify-center text-nowrap pt-5">
+										<div class="absolute top-0 text-xs font-bold text-slate-400">10 Indicações</div>
+										<div
+											class="rounded bg-slate-800/50 px-1.5 py-0.5 text-xs font-semibold text-slate-500 md:px-2 md:py-1"
+										>
+											R$ 45
+										</div>
+									</div>
+								{/if}
+							</div>
+
+							<!-- Indicações 11-15 -->
+							{#each Array(5) as _, i}
+								{#if currentProgress > i + 10}
+									<Separator
+										class="mt-4 h-1.5 w-4 bg-emerald-500 shadow-lg shadow-emerald-500/25 md:mt-6 md:h-2 md:w-8"
+									/>
+								{:else}
+									<Separator
+										class="mt-4 h-1.5 w-4 border border-slate-600 bg-slate-700 md:mt-6 md:h-2 md:w-8"
+									/>
+								{/if}
+							{/each}
+
+							<!-- Marco 15 indicações -->
+							<div class="flex flex-col items-center gap-2 md:gap-3">
+								{#if currentProgress >= 15}
+									<div
+										class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/40 md:h-14 md:w-14"
+									>
+										<Check class="h-5 w-5 text-white drop-shadow-sm md:h-7 md:w-7" />
+									</div>
+									<div class="relative flex justify-center text-nowrap pt-5">
+										<div class="absolute top-0 text-xs font-bold text-emerald-400">
+											15 Indicações
+										</div>
+										<div
+											class="rounded bg-slate-800/50 px-1.5 py-0.5 text-xs font-semibold text-yellow-400 md:px-2 md:py-1"
+										>
+											R$ 75
+										</div>
+									</div>
+								{:else}
+									<div
+										class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-slate-600 bg-slate-800 shadow-lg md:h-14 md:w-14"
+									>
+										<DollarSign class="h-5 w-5 text-slate-400 md:h-7 md:w-7" />
+									</div>
+									<div class="relative flex justify-center text-nowrap pt-5">
+										<div class="absolute top-0 text-xs font-bold text-slate-400">15 Indicações</div>
+										<div
+											class="rounded bg-slate-800/50 px-1.5 py-0.5 text-xs font-semibold text-slate-500 md:px-2 md:py-1"
+										>
+											R$ 75
+										</div>
+									</div>
+								{/if}
+							</div>
+
+							<!-- Indicações 16-20 -->
+							{#each Array(5) as _, i}
+								{#if currentProgress > i + 15}
+									<Separator
+										class="mt-4 h-1.5 w-4 bg-emerald-500 shadow-lg shadow-emerald-500/25 md:mt-6 md:h-2 md:w-8"
+									/>
+								{:else}
+									<Separator
+										class="mt-4 h-1.5 w-4 border border-slate-600 bg-slate-700 md:mt-6 md:h-2 md:w-8"
+									/>
+								{/if}
+							{/each}
+
+							<!-- Marco final 20 indicações (especial) -->
+							<div class="flex flex-col items-center gap-2 md:gap-3">
+								{#if currentProgress >= 20}
+									<div
+										class="flex h-12 w-12 animate-pulse items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 shadow-xl shadow-orange-500/50 md:h-16 md:w-16"
+									>
+										<Star class="h-6 w-6 text-white drop-shadow-lg md:h-9 md:w-9" />
+									</div>
+									<div class="relative flex justify-center text-nowrap pt-5">
+										<div class="absolute top-0 text-xs font-bold text-yellow-300">
+											20 Indicações
+										</div>
+										<div
+											class="rounded-lg bg-slate-800/70 px-2 py-0.5 text-xs font-bold text-yellow-400 md:px-3 md:py-1 md:text-sm"
+										>
+											R$ 150
+										</div>
+										<div class="text-xs font-bold text-orange-400">🎉 MÁXIMO! 🎉</div>
+									</div>
+								{:else}
+									<div
+										class="border-3 flex h-12 w-12 animate-pulse items-center justify-center rounded-full border-orange-400 bg-slate-800 shadow-xl shadow-orange-400/30 md:h-16 md:w-16"
+									>
+										<Star class="h-6 w-6 text-orange-400 drop-shadow-sm md:h-9 md:w-9" />
+									</div>
+									<div class="relative flex justify-center text-nowrap pt-5">
+										<div class="absolute top-0 text-xs font-bold text-orange-300">
+											20 Indicações
+										</div>
+										<div
+											class="rounded-lg bg-slate-800/70 px-2 py-0.5 text-xs font-bold text-orange-400 md:px-3 md:py-1 md:text-sm"
+										>
+											R$ 150
+										</div>
+									</div>
+								{/if}
 							</div>
 						</div>
-					{/each}
-				</div>
-
-				<!-- Enhanced progress summary -->
-				<div class="flex justify-center">
-					<div
-						class="inline-flex items-center gap-4 rounded-full border-2 border-orange-500/30 bg-gradient-to-r from-red-500/20 via-orange-400/20 to-pink-500/20 px-8 py-4 shadow-xl backdrop-blur-sm"
-					>
-						<div class="relative">
-							<div
-								class="animate-pulse-fast h-4 w-4 rounded-full bg-gradient-to-r from-red-500 via-orange-400 to-pink-400"
-							></div>
-							<div
-								class="absolute inset-0 h-4 w-4 animate-ping rounded-full bg-orange-400 opacity-30"
-							></div>
-						</div>
-						<span class="text-lg font-bold text-white">
-							{completedMilestones} de {milestones.length} marcos concluídos
-						</span>
 					</div>
 				</div>
 
-				<!-- Enhanced next milestone info -->
+				<!-- Progress Summary -->
+				<div class="flex justify-center px-2 md:px-0">
+					<div
+						class="inline-flex flex-col items-center gap-3 rounded-2xl border border-emerald-500/40 bg-gradient-to-r from-emerald-500/15 via-green-400/10 to-emerald-500/15 px-4 py-2 shadow-xl backdrop-blur-sm md:flex-row md:gap-6 md:px-8 md:py-3"
+					>
+						<div class="flex items-center gap-2 md:gap-3">
+							<div
+								class="h-3 w-3 animate-pulse rounded-full bg-emerald-400 shadow-sm md:h-4 md:w-4"
+							></div>
+							<span class="text-sm font-bold text-white md:text-lg">
+								Progresso Atual:
+								<span class="text-base text-emerald-400 md:text-xl">{currentProgress}</span>
+								<span class="text-slate-300">/ 20 indicações</span>
+							</span>
+						</div>
+
+						<Separator class="hidden h-6 w-px bg-slate-500 md:block" />
+
+						<div class="flex items-center gap-2 md:gap-3">
+							<Trophy class="h-4 w-4 text-yellow-400 md:h-6 md:w-6" />
+							<span class="text-sm font-bold text-white md:text-lg">
+								Conquistas: <span class="text-base text-yellow-400 md:text-xl"
+									>{completedMilestones}</span
+								>
+								<span class="text-slate-300">/ 5</span>
+							</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Next Milestone Info -->
 				{#if nextMilestone}
 					<div
-						class="relative rounded-2xl border-2 border-orange-500/40 bg-gradient-to-r from-red-500/20 via-orange-400/20 to-pink-500/20 p-3 shadow-2xl backdrop-blur-sm"
+						class="relative mt-6 rounded-2xl border border-orange-400/50 bg-gradient-to-r from-orange-500/15 via-yellow-400/10 to-orange-500/15 p-3 shadow-2xl backdrop-blur-sm md:mt-8 md:p-4"
 					>
-						<div
-							class="animate-pulse-glow absolute inset-0 rounded-2xl bg-gradient-to-r from-red-500/10 to-orange-500/10 blur-xl"
-						></div>
-						<div class="relative flex flex-col items-center gap-3 text-center">
-							<p class="text-lg font-medium text-slate-300">
-								Próxima recompensa em
-								<span class="animate-bounce-text text-xl font-black text-orange-400">
+						<div class="relative flex flex-col items-center gap-2 text-center md:gap-3">
+							<div class="flex items-center gap-2 md:gap-3">
+								<Gift class="h-5 w-5 text-orange-400 md:h-7 md:w-7" />
+								<h3 class="text-lg font-bold text-white md:text-2xl">Próxima Recompensa</h3>
+								<Gift class="h-5 w-5 text-orange-400 md:h-7 md:w-7" />
+							</div>
+
+							<div class="flex flex-row items-center gap-2 md:gap-2">
+								<span class="text-sm font-medium text-slate-200 md:text-lg">Faltam apenas</span>
+								<span
+									class="rounded-lg bg-slate-800/60 px-2 py-1 text-lg font-black text-orange-400 drop-shadow-xl md:px-3 md:text-xl"
+								>
 									{remainingReferrals} indicações
 								</span>
-							</p>
-							<p
-								class="animate-gradient bg-gradient-to-r from-red-400 via-orange-300 to-pink-400 bg-clip-text text-4xl font-black text-transparent"
-							>
-								R$ {nextMilestone.reward}
-							</p>
+								<span class="text-sm font-medium text-slate-200 md:text-lg">para ganhar</span>
+							</div>
+							<div class="flex items-center gap-4">
+								<span class="text-3xl font-black text-emerald-400 drop-shadow-xl md:text-5xl">
+									R$ {nextMilestone.reward}
+								</span>
+							</div>
 						</div>
 					</div>
 				{:else}
 					<div
-						class="relative rounded-2xl border-2 border-pink-500/50 bg-gradient-to-r from-red-500/30 via-orange-500/30 to-pink-500/30 p-8 shadow-2xl backdrop-blur-sm"
+						class="relative rounded-2xl border border-yellow-400/60 bg-gradient-to-r from-yellow-500/20 via-emerald-500/15 to-yellow-500/20 p-8 shadow-2xl backdrop-blur-sm"
 					>
-						<div
-							class="animate-pulse-rainbow absolute inset-0 rounded-2xl bg-gradient-to-r from-red-500/20 to-orange-500/20 blur-xl"
-						></div>
 						<div class="relative text-center">
-							<p
-								class="animate-gradient bg-gradient-to-r from-red-400 via-orange-400 to-pink-400 bg-clip-text text-2xl font-black text-transparent"
-							>
-								🎉 Parabéns! Você completou todos os marcos! 🎉
-							</p>
-							<div class="mt-4 flex justify-center gap-2">
-								<Trophy class="h-6 w-6 animate-bounce text-yellow-400" />
+							<div class="mb-6 flex justify-center gap-3">
+								<Trophy class="h-10 w-10 animate-bounce text-yellow-400" />
 								<Star
-									class="h-6 w-6 animate-bounce text-orange-400"
+									class="h-10 w-10 animate-bounce text-orange-400"
 									style="animation-delay: 0.2s;"
 								/>
-								<Gift class="h-6 w-6 animate-bounce text-pink-400" style="animation-delay: 0.4s;" />
+								<Gift
+									class="h-10 w-10 animate-bounce text-emerald-400"
+									style="animation-delay: 0.4s;"
+								/>
 							</div>
+							<p class="mb-3 text-4xl font-black text-yellow-400">🎉 PARABÉNS! 🎉</p>
+							<p class="mb-2 text-2xl font-bold text-emerald-400">
+								Você completou todos os marcos de indicação!
+							</p>
+							<p class="text-lg text-slate-200">Continue indicando para manter seu bônus ativo!</p>
 						</div>
 					</div>
 				{/if}
 			</div>
-		</div>
+		{/if}
 	</div>
 
 	<!-- Enhanced floating action button -->
-	<div class="fixed bottom-10 left-1/2 z-20 -translate-x-1/2">
-		<a href="/dashboard/recompensa2" class="h-full w-full">
+	{#if currentProgress < 4 || isLoading}
+		<div class="fixed bottom-6 left-1/2 z-20 -translate-x-1/2 md:bottom-10">
 			<Button
 				size="lg"
-				class="animate-float-button relative h-12 w-full overflow-hidden border-2 border-orange-400/50 bg-gradient-to-r from-red-600 via-orange-500 to-pink-600 text-xl font-bold text-white shadow-2xl shadow-orange-500/50 transition-all duration-300 hover:scale-110 hover:from-orange-500 hover:via-red-400 hover:to-pink-500 hover:shadow-orange-500/70"
-				on:click={() => foo()}
+				class="animate-float-button relative h-12 w-auto overflow-hidden border-2 border-emerald-400/50 bg-gradient-to-r from-emerald-600 via-orange-500 to-yellow-600 text-lg font-bold text-white shadow-2xl shadow-emerald-500/50 transition-all duration-300 hover:scale-110 hover:from-orange-500 hover:via-emerald-400 hover:to-yellow-500 hover:shadow-emerald-500/70 md:h-14 md:text-xl"
+				disabled
 			>
-				<span class="relative z-10 flex items-center gap-3 px-1">
-					<Sparkles class="animate-spin-slow h-6 w-6" />
-					Resgatar Recompensa
+				<span class="relative z-10 flex items-center gap-2 px-4 md:gap-3 md:px-6">
+					<Sparkles class="animate-spin-slow h-5 w-5 md:h-7 md:w-7" />
+					<span class="hidden md:inline">Resgatar Recompensa</span>
+					<span class="md:hidden">Resgatar</span>
+					<Gift class="h-5 w-5 md:h-7 md:w-7" />
 				</span>
 				<!-- Enhanced button glow effects -->
 				<div
-					class="animate-pulse-glow absolute inset-0 bg-gradient-to-r from-red-500/30 to-orange-500/30 blur-2xl"
+					class="animate-pulse-glow absolute inset-0 bg-gradient-to-r from-emerald-500/30 to-orange-500/30 blur-2xl"
 				></div>
 				<div
 					class="animate-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
 				></div>
 			</Button>
-		</a>
-	</div>
+		</div>
+	{:else}
+		<div class="fixed bottom-10 left-1/2 z-20 -translate-x-1/2 md:bottom-16">
+			<a href="/dashboard/recompensa2" class="h-full w-full">
+				<Button
+					size="lg"
+					class="animate-float-button relative h-12 w-auto overflow-hidden border-2 border-emerald-400/50 bg-gradient-to-r from-emerald-600 via-orange-500 to-yellow-600 text-lg font-bold text-white shadow-2xl shadow-emerald-500/50 transition-all duration-300 hover:scale-110 hover:from-orange-500 hover:via-emerald-400 hover:to-yellow-500 hover:shadow-emerald-500/70 md:h-14 md:text-xl"
+					on:click={() => foo()}
+				>
+					<span class="relative z-10 flex items-center gap-2 px-4 md:gap-3 md:px-6">
+						<Sparkles class="animate-spin-slow h-5 w-5 md:h-7 md:w-7" />
+						<span class="hidden md:inline">Resgatar Recompensa</span>
+						<span class="md:hidden">Resgatar</span>
+						<Gift class="h-5 w-5 md:h-7 md:w-7" />
+					</span>
+					<!-- Enhanced button glow effects -->
+					<div
+						class="animate-pulse-glow absolute inset-0 bg-gradient-to-r from-emerald-500/30 to-orange-500/30 blur-2xl"
+					></div>
+					<div
+						class="animate-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+					></div>
+				</Button>
+			</a>
+		</div>
+	{/if}
 </div>
 
 <style>
-	/* Animações utilizadas */
 	.animate-ping {
 		animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-	}
-
-	.animate-pulse-slow {
-		animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-	}
-
-	.animate-pulse-fast {
-		animation: pulse 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-	}
-
-	.animate-float {
-		animation: float 6s ease-in-out infinite;
-	}
-
-	.animate-float-delayed {
-		animation: float 6s ease-in-out infinite;
-		animation-delay: 3s;
-	}
-
-	.animate-gradient {
-		background-size: 200% 200%;
-		animation: gradient 3s ease infinite;
-	}
-
-	.animate-shimmer {
-		animation: shimmer 2s ease-in-out infinite;
-	}
-
-	.animate-glow {
-		animation: glow 2s ease-in-out infinite alternate;
 	}
 
 	.animate-pulse-glow {
 		animation: pulse-glow 3s ease-in-out infinite;
 	}
 
-	.animate-pulse-rainbow {
-		animation: pulse-rainbow 2s ease-in-out infinite;
+	.animate-shimmer {
+		animation: shimmer 2s ease-in-out infinite;
 	}
 
-	.animate-ping-slow {
-		animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+	.animate-float-button {
+		animation: float-button 3s ease-in-out infinite;
 	}
 
-	.animate-pulse-ring {
-		animation: pulse-ring 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+	.border-3 {
+		border-width: 3px;
 	}
 
-	.animate-bounce-text {
-		animation: bounce-text 2s ease-in-out infinite;
-	}
-
-	/* Keyframes utilizados */
 	@keyframes ping {
 		75%,
 		100% {
 			transform: scale(2);
 			opacity: 0;
-		}
-	}
-
-	@keyframes pulse {
-		0%,
-		100% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0.7;
-		}
-	}
-
-	@keyframes float {
-		0%,
-		100% {
-			transform: translateY(0px);
-		}
-		50% {
-			transform: translateY(-20px);
-		}
-	}
-
-	@keyframes gradient {
-		0% {
-			background-position: 0% 50%;
-		}
-		50% {
-			background-position: 100% 50%;
-		}
-		100% {
-			background-position: 0% 50%;
-		}
-	}
-
-	@keyframes shimmer {
-		0% {
-			transform: translateX(-100%);
-		}
-		100% {
-			transform: translateX(100%);
-		}
-	}
-
-	@keyframes glow {
-		0% {
-			box-shadow: 0 0 20px rgba(251, 146, 60, 0.5);
-		}
-		100% {
-			box-shadow: 0 0 40px rgba(251, 146, 60, 0.8);
 		}
 	}
 
@@ -382,42 +499,22 @@
 		}
 	}
 
-	@keyframes pulse-rainbow {
-		0%,
-		100% {
-			opacity: 0.6;
-		}
-		50% {
-			opacity: 1;
-		}
-	}
-
-	@keyframes ping-slow {
-		75%,
-		100% {
-			transform: scale(1.5);
-			opacity: 0;
-		}
-	}
-
-	@keyframes pulse-ring {
+	@keyframes shimmer {
 		0% {
-			transform: scale(1);
-			opacity: 0.3;
+			transform: translateX(-100%);
 		}
 		100% {
-			transform: scale(1.8);
-			opacity: 0;
+			transform: translateX(100%);
 		}
 	}
 
-	@keyframes bounce-text {
+	@keyframes float-button {
 		0%,
 		100% {
-			transform: translateY(0);
+			transform: translateY(0px);
 		}
 		50% {
-			transform: translateY(-3px);
+			transform: translateY(-5px);
 		}
 	}
 </style>

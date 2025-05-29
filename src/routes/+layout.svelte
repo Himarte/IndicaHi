@@ -29,7 +29,7 @@
 
 <!-- <NovoHeader {isLoggedIn} {userData} /> -->
 
-<main class="flex h-full w-full {isLoggedIn ? 'pl-[3.5rem]' : ''} relative">
+<main class="flex h-full w-full {isLoggedIn ? 'md:pl-[3.5rem]' : ' '} relative">
 	{#if isLoggedIn && userData}
 		{#if showPrimeiroLogin}
 			<PrimeiroLogin {userData} />
