@@ -1,60 +1,51 @@
-import {
-	BLIP_CHAVE_API,
-	BLIP_VOALLE_CLIENT_ID,
-	BLIP_VOALLE_CLIENT_SECRET,
-	VOALLE_SYNDATA_API,
-	VOALLE_URL
-} from '$env/static/private';
+import { BLIP_CHAVE_API } from '$env/static/private';
 import type { RequestHandler } from './$types';
+import {
+	validateCpfCnpj,
+	getVoalleAccessToken,
+	fetchVoalleBoletos
+} from '$lib/server/utils/voalle.server';
+import {
+	createErrorResponse,
+	createSuccessResponse,
+	validateApiKey
+} from '$lib/server/utils/response.server';
 
-// API pegar boletos em abertos
+// API para buscar boletos em aberto
 export const GET: RequestHandler = async ({ request }) => {
-	if (request.headers.get('API-KEY-BLIP') !== BLIP_CHAVE_API) {
-		return new Response('Chave de API inválida', { status: 401 });
-	}
-	const cpfCnpj = request.headers.get('CPF-CNPJ');
-	if (!cpfCnpj) {
-		return new Response('Parâmetros inválidos', { status: 400 });
-	}
-
-
-	// Faz a requisição para para pegar o access token
-	const autentificacaoVoalle = await fetch(`${VOALLE_URL}:45700/connect/token`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded'
-		},
-		body: new URLSearchParams({
-			grant_type: 'client_credentials',
-			scope: 'syngw',
-			client_id: BLIP_VOALLE_CLIENT_ID,
-			client_secret: BLIP_VOALLE_CLIENT_SECRET,
-			syndata: VOALLE_SYNDATA_API
-		})
-	}).then((res) => res.json());
-
-	const accessToken = autentificacaoVoalle.access_token;
-
-	const response = await fetch(
-		`${VOALLE_URL}:45715/external/integrations/thirdparty/getopentitlesbytxid/${cpfCnpj}`,
-		{
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${accessToken}`
-			}
+	try {
+		// Validação da chave de API
+		if (!validateApiKey(request, BLIP_CHAVE_API)) {
+			return createErrorResponse('Chave de API inválida', 401);
 		}
-	);
 
-	if (!response.ok) {
-		console.error(`HTTP error status: ${response.status}`);
-		const errorText = await response.text();
-		return new Response(errorText, { status: response.status });
+		// Validação e sanitização do CPF/CNPJ
+		const cpfCnpjRaw = request.headers.get('CPF-CNPJ');
+		const cpfCnpj = validateCpfCnpj(cpfCnpjRaw);
+
+		if (!cpfCnpj) {
+			return createErrorResponse('CPF/CNPJ inválido ou não fornecido', 400);
+		}
+
+		// Obtenção do token de acesso
+		const accessToken = await getVoalleAccessToken();
+
+		// Busca dos boletos em aberto
+		const dadosBoletos = await fetchVoalleBoletos(cpfCnpj, accessToken);
+
+		return createSuccessResponse(dadosBoletos, 180); // Cache de 3 minutos
+	} catch (error) {
+		console.error('Erro no endpoint de boletos Voalle:', error);
+
+		const message = error instanceof Error ? error.message : 'Erro interno do servidor';
+		const status = message.includes('autenticação')
+			? 502
+			: message.includes('não encontrado')
+				? 404
+				: message.includes('inválido')
+					? 400
+					: 500;
+
+		return createErrorResponse(message, status);
 	}
-
-	const dadosBoletos = await response.json();
-
-	return new Response(JSON.stringify(dadosBoletos), {
-		status: 200,
-		headers: { 'Content-Type': 'application/json' }
-	});
 };
