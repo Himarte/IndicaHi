@@ -19,9 +19,17 @@ export function maskCellPhone(value: string): string {
 		.slice(0, 15);
 }
 
+export function maskCep(value: string): string {
+	const cleanValue = value.replace(/\D/g, '');
+	const cep = cleanValue.slice(0, 8);
+
+	return cep.replace(/(\d{5})(\d{1,3})/, '$1-$2');
+}
+
 export const formatarTelefone = maskCellPhone;
 export const formatarCPF = maskCPF;
 export const formatarCNPJ = maskCNPJ;
+export const formatarCep = maskCep;
 
 export function maskCNPJ(value: string): string {
 	const cleanValue = value.replace(/\D/g, '');

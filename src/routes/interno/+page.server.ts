@@ -2,7 +2,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { SITE_CHAVE_API } from '$env/static/private';
 import { fail } from '@sveltejs/kit';
 import { db } from '$lib/server/database/db.server';
-import { leadsTable, motivoCancelado } from '$lib/server/database/schema';
+import { leadsTable, motivoCancelado, userTable } from '$lib/server/database/schema';
 import { eq } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({ fetch }) => {
@@ -96,15 +96,55 @@ export const actions: Actions = {
 				});
 			}
 
+			// Preparar os dados para atualização com os timestamps apropriados
+			const updateData: {
+				status: (typeof validStatuses)[number];
+				atendidoPor: string;
+				atendidoEm?: string;
+				finalizadoEm?: string;
+				pagoEm?: string;
+				aguardandoPagamentoEm?: string;
+				canceladoEm?: string | null;
+			} = {
+				status: status as (typeof validStatuses)[number],
+				atendidoPor: locals.user.name
+			};
+
+			// Atualizar o timestamp correspondente ao status atual
+			const now = new Date().toISOString();
+			if (status === 'Sendo Atendido') {
+				updateData.atendidoEm = now;
+			} else if (status === 'Finalizado') {
+				updateData.finalizadoEm = now;
+			} else if (status === 'Pago') {
+				updateData.pagoEm = now;
+			} else if (status === 'Aguardando Pagamento') {
+				updateData.aguardandoPagamentoEm = now;
+
+				// Incrementar o bônus de indicação do usuário indicador
+				if (lead[0].userIdPromoCode) {
+					// Buscar o usuário indicador pelo ID
+					const usuarioIndicador = await db
+						.select()
+						.from(userTable)
+						.where(eq(userTable.id, lead[0].userIdPromoCode));
+
+					if (usuarioIndicador && usuarioIndicador.length > 0) {
+						// Incrementar o bônus de indicação
+						await db
+							.update(userTable)
+							.set({
+								bonusIndicacao: (usuarioIndicador[0].bonusIndicacao || 0) + 1
+							})
+							.where(eq(userTable.id, lead[0].userIdPromoCode));
+					}
+				}
+			} else if (status === 'Cancelado') {
+				updateData.canceladoEm = now;
+			}
+
 			// Atualiza o status do lead
-			await db
-				.update(leadsTable)
-				.set({
-					status: status as (typeof validStatuses)[number], // Garantir que é um valor válido
-					atendidoPor: locals.user.name,
-					canceladoEm: status === 'Cancelado' ? new Date().toISOString() : null
-				})
-				.where(eq(leadsTable.id, id));
+			await db.update(leadsTable).set(updateData).where(eq(leadsTable.id, id));
 
 			// Se o status for "Cancelado", salva o motivo na tabela `motivo_cancelado`
 			if (status === 'Cancelado' && motivo) {
@@ -129,7 +169,8 @@ export const actions: Actions = {
 
 			return {
 				success: true,
-				message: `Status atualizado para ${status} com sucesso.`
+				message: `Status atualizado para ${status} com sucesso.`,
+				newStatus: status
 			};
 		} catch (error) {
 			console.error('Erro ao atualizar status:', error);

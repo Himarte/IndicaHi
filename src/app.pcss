@@ -37,4 +37,19 @@ body {
 	position: relative;
 	margin: 0;
 	padding: 0;
+	font-family: 'inter', sans-serif;
+}
+
+@layer base {
+	/* Remover spinners em navegadores WebKit */
+	input[type='number']::-webkit-inner-spin-button,
+	input[type='number']::-webkit-outer-spin-button {
+		-webkit-appearance: none; /* Chrome, Safari, Edge */
+		margin: 0;
+	}
+
+	/* Remover spinners no Firefox */
+	input[type='number'] {
+		-moz-appearance: textfield; /* Firefox */
+	}
 }

@@ -7,16 +7,13 @@
 	import Dropdown from '$lib/components/StatusDropdown/Dropdown-financeiro.svelte';
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
-	import { formatarCPF,  formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
+	import { formatarCPF, formatarTelefone, formatarCNPJ } from '$lib/uteis/masks';
 	import Separator from '../ui/separator/separator.svelte';
 	import BotaoBaixar from './BotaoBaixarFinanceiro.svelte';
 	import { onMount } from 'svelte';
 
-
-
 	export let lead: LeadFinanceiro;
 	export let cargo: string;
-
 
 	if (lead.status === 'Pago') {
 		// fazer um onmout para pegar o comprovante para colocar um #await no botaoBaixar e passar o comprovante para o botaoBaixar
@@ -33,13 +30,23 @@
 	let isOpen = false;
 	let isSubmitting = false;
 	let formEl: HTMLFormElement;
+	let selectedStatus = '';
+
+	// Função para atualizar o status selecionado
+	function updateSelectedStatus(event: CustomEvent) {
+		selectedStatus = event.detail;
+	}
 
 	const handleSubmit = () => {
 		return async ({ formData, cancel }: { formData: FormData; cancel: () => void }) => {
 			isSubmitting = true;
 
+			// Obter o status do formulário
+			const status = formData.get('status') as string;
 			const comprovante = formData.get('comprovante') as File;
-			if (!comprovante || comprovante.size === 0) {
+
+			// Só exige comprovante se o status não for "Cancelado"
+			if (status !== 'Cancelado' && (!comprovante || comprovante.size === 0)) {
 				toast.error('Por favor, anexe um comprovante');
 				isSubmitting = false;
 				cancel();
@@ -67,7 +74,6 @@
 			};
 		};
 	};
-
 </script>
 
 <Sheet.Root bind:open={isOpen}>
@@ -166,11 +172,15 @@
 				<Separator class="mb-3 mt-4" />
 				<div class="flex flex-col items-start gap-2">
 					<Label for="status" class="text-right text-orange-400		">Alterar status:</Label>
-					<Dropdown {lead} {cargo} />
+					<Dropdown {lead} {cargo} on:statusChange={(e) => (selectedStatus = e.detail)} />
 				</div>
 
 				<div class=" flex flex-col items-start gap-2">
-					<Label for="comprovante" class="text-right text-orange-400">Anexar comprovante:</Label>
+					<Label for="comprovante" class="text-right text-orange-400">
+						{selectedStatus === 'Cancelado'
+							? 'Anexar comprovante (opcional):'
+							: 'Anexar comprovante:'}
+					</Label>
 					<input
 						type="file"
 						id="comprovante"

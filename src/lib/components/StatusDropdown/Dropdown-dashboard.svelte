@@ -65,10 +65,19 @@
 			if (result.type === 'failure') {
 				toast.error('Erro ao atualizar status');
 			} else if (result.type === 'success') {
-				// Atualiza o estado local
-				updateLeadStatus(result.data?.newStatus);
+				const form = new FormData();
+				form.get('status');
+				toast.success('Status atualizado com sucesso');
+
+				// Atualiza o estado local com o novo status
+				const newStatus = result.data?.newStatus || form.get('status');
+				if (newStatus) {
+					updateLeadStatus(newStatus);
+				}
+
 				// Força uma atualização da página
 				await update({ reset: false });
+
 				// Recarrega os dados
 				await invalidateAll();
 			}

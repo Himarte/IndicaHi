@@ -41,7 +41,14 @@ export const userTable = pgTable('user', {
 	status: boolean('status').default(true).notNull(),
 	criadoEm: timestamp('criado_em', { mode: 'string', precision: 6, withTimezone: true })
 		.notNull()
-		.defaultNow()
+		.defaultNow(),
+	bonusIndicacao: integer('bonus_indicacao').default(0),
+	bonusIndicacaoResgatado: integer('bonus_indicacao_resgatado').default(0),
+	bonusIndicacaoResgatadoEm: timestamp('bonus_indicacao_resgatado_em', {
+		withTimezone: true,
+		precision: 6,
+		mode: 'string'
+	})
 });
 
 export const sessionTable = pgTable('session', {
