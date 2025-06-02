@@ -8,17 +8,17 @@
 	import { navigating } from '$app/stores';
 	import IsLoading from './_components/IsLoading.svelte';
 	import AnimationBg from './_components/AnimationBg.svelte';
-	export let data: PageData;
-	export let foo: () => void = () => {}; // Callback prop for component events
+	import ResgatarRecompensa from '$lib/components/Dialogs/ResgatarRecompensa.svelte';
 
-	// Estados de loading
+	export let data: PageData;
+
+	// Estados da página
 	$: isLoading = $navigating || !data.userData;
 	$: currentUserData = data.userData as userDataFromCookies;
-
-	// Progresso real do usuário baseado no bonusIndicacao (seguindo a lógica do BonusIndicador)
 	$: currentProgress = currentUserData?.bonusIndicacao || 0;
+	let showResgateDialog = false;
 
-	// Milestones baseados no BonusIndicador.svelte (a cada 5 indicações até 20)
+	// Configuração dos milestones de recompensa
 	const milestones = [
 		{ id: 1, referrals: 0, reward: 0, completed: false },
 		{ id: 2, referrals: 5, reward: 20, completed: false },
@@ -27,11 +27,20 @@
 		{ id: 5, referrals: 20, reward: 150, completed: false, special: true }
 	];
 
-	// Calcular quais milestones foram completados baseado no progresso real
+	// Cálculos baseados no progresso atual
 	$: milestonesWithProgress = milestones.map((milestone) => ({
 		...milestone,
 		completed: currentProgress >= milestone.referrals
 	}));
+
+	// Calcular valor disponível para resgate
+	$: availableReward = (() => {
+		const maiorMilestoneAtingido = milestones
+			.filter((milestone) => currentProgress >= milestone.referrals && milestone.reward > 0)
+			.sort((a, b) => b.referrals - a.referrals)[0];
+
+		return maiorMilestoneAtingido ? maiorMilestoneAtingido.reward : 0;
+	})();
 
 	$: nextMilestone = milestonesWithProgress.find((m) => !m.completed);
 	$: completedMilestones = milestonesWithProgress.filter((m) => m.completed).length;
@@ -90,13 +99,13 @@
 					class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-emerald-500/20 via-orange-400/20 to-yellow-500/20 opacity-50 blur-xl"
 				></div>
 
-				<div class="relative z-10 flex flex-col gap-6 md:gap-12">
+				<div class="relative z-10 flex flex-col gap-6 md:gap-8">
 					<!-- Header with enhanced styling -->
 					<div class="flex flex-col items-center gap-2 text-center">
 						<div class="mb-3 flex items-center gap-2 md:gap-4">
 							<Gift class="h-6 w-6 animate-bounce text-orange-400 md:h-10 md:w-10" />
 							<h2
-								class="bg-gradient-to-r from-orange-400 via-yellow-300 to-emerald-400 bg-clip-text text-3xl font-black text-transparent md:text-5xl"
+								class="bg-gradient-to-r from-orange-400 via-yellow-300 to-emerald-400 bg-clip-text text-3xl font-black text-transparent md:text-3xl"
 							>
 								Seu Progresso
 							</h2>
@@ -105,8 +114,8 @@
 								style="animation-delay: 0.5s;"
 							/>
 						</div>
-						<p class="text-base font-medium text-slate-200 md:text-xl">
-							Realize indicações e lucre mais ainda com nossas recompensas!
+						<p class="text-base font-medium text-slate-200 md:text-lg">
+							Voce pode resgatar o valor disponivel em suas conquistas abaixo.
 						</p>
 					</div>
 
@@ -411,7 +420,7 @@
 	</div>
 
 	<!-- Enhanced floating action button -->
-	{#if currentProgress < 4 || isLoading}
+	{#if availableReward <= 0 || isLoading}
 		<div class="fixed bottom-6 left-1/2 z-20 -translate-x-1/2 md:bottom-10">
 			<Button
 				size="lg"
@@ -420,8 +429,8 @@
 			>
 				<span class="relative z-10 flex items-center gap-2 px-4 md:gap-3 md:px-6">
 					<Sparkles class="animate-spin-slow h-5 w-5 md:h-7 md:w-7" />
-					<span class="hidden md:inline">Resgatar Recompensa</span>
-					<span class="md:hidden">Resgatar</span>
+					<span class="hidden md:inline">Sem Recompensa Disponível</span>
+					<span class="md:hidden">Sem Recompensa</span>
 					<Gift class="h-5 w-5 md:h-7 md:w-7" />
 				</span>
 				<!-- Enhanced button glow effects -->
@@ -435,30 +444,33 @@
 		</div>
 	{:else}
 		<div class="fixed bottom-10 left-1/2 z-20 -translate-x-1/2 md:bottom-16">
-			<a href="/dashboard/recompensa2" class="h-full w-full">
-				<Button
-					size="lg"
-					class="animate-float-button relative h-12 w-auto overflow-hidden border-2 border-emerald-400/50 bg-gradient-to-r from-emerald-600 via-orange-500 to-yellow-600 text-lg font-bold text-white shadow-2xl shadow-emerald-500/50 transition-all duration-300 hover:scale-110 hover:from-orange-500 hover:via-emerald-400 hover:to-yellow-500 hover:shadow-emerald-500/70 md:h-14 md:text-xl"
-					on:click={() => foo()}
-				>
-					<span class="relative z-10 flex items-center gap-2 px-4 md:gap-3 md:px-6">
-						<Sparkles class="animate-spin-slow h-5 w-5 md:h-7 md:w-7" />
-						<span class="hidden md:inline">Resgatar Recompensa</span>
-						<span class="md:hidden">Resgatar</span>
-						<Gift class="h-5 w-5 md:h-7 md:w-7" />
-					</span>
-					<!-- Enhanced button glow effects -->
-					<div
-						class="animate-pulse-glow absolute inset-0 bg-gradient-to-r from-emerald-500/30 to-orange-500/30 blur-2xl"
-					></div>
-					<div
-						class="animate-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-					></div>
-				</Button>
-			</a>
+			<Button
+				size="lg"
+				class="animate-float-button relative h-12 w-auto overflow-hidden border-2 border-emerald-400/50 bg-gradient-to-r from-emerald-600 via-orange-500 to-yellow-600 text-lg font-bold text-white shadow-2xl shadow-emerald-500/50 transition-all duration-300 hover:scale-110 hover:from-orange-500 hover:via-emerald-400 hover:to-yellow-500 hover:shadow-emerald-500/70 md:h-14 md:text-xl"
+				on:click={() => {
+					showResgateDialog = true;
+				}}
+			>
+				<span class="relative z-10 flex items-center gap-2 px-4 md:gap-3 md:px-6">
+					<Sparkles class="animate-spin-slow h-5 w-5 md:h-7 md:w-7" />
+					<span class="hidden md:inline">Resgatar R$ {availableReward}</span>
+					<span class="md:hidden">Resgatar R$ {availableReward}</span>
+					<Gift class="h-5 w-5 md:h-7 md:w-7" />
+				</span>
+				<!-- Enhanced button glow effects -->
+				<div
+					class="animate-pulse-glow absolute inset-0 bg-gradient-to-r from-emerald-500/30 to-orange-500/30 blur-2xl"
+				></div>
+				<div
+					class="animate-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+				></div>
+			</Button>
 		</div>
 	{/if}
 </div>
+
+<!-- Dialog de Resgate que abre quando o usuário tem recompensa disponível -->
+<ResgatarRecompensa userData={currentUserData} bind:open={showResgateDialog} {availableReward} />
 
 <style>
 	.animate-ping {
