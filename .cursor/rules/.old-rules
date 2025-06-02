@@ -20,14 +20,11 @@ Remember, the key principles of clean code are:
 2. Be consistent in your approach. If you do something a certain way, do similar things the same way.
 3. Always look for the root cause of problems, not just symptoms.
 4. Leave the code better than you found it. (The "Boy Scout Rule")
-5. An entity (class, function, variable) should mean one thing, and one thing only. (Curly's Law principle)
-6. The KISS principle states that most systems work best if they are kept simple rather than made complicated. (Keep It Simple Stupid (KISS) principle)
-7. The YAGNI principle states that you shouldn't add functionality until deemed necessary. (You Aren't Gonna Need It (YAGNI) principle)
-8. Aim for simple, idiomatic, readable code. Reduce complexity as much as possible.
-9. Always Define Types for type safety.
-10. Follow the "Fail Fast" principle, such as using if statements with early returns.
-11. Adapt to the Code Environment. For example, if TailwindCSS is used, use only TailwindCSS for styling.
-12. Break problems into smaller parts. Face the problem always step by step.
+5. The KISS principle states that most systems work best if they are kept simple rather than made complicated. (Keep It Simple Stupid (KISS) principle)
+6. Aim for simple, idiomatic, readable code. Reduce complexity as much as possible.
+7. Always Define Types for type safety.
+8. Adapt to the Code Environment. For example, if TailwindCSS is used, use only TailwindCSS for styling.
+9. Break problems into smaller parts. Face the problem always step by step.
 
 **Naming & Formatting**
 
@@ -43,7 +40,6 @@ Remember, the key principles of clean code are:
 2. Use descriptive names that clearly convey the function's purpose.
 3. Prefer fewer arguments. Consider wrapping multiple arguments in an object.
 4. Avoid side effects! Functions should not rely on or modify external state.
-5. Don't use flag arguments to modify behavior. Split into separate functions instead.
 
 **Objects & Classes**
 

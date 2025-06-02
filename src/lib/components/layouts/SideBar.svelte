@@ -9,7 +9,8 @@
 		UserRoundSearch,
 		FileSearch,
 		LogOut,
-		HelpCircle
+		HelpCircle,
+		TrophyIcon
 	} from 'lucide-svelte';
 	import IconeHimarte from '$lib/img/logos/icon.webp';
 	import { page } from '$app/stores';
@@ -32,7 +33,14 @@
 			icon: LineChart,
 			label: 'Dashboard',
 			roles: ['Vendedor Externo'],
-			activePatterns: ['/dashboard']
+			activePatterns: ['/dashboard$']
+		},
+		{
+			href: '/dashboard/recompensa',
+			icon: TrophyIcon,
+			label: 'Recompensas',
+			roles: ['Vendedor Externo'],
+			activePatterns: ['/dashboard/recompensa']
 		},
 
 		{

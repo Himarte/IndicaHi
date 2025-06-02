@@ -473,10 +473,6 @@
 		animation: shimmer 2s ease-in-out infinite;
 	}
 
-	.animate-float-button {
-		animation: float-button 3s ease-in-out infinite;
-	}
-
 	.border-3 {
 		border-width: 3px;
 	}
