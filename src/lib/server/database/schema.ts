@@ -43,12 +43,7 @@ export const userTable = pgTable('user', {
 		.notNull()
 		.defaultNow(),
 	bonusIndicacao: integer('bonus_indicacao').default(0),
-	bonusIndicacaoResgatado: integer('bonus_indicacao_resgatado').default(0),
-	bonusIndicacaoResgatadoEm: timestamp('bonus_indicacao_resgatado_em', {
-		withTimezone: true,
-		precision: 6,
-		mode: 'string'
-	})
+	bonusIndicacaoResgatado: integer('bonus_indicacao_resgatado').default(0)
 });
 
 export const sessionTable = pgTable('session', {
@@ -121,9 +116,22 @@ export const motivoCancelado = pgTable('motivo_cancelado', {
 		.unique()
 });
 
+export const bonusResgateHistoricoTable = pgTable('bonus_resgate_historico', {
+	id: varchar('id').primaryKey().notNull(),
+	userId: text('user_id')
+		.notNull()
+		.references(() => userTable.id, { onDelete: 'cascade' }),
+	valorResgatado: integer('valor_resgatado').notNull(),
+	resgatadoEm: timestamp('resgatado_em', { mode: 'string', precision: 6, withTimezone: true })
+		.notNull()
+		.defaultNow()
+});
+
 // Define types for insert schemas
 export type UserInsertSchema = typeof userTable.$inferInsert;
 export type UserSchema = typeof userTable.$inferSelect;
 export type LeadsSchema = typeof leadsTable.$inferSelect;
 export type MotivoCanceladoSchema = typeof motivoCancelado.$inferSelect;
 export type LeadsComprovanteSchema = typeof leadsComprovanteTable.$inferSelect;
+export type BonusResgateHistoricoSchema = typeof bonusResgateHistoricoTable.$inferSelect;
+export type BonusResgateHistoricoInsertSchema = typeof bonusResgateHistoricoTable.$inferInsert;

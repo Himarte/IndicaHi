@@ -8,6 +8,7 @@
 	import type { userDataFromCookies } from '$lib/server/lucia.server';
 	import AvatarOpcoes from './AvatarOpcoes.svelte';
 	import { page } from '$app/stores';
+	import { ROUTES } from '$lib/uteis/routes';
 
 	export let userData: userDataFromCookies;
 	export let isLoggedIn: boolean;
@@ -31,20 +32,22 @@
 
 			<Sheet.Content side="left" class="sm:max-w-xs">
 				<nav class="flex w-2/3 flex-col items-center gap-5 rounded-xl">
-					<a href="/">
+					<a href={ROUTES.HOME}>
 						<img src={LogoHimarte} alt="Logo Himarte" class="w-36 py-5 pr-5" />
 					</a>
 					<Button
 						variant="ghost"
-						href="/"
-						class={$page.url.pathname === '/' ? 'bg-secondary text-accent-foreground' : ''}
+						href={ROUTES.HOME}
+						class={$page.url.pathname === ROUTES.HOME ? 'bg-secondary text-accent-foreground' : ''}
 					>
 						Home
 					</Button>
 					<Button
 						variant="ghost"
-						href="/dashboard"
-						class={$page.url.pathname === '/dashboard' ? 'bg-secondary text-accent-foreground' : ''}
+						href={ROUTES.DASHBOARD}
+						class={$page.url.pathname === ROUTES.DASHBOARD
+							? 'bg-secondary text-accent-foreground'
+							: ''}
 					>
 						Dashboard
 					</Button>
@@ -56,15 +59,15 @@
 		<nav class="hidden w-2/3 items-center gap-5 md:flex">
 			<Button
 				variant="ghost"
-				href="/"
-				class={$page.url.pathname === '/' ? 'bg-secondary text-accent-foreground' : ''}
+				href={ROUTES.HOME}
+				class={$page.url.pathname === ROUTES.HOME ? 'bg-secondary text-accent-foreground' : ''}
 			>
 				Home
 			</Button>
 			<Button
 				variant="ghost"
-				href="/dashboard"
-				class={$page.url.pathname === '/dashboard' ? 'bg-secondary text-accent-foreground' : ''}
+				href={ROUTES.DASHBOARD}
+				class={$page.url.pathname === ROUTES.DASHBOARD ? 'bg-secondary text-accent-foreground' : ''}
 			>
 				Dashboard
 			</Button>

@@ -3,11 +3,13 @@
 	import { Circle } from 'lucide-svelte';
 	import { Separator } from '../ui/separator';
 	import type { userDataFromCookies } from '$lib/server/lucia.server';
+	import { ROUTES } from '$lib/uteis/routes';
+
 	export let userData: userDataFromCookies;
 	let bonusIndicacao = userData.bonusIndicacao;
 </script>
 
-<a href="/dashboard/recompensa">
+<a href={ROUTES.DASHBOARD_RECOMPENSA}>
 	<div class="absolute left-24 top-1 z-50 flex w-fit flex-col items-center gap-1">
 		<div class="flex items-center justify-center gap-3">
 			<h1 class="text-xl font-bold">Bonus de indicação</h1>

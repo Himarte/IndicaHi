@@ -6,57 +6,31 @@
 	import NovoSide from '$lib/components/layouts/SideBar.svelte';
 	import { ModeWatcher } from 'mode-watcher';
 	import PrimeiroLogin from '$lib/components/Dialogs/PrimeiroLogin.svelte';
-	import { page } from '$app/stores';
-	import BonusIndicador from '$lib/components/layouts/BonusIndicador.svelte';
+	import VendedorExternoElements from '$lib/components/layouts/VendedorExternoElements.svelte';
+	import { needsFirstLogin } from '$lib/uteis/userValidation';
 
 	export let data: LayoutData;
-	export let isLoggedIn = data.isUserLoggedIn;
-	export let userData = data.user;
 
 	$: isLoggedIn = data.isUserLoggedIn as boolean;
 	$: userData = data.user as userDataFromCookies;
-
-	$: showPrimeiroLogin =
-		userData?.job === 'Vendador Externo' ||
-		!userData?.cpf ||
-		!userData?.telefone ||
-		!userData?.pixCode ||
-		!userData?.pixType;
+	$: showFirstLogin = needsFirstLogin(userData);
 </script>
 
 <Toaster richColors closeButton />
 <ModeWatcher defaultMode={'dark'} />
 
-<!-- <NovoHeader {isLoggedIn} {userData} /> -->
-
-<main class="flex h-full w-full {isLoggedIn ? 'md:pl-[3.5rem]' : ' '} relative">
+<main class="flex h-full w-full {isLoggedIn ? 'md:pl-[3.5rem]' : ''} relative">
 	{#if isLoggedIn && userData}
-		{#if showPrimeiroLogin}
+		{#if showFirstLogin}
 			<PrimeiroLogin {userData} />
 		{:else}
-			{#if userData?.promoCode && userData?.job === 'Vendedor Externo'}
-				<div
-					class="absolute right-2 top-2 z-50 flex justify-center rounded-xl {$page.url.pathname ===
-						'/configuracoes' || $page.url.pathname === '/configuracoes/privacidade'
-						? 'hidden'
-						: 'flex'} border border-border px-4 py-1 text-lg font-bold text-orange-500"
-				>
-					<span class="mr-2 select-none text-white">Código de indicação: </span>
-					<a href="/configuracoes" class="text-orange-500">
-						{userData?.promoCode || 'Não possui'}
-					</a>
-				</div>
-				<div
-					class={$page.url.pathname === '/configuracoes' ||
-					$page.url.pathname === '/configuracoes/privacidade' ||
-					$page.url.pathname === '/dashboard/recompensa'
-						? 'hidden'
-						: ''}
-				>
-					<BonusIndicador {userData} />
-				</div>
-			{/if}
+			<!-- Elementos específicos do vendedor externo -->
+			<VendedorExternoElements {userData} />
+
+			<!-- Sidebar -->
 			<NovoSide {userData} />
+
+			<!-- Conteúdo da página -->
 			<slot {userData} />
 		{/if}
 	{:else}
