@@ -52,7 +52,7 @@ export const NAV_ITEMS: NavItem[] = [
 		href: ROUTES.DASHBOARD,
 		label: 'Dashboard',
 		roles: ['Vendedor Externo'],
-		activePatterns: ['/dashboard$']
+		activePatterns: ['/dashboard']
 	},
 	{
 		href: ROUTES.DASHBOARD_RECOMPENSA,
@@ -64,7 +64,7 @@ export const NAV_ITEMS: NavItem[] = [
 		href: ROUTES.FINANCEIRO,
 		label: 'Financeiro',
 		roles: ['Financeiro'],
-		activePatterns: ['/financeiro$']
+		activePatterns: ['/financeiro']
 	},
 	{
 		href: ROUTES.FINANCEIRO_PAGAMENTOS,
@@ -123,43 +123,70 @@ export const USER_CONFIG_LINKS = [
 // Funções helper para verificação de rotas
 export const routeHelpers = {
 	/**
-	 * Verifica se o caminho atual está em um grupo de rotas
+	 * Verifica se o caminho atual está em um grupo de rotas (correspondência exata)
 	 */
 	isInRouteGroup: (currentPath: string, routeGroup: readonly string[]): boolean => {
+		return routeGroup.includes(currentPath as any);
+	},
+
+	/**
+	 * Verifica se o caminho atual pertence a uma categoria de rotas (inclui subrotas)
+	 */
+	isInRouteCategory: (currentPath: string, routeGroup: readonly string[]): boolean => {
 		return routeGroup.some((route) => currentPath.startsWith(route));
 	},
 
 	/**
-	 * Verifica se é uma rota de dashboard
+	 * Verifica se é uma rota de dashboard (inclui subrotas)
 	 */
 	isDashboardRoute: (currentPath: string): boolean => {
-		return routeHelpers.isInRouteGroup(currentPath, ROUTE_GROUPS.DASHBOARD_ROUTES);
+		return routeHelpers.isInRouteCategory(currentPath, ROUTE_GROUPS.DASHBOARD_ROUTES);
 	},
 
 	/**
-	 * Verifica se é uma rota onde bonus deve aparecer
+	 * Verifica se é uma rota onde bonus deve aparecer (correspondência exata)
 	 */
 	shouldShowBonus: (currentPath: string): boolean => {
-		return routeHelpers.isInRouteGroup(currentPath, ROUTE_GROUPS.BONUS_ROUTES);
+		return ROUTE_GROUPS.BONUS_ROUTES.includes(currentPath as any);
 	},
 
 	/**
-	 * Verifica se é uma rota de configurações
+	 * Verifica se é uma rota de configurações (inclui subrotas)
 	 */
 	isConfigRoute: (currentPath: string): boolean => {
-		return routeHelpers.isInRouteGroup(currentPath, ROUTE_GROUPS.CONFIG_ROUTES);
+		return routeHelpers.isInRouteCategory(currentPath, ROUTE_GROUPS.CONFIG_ROUTES);
 	},
 
 	/**
-	 * Verifica se uma rota está ativa baseado nos padrões
+	 * Verifica se uma rota está ativa (prioriza rotas mais específicas)
 	 */
 	isActiveRoute: (currentPath: string, href: string, activePatterns: string[]): boolean => {
-		return activePatterns.some((pattern) => {
-			if (pattern.endsWith('$')) {
-				return currentPath === pattern.slice(0, -1);
-			}
-			return currentPath.startsWith(pattern);
-		});
+		// Lista de todas as rotas possíveis para verificar se existe uma mais específica
+		const allRoutes = [
+			...NAV_ITEMS.map((item) => item.href),
+			...CONFIG_ITEMS.map((item) => item.href)
+		];
+
+		// Verifica se a rota atual é exatamente o href
+		if (currentPath === href) {
+			return true;
+		}
+
+		// Verifica se existe uma rota mais específica que também seria ativa
+		const hasMoreSpecificRoute = allRoutes.some(
+			(route) => route !== href && route.startsWith(href) && currentPath.startsWith(route)
+		);
+
+		// Se existe uma rota mais específica, não ativa esta
+		if (hasMoreSpecificRoute) {
+			return false;
+		}
+
+		// Verifica se a rota atual começa com o href ou com qualquer padrão ativo
+		return (
+			currentPath.startsWith(href) ||
+			activePatterns.some((pattern) => currentPath.startsWith(pattern))
+		);
 	},
 
 	/**
