@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Badge } from '../ui/badge';
-	import Separator from '../ui/separator/separator.svelte';
+	import { FlameKindlingIcon } from 'lucide-svelte';
+
 	import { formatarTelefone } from '$lib/uteis/masks';
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
@@ -44,7 +44,7 @@
 
 	// Configuração da paginação
 	let currentPage = 1;
-	let itemsPerPage = 6;
+	let itemsPerPage = 3;
 
 	$: filteredLeads = leads?.success ? leads.data.filter((lead) => lead.status === status) : [];
 
@@ -118,36 +118,26 @@
 				ballTopLeft="#374151"
 				ballTopRight="#F97316"
 			/>
-			<p class="font-medium text-orange-400">Carregando grupos...</p>
+			<p class="font-medium text-orange-400">Carregando Leads...</p>
 		</div>
 	</div>
 {:then}
-	<div class="min-h-screen p-6">
+	<div class="flex h-full w-full p-6">
 		<div class="mx-auto max-w-7xl">
 			{#if paginatedGroups.length === 0}
-				<div class="flex flex-col items-center justify-center py-16">
+				<div class="flex h-full flex-col items-center justify-center gap-4">
 					<div
 						class="mb-4 flex h-24 w-24 items-center justify-center rounded-full border border-gray-700 bg-gray-800"
 					>
-						<svg
-							class="h-12 w-12 text-orange-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8l-4 4m0 0l-4-4m4 4V3"
-							></path>
-						</svg>
+						<FlameKindlingIcon class="size-12 text-orange-400" />
 					</div>
 					<p class="text-xl font-medium text-gray-400">{statusConfig[status].emptyMessage}</p>
 				</div>
 			{:else}
 				<!-- Bento Grid -->
-				<div class="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+				<div
+					class="flex h-full w-full flex-col items-center justify-center gap-6 md:flex-row md:items-start"
+				>
 					{#each paginatedGroups as group, index}
 						<div
 							class="group relative rounded-2xl border border-gray-700/50 shadow-xl transition-all duration-300 hover:border-orange-500/30 hover:shadow-2xl"
@@ -254,7 +244,7 @@
 								</div>
 
 								<!-- Footer com status temporal -->
-								<div class="flex justify-between border-t border-gray-700/50 pt-4">
+								<div class="flex justify-between border-t border-gray-700/50 py-2">
 									<div class="flex items-center text-sm">
 										<span class="text-gray-400">
 											{status === 'Aguardando Pagamento'
@@ -317,25 +307,26 @@
 		{#if paginatedGroups.length > 0 && totalPages > 1}
 			<div class="fixed bottom-6 left-1/2 z-10 -translate-x-1/2 transform">
 				<div
-					class="flex items-center gap-2 rounded-full border border-gray-700/50 bg-gray-800/90 px-4 py-2 shadow-xl backdrop-blur-sm"
+					class="flex items-center gap-1 rounded-full border border-gray-700/50 bg-zinc-900/50 px-4 py-2"
 				>
 					<Button
 						variant="ghost"
 						size="sm"
-						class="h-8 w-8 p-0 text-orange-400 hover:bg-gray-700/50 hover:text-orange-300"
+						class="mr-2 size-8 p-0 text-orange-400 hover:bg-gray-700/50 hover:text-orange-400"
+						aria-label="Página anterior"
 						on:click={previousPage}
 						disabled={currentPage === 1}
 					>
-						<CircleArrowLeftIcon class="h-4 w-4" />
+						<CircleArrowLeftIcon class="size-6" />
 					</Button>
 
 					{#each pages as page}
 						<Button
 							variant={currentPage === page ? 'default' : 'ghost'}
 							size="sm"
-							class="h-8 w-8 p-0 {currentPage === page
+							class="size-8 p-0 {currentPage === page
 								? 'bg-orange-500 text-white hover:bg-orange-600'
-								: 'text-gray-400 hover:bg-gray-700/50 hover:text-orange-300'}"
+								: 'text-gray-400 hover:bg-gray-700/50 hover:text-orange-400'}"
 							on:click={() => goToPage(page)}
 						>
 							{page}
@@ -345,11 +336,12 @@
 					<Button
 						variant="ghost"
 						size="sm"
-						class="h-8 w-8 p-0 text-orange-400 hover:bg-gray-700/50 hover:text-orange-300"
+						class="ml-2 size-8 p-0 text-orange-400 hover:bg-gray-700/50 hover:text-orange-400"
+						aria-label="Próxima página"
 						on:click={nextPage}
 						disabled={currentPage === totalPages}
 					>
-						<CircleArrowRight class="h-4 w-4" />
+						<CircleArrowRight class="size-6" />
 					</Button>
 				</div>
 			</div>
