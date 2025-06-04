@@ -5,6 +5,7 @@ interface Vendedor {
 	telefone: string | null;
 	pixType: 'cpf' | 'cnpj' | 'email' | 'telefone' | null;
 	pixCode: string | null;
+	bonusIndicacaoResgatado: number;
 }
 
 export interface LeadFinanceiro {

@@ -81,15 +81,20 @@
 		<Button
 			builders={[builder]}
 			variant="outline"
-			class="text-orange-400 hover:bg-stone-900 hover:text-orange-400"
+			class="w-full border border-gray-700/30 bg-zinc-900/40 text-green-400  hover:bg-zinc-900 {cargo ===
+			'Financeiro'
+				? 'text-orange-400 '
+				: 'text-green-400 '}"
 		>
-			Alterar Dados
+			{cargo === 'Financeiro' ? 'Realizar Pagamento' : 'Visualizar Pagamento'}
 		</Button>
 	</Sheet.Trigger>
 
 	<Sheet.Content side="right" class="border-border">
 		<Sheet.Header>
-			<Sheet.Title class="text-orange-400">Informações do Vendedor</Sheet.Title>
+			<Sheet.Title class="text-orange-400">
+				{cargo === 'Financeiro' ? 'Informações do Vendedor' : 'Informações do Cliente'}
+			</Sheet.Title>
 			<Sheet.Description>
 				Preencha os dados e anexe o comprovante para atualizar o status
 			</Sheet.Description>

@@ -5,7 +5,7 @@
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
-	// import SheetFinanceiro from '$lib/components/Sheets/SheetFinanceiro.svelte';
+	import SheetFinanceiro from '$lib/components/Sheets/SheetFinanceiro.svelte';
 	import type { LeadFinanceiro } from '$lib/types/financeiro';
 	import Time from '$lib/components/ui/time/index.svelte';
 	import { Tooltip } from 'bits-ui';
@@ -17,6 +17,7 @@
 
 	export let leads: LeadsFinanceiro;
 	export let status: 'Aguardando Pagamento' | 'Pago';
+	export let cargo: string;
 
 	// Configuração visual por status
 	const statusConfig = {
@@ -60,7 +61,8 @@
 					valorTotal: 0,
 					criadoEm: lead.criadoEm,
 					atendidoEm: lead.atendidoEm,
-					pagoEm: lead.pagoEm
+					pagoEm: lead.pagoEm,
+					bonusIndicacaoResgatado: 0 // Inicializa com 0, será definido após agrupar todos os leads
 				};
 			}
 
@@ -73,6 +75,11 @@
 			});
 
 			acc[promoCode].valorTotal += calcularValorPlano(lead.planoMegas || 0);
+
+			// Define o bonusIndicacaoResgatado do vendedor (vai ser o mesmo para todos os leads do mesmo código)
+			if (lead.vendedor?.bonusIndicacaoResgatado) {
+				acc[promoCode].bonusIndicacaoResgatado = lead.vendedor.bonusIndicacaoResgatado;
+			}
 
 			return acc;
 		},
@@ -183,7 +190,7 @@
 											Clientes ({group.clientes.length})
 										</h3>
 										<div
-											class="scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-zinc-900 max-h-40 space-y-2 overflow-y-auto"
+											class="max-h-40 space-y-2 overflow-y-auto scrollbar-thin scrollbar-track-zinc-900 scrollbar-thumb-zinc-700"
 										>
 											{#each group.clientes as cliente}
 												<div
@@ -235,10 +242,35 @@
 													clip-rule="evenodd"
 												></path>
 											</svg>
-											Total
+											Total a Pagar
 										</h3>
-										<div class="text-2xl font-bold text-green-400">
-											R$ {group.valorTotal.toFixed(2)}
+										<div class="space-y-2">
+											{#if group.bonusIndicacaoResgatado > 0}
+												<div class="space-y-1 text-xs text-gray-300">
+													<div class="flex justify-between">
+														<span>Planos:</span>
+														<span>R$ {group.valorTotal.toFixed(2)}</span>
+													</div>
+													<div class="flex justify-between text-amber-400">
+														<span>Resgatado:</span>
+														<span>R$ {group.bonusIndicacaoResgatado.toFixed(2)}</span>
+													</div>
+													<div class="mt-1 pt-1">
+														<div class="flex justify-between font-semibold">
+															<span>Total:</span>
+															<span
+																>R$ {(group.valorTotal + group.bonusIndicacaoResgatado).toFixed(
+																	2
+																)}</span
+															>
+														</div>
+													</div>
+												</div>
+											{:else}
+												<div class="flex text-2xl font-bold text-green-400">
+													R$ {group.valorTotal.toFixed(2)}
+												</div>
+											{/if}
 										</div>
 									</div>
 								</div>
@@ -275,27 +307,69 @@
 										<Tooltip.Content
 											align="end"
 											side="right"
-											class="z-50 rounded-lg   bg-zinc-900 p-3 shadow-2xl"
+											class="z-50 rounded-lg border border-gray-700 bg-zinc-900 p-3 shadow-2xl"
 										>
-											<div class="space-y-2">
-												{#each group.clientes as cliente}
-													<div class="flex justify-between gap-4 text-xs">
-														<span class="text-gray-200">{cliente.planoMegas}MB</span>
-														<span class="font-medium text-gray-200"
-															>R$ {calcularValorPlano(cliente.planoMegas || 0).toFixed(2)}</span
-														>
+											<div class="space-y-3">
+												<div>
+													<h4 class="mb-2 text-xs font-semibold text-green-400">
+														Valores por Plano:
+													</h4>
+													<div class="space-y-1">
+														{#each group.clientes as cliente}
+															<div class="flex justify-between gap-4 text-xs">
+																<span class="text-gray-200">{cliente.planoMegas}MB</span>
+																<span class="font-medium text-gray-200"
+																	>R$ {calcularValorPlano(cliente.planoMegas || 0).toFixed(2)}</span
+																>
+															</div>
+														{/each}
 													</div>
-												{/each}
+													<div class="mt-2 border-t border-gray-700 pt-1">
+														<div class="flex justify-between gap-4 text-xs font-semibold">
+															<span class="text-green-400">Subtotal Planos:</span>
+															<span class="text-green-400">R$ {group.valorTotal.toFixed(2)}</span>
+														</div>
+													</div>
+												</div>
+
+												{#if group.bonusIndicacaoResgatado > 0}
+													<div class="border-t border-gray-700 pt-2">
+														<h4 class="mb-1 text-xs font-semibold text-amber-400">
+															Bônus de Indicação:
+														</h4>
+														<div class="flex justify-between gap-4 text-xs">
+															<span class="text-amber-300">Resgate de Bônus:</span>
+															<span class="font-medium text-amber-300"
+																>R$ {group.bonusIndicacaoResgatado.toFixed(2)}</span
+															>
+														</div>
+													</div>
+
+													<div class="border-t border-gray-700 pt-2">
+														<div class="flex justify-between gap-4 text-sm font-bold">
+															<span class="text-white">Total Final:</span>
+															<span class="text-white"
+																>R$ {(group.valorTotal + group.bonusIndicacaoResgatado).toFixed(
+																	2
+																)}</span
+															>
+														</div>
+													</div>
+												{/if}
 											</div>
 										</Tooltip.Content>
 									</Tooltip.Root>
 								</div>
-								<!-- Realizar Pagamento -->
-								<Button
-									variant="ghost"
-									class="w-full border border-gray-700/30 bg-zinc-900/40 text-orange-400  hover:bg-zinc-900"
-									>Realizar Pagamento</Button
-								>
+								<!-- Botao - SheetFinanceiro -->
+								{#if status === 'Aguardando Pagamento'}
+									<SheetFinanceiro lead={group} {cargo} />
+								{:else if status === 'Pago'}
+									<Button
+										variant="ghost"
+										class="w-full border border-gray-700/30 bg-zinc-900/40 text-green-400  hover:bg-zinc-900"
+										>Visualizar Pagamento</Button
+									>
+								{/if}
 							</div>
 						</div>
 					{/each}

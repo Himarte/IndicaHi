@@ -4,8 +4,7 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 
 	export let data: PageData;
-	export let cargo = data.user?.job || '';
-	console.log(data);
+	let cargo = data.user?.job as string;
 </script>
 
 <Tabs.Root value="aguardandoPagamento" class="relative flex h-full w-full justify-center pt-5">
@@ -16,10 +15,10 @@
 		<Tabs.Trigger value="pagos" class="data-[state=active]:bg-zinc-800">Pagos</Tabs.Trigger>
 	</Tabs.List>
 	<Tabs.Content class="w-full pt-10" value="aguardandoPagamento">
-		<TableBase leads={data.leads?.aguardandoPagamento} {cargo} status="Aguardando Pagamento" />
+		<TableBase leads={data.leads?.aguardandoPagamento} status="Aguardando Pagamento" {cargo} />
 	</Tabs.Content>
 
 	<Tabs.Content class="w-full pt-10" value="pagos">
-		<TableBase leads={data.leads?.pagos} {cargo} status="Pago" />
+		<TableBase leads={data.leads?.pagos} status="Pago" {cargo} />
 	</Tabs.Content>
 </Tabs.Root>

@@ -71,7 +71,8 @@ export const GET: RequestHandler = async ({ request, params }) => {
 					email: userTable.email,
 					telefone: userTable.telefone,
 					pixType: userTable.pixType,
-					pixCode: userTable.pixCode
+					pixCode: userTable.pixCode,
+					bonusIndicacaoResgatado: userTable.bonusIndicacaoResgatado
 				}
 			})
 			.from(leadsTable)
