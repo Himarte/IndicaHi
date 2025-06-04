@@ -1,4 +1,5 @@
 import { fontFamily } from 'tailwindcss/defaultTheme';
+import scrollbar from 'tailwind-scrollbar';
 
 /** @type {import('tailwindcss').Config} */
 const config = {
@@ -60,7 +61,8 @@ const config = {
 				inter: ['Inter', ...fontFamily.sans]
 			}
 		}
-	}
+	},
+	plugins: [scrollbar]
 };
 
 export default config;

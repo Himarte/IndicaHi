@@ -5,6 +5,7 @@
 
 	export let data: PageData;
 	export let cargo = data.user?.job || '';
+	console.log(data);
 </script>
 
 <Tabs.Root value="aguardandoPagamento" class="relative flex h-full w-full justify-center pt-5">
