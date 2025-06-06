@@ -21,7 +21,8 @@
 		DollarSign,
 		FileText,
 		Gift,
-		X
+		X,
+		Download
 	} from 'lucide-svelte';
 
 	interface GrupoFinanceiro {
@@ -45,9 +46,73 @@
 	let isSubmitting = false;
 	let formEl: HTMLFormElement;
 	let selectedStatus = '';
+	let isDownloading = false;
 
 	// Calcula valor total final (planos + bônus) - correto é somar, não subtrair
 	$: valorTotalFinal = grupo.valorTotal + grupo.bonusIndicacaoResgatado;
+
+	// Função para baixar comprovante do grupo
+	async function baixarComprovante() {
+		isDownloading = true;
+		try {
+			const response = await fetch(
+				`/api/indicacoes/financeiro/comprovante/grupo/${grupo.promoCode}`
+			);
+
+			if (!response.ok) {
+				if (response.status === 404) {
+					toast.error('Comprovante não encontrado para este grupo');
+				} else {
+					toast.error('Erro ao buscar comprovante do grupo');
+				}
+				return;
+			}
+
+			const data = await response.json();
+			const comprovanteBase64 = data.comprovante;
+
+			// Extrair tipo do arquivo e dados base64
+			const [metadata, base64Data] = comprovanteBase64.split(',');
+			const mimeType = metadata.match(/data:([^;]+)/)?.[1] || 'application/octet-stream';
+
+			// Determinar extensão do arquivo
+			const extensao = mimeType.includes('pdf')
+				? 'pdf'
+				: mimeType.includes('png')
+					? 'png'
+					: mimeType.includes('jpeg')
+						? 'jpg'
+						: mimeType.includes('webp')
+							? 'webp'
+							: 'bin';
+
+			// Converter base64 para blob
+			const byteCharacters = atob(base64Data);
+			const byteNumbers = new Array(byteCharacters.length);
+			for (let i = 0; i < byteCharacters.length; i++) {
+				byteNumbers[i] = byteCharacters.charCodeAt(i);
+			}
+			const byteArray = new Uint8Array(byteNumbers);
+			const blob = new Blob([byteArray], { type: mimeType });
+
+			// Criar link de download
+			const url = window.URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = `comprovante-grupo-${grupo.promoCode}.${extensao}`;
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+			window.URL.revokeObjectURL(url);
+
+			toast.success('Comprovante baixado com sucesso!');
+		} catch (error) {
+			console.error('Erro ao baixar comprovante:', error);
+			toast.error('Erro ao baixar comprovante');
+		} finally {
+			isDownloading = false;
+		}
+	}
 
 	function getStatusIcon(status: string) {
 		if (status === 'Aguardando Pagamento') return Clock;
@@ -279,6 +344,38 @@
 							</div>
 						</Card.Content>
 					</Card.Root>
+
+					<!-- Botão de Download do Comprovante - apenas para status Pago -->
+					{#if status === 'Pago'}
+						<Card.Root class="border-emerald-800/50 bg-emerald-900/20 backdrop-blur-sm">
+							<Card.Header class="pb-4">
+								<Card.Title class="flex items-center gap-2 text-lg text-emerald-400">
+									<FileText class="h-5 w-5" />
+									Comprovante do Pagamento
+								</Card.Title>
+							</Card.Header>
+							<Card.Content>
+								<div class="flex items-center justify-between gap-6">
+									<div class="text-z inc-400 text-sm">Baixar comprovante do pagamento do grupo</div>
+									<Button
+										on:click={baixarComprovante}
+										disabled={isDownloading}
+										class="bg-emerald-600 text-white hover:bg-emerald-700"
+									>
+										{#if isDownloading}
+											<div
+												class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+											></div>
+											Baixando...
+										{:else}
+											<Download class="mr-2 h-4 w-4" />
+											Baixar Comprovante
+										{/if}
+									</Button>
+								</div>
+							</Card.Content>
+						</Card.Root>
+					{/if}
 
 					<!-- Form de Ação -->
 					{#if status === 'Aguardando Pagamento' && cargo === 'Financeiro'}
