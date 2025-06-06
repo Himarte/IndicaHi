@@ -181,7 +181,7 @@
 		<Button
 			builders={[builder]}
 			variant="outline"
-			class="w-full  border border-zinc-700/50 bg-zinc-900/60 backdrop-blur-sm transition-all duration-200 hover:border-zinc-600/50 hover:bg-zinc-800/80 {status ===
+			class="w-full border border-zinc-700/50 bg-zinc-900/60 backdrop-blur-sm transition-all duration-200 hover:border-zinc-600/50 hover:bg-zinc-800/80 md:w-auto {status ===
 			'Aguardando Pagamento'
 				? 'text-orange-400 hover:text-orange-300'
 				: 'text-emerald-400 hover:text-emerald-300'}"
@@ -203,22 +203,22 @@
 
 	<Sheet.Content
 		side="right"
-		class="min-w-[600px] border-zinc-800/50 bg-zinc-950 backdrop-blur-xl "
+		class="w-full max-w-[95vw] border-zinc-800/50 bg-zinc-950 backdrop-blur-xl md:min-w-[600px] md:max-w-[600px]"
 	>
 		<Sheet.Header class="space-y-4 pb-6">
-			<div class="flex items-center justify-between">
-				<Sheet.Title class="flex items-center gap-2 text-2xl font-bold text-zinc-100">
-					<FileText class="h-6 w-6 text-amber-400" />
-					Grupo: {grupo.promoCode}
+			<div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+				<Sheet.Title class="flex items-center gap-2 text-xl font-bold text-zinc-100 md:text-2xl">
+					<FileText class="h-5 w-5 text-amber-400 md:h-6 md:w-6" />
+					<span class="truncate">Grupo: {grupo.promoCode}</span>
 				</Sheet.Title>
 				<Badge class="{getStatusColor(status)} font-medium">
 					<div class="flex items-center gap-1">
 						<svelte:component this={getStatusIcon(status)} class="h-4 w-4" />
-						{status}
+						<span class="text-xs md:text-sm">{status}</span>
 					</div>
 				</Badge>
 			</div>
-			<Sheet.Description class="text-base text-zinc-400">
+			<Sheet.Description class="text-sm text-zinc-400 md:text-base">
 				{status === 'Aguardando Pagamento'
 					? 'Processe o pagamento para todos os clientes deste grupo'
 					: 'Informações do pagamento realizado'}
@@ -226,30 +226,30 @@
 		</Sheet.Header>
 
 		<div
-			class="h-[calc(100vh-200px)] overflow-y-auto pr-2 scrollbar-thin scrollbar-track-zinc-900/50 scrollbar-thumb-zinc-800/50"
+			class="h-[70%] overflow-y-auto pr-2 scrollbar-thin scrollbar-track-zinc-900/50 scrollbar-thumb-zinc-800/50 md:h-[calc(100vh-200px)]"
 		>
 			<div class="space-y-4">
 				<!-- Informações do Vendedor -->
 				<Card.Root class="border-zinc-800/50 bg-zinc-900/50 backdrop-blur-sm">
 					<Card.Header class="pb-4">
-						<Card.Title class="flex items-center gap-2 text-lg text-amber-400">
-							<User class="h-5 w-5" />
+						<Card.Title class="flex items-center gap-2 text-base text-amber-400 md:text-lg">
+							<User class="h-4 w-4 md:h-5 md:w-5" />
 							Informações do Vendedor
 						</Card.Title>
 					</Card.Header>
 					<Card.Content class="space-y-4">
-						<div class="grid grid-cols-2 gap-4">
+						<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 							<div class="space-y-2">
-								<Label class="text-base font-medium text-zinc-400">Nome:</Label>
+								<Label class="text-sm font-medium text-zinc-400 md:text-base">Nome:</Label>
 								<div
-									class="rounded-lg bg-zinc-800/50 px-3 py-2 text-base font-medium text-zinc-100"
+									class="rounded-lg bg-zinc-800/50 px-3 py-2 text-sm font-medium text-zinc-100 md:text-base"
 								>
 									{grupo.vendedor?.nome || 'Não informado'}
 								</div>
 							</div>
 							<div class="space-y-2">
-								<Label class="text-base font-medium text-zinc-400">Telefone:</Label>
-								<div class="rounded-lg bg-zinc-800/50 px-3 py-2 text-base text-zinc-100">
+								<Label class="text-sm font-medium text-zinc-400 md:text-base">Telefone:</Label>
+								<div class="rounded-lg bg-zinc-800/50 px-3 py-2 text-sm text-zinc-100 md:text-base">
 									{grupo.vendedor?.telefone
 										? formatarTelefone(grupo.vendedor.telefone)
 										: 'Não informado'}
@@ -259,11 +259,11 @@
 
 						{#if grupo.vendedor?.pixCode}
 							<div class="space-y-2">
-								<Label class="text-base font-medium text-zinc-400">
+								<Label class="text-sm font-medium text-zinc-400 md:text-base">
 									Chave PIX ({grupo.vendedor.pixType?.toUpperCase()}):
 								</Label>
 								<div
-									class="break-all rounded-lg border border-zinc-700/50 bg-zinc-800/70 px-3 py-2 font-mono text-base text-zinc-100"
+									class="break-all rounded-lg border border-zinc-700/50 bg-zinc-800/70 px-3 py-2 font-mono text-sm text-zinc-100 md:text-base"
 								>
 									{grupo.vendedor.pixCode}
 								</div>
@@ -309,36 +309,36 @@
 						class="border-emerald-800/30 bg-gradient-to-br from-emerald-900/20 to-zinc-900/50 backdrop-blur-sm"
 					>
 						<Card.Header class="pb-4">
-							<Card.Title class="flex items-center gap-2 text-lg text-emerald-400">
-								<DollarSign class="h-5 w-5" />
+							<Card.Title class="flex items-center gap-2 text-base text-emerald-400 md:text-lg">
+								<DollarSign class="h-4 w-4 md:h-5 md:w-5" />
 								Resumo do Pagamento
 							</Card.Title>
 						</Card.Header>
-						<Card.Content>
+						<Card.Content class="space-y-3">
 							<div class="flex items-center justify-between">
-								<span class="text-zinc-400">Valor dos Planos:</span>
-								<span class="text-lg font-semibold text-zinc-100"
+								<span class="text-sm text-zinc-400 md:text-base">Valor dos Planos:</span>
+								<span class="text-base font-semibold text-zinc-100 md:text-lg"
 									>R$ {grupo.valorTotal.toFixed(2)}</span
 								>
 							</div>
 
 							{#if grupo.bonusIndicacaoResgatado > 0}
 								<div class="flex items-center justify-between">
-									<span class="flex items-center gap-1 text-amber-400">
-										<Gift class="h-4 w-4" />
+									<span class="flex items-center gap-1 text-sm text-amber-400 md:text-base">
+										<Gift class="h-3 w-3 md:h-4 md:w-4" />
 										Bônus Resgatado:
 									</span>
-									<span class="text-lg font-semibold text-amber-400">
+									<span class="text-base font-semibold text-amber-400 md:text-lg">
 										+R$ {grupo.bonusIndicacaoResgatado.toFixed(2)}
 									</span>
 								</div>
 							{/if}
 
 							<div
-								class="mt-1 flex items-center justify-between rounded-lg border border-emerald-400/20 bg-emerald-400/10 px-4 py-2"
+								class="mt-1 flex items-center justify-between rounded-lg border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 md:px-4"
 							>
-								<span class="text-xl font-bold text-emerald-400">TOTAL:</span>
-								<span class="text-2xl font-bold text-emerald-400"
+								<span class="text-lg font-bold text-emerald-400 md:text-xl">TOTAL:</span>
+								<span class="text-xl font-bold text-emerald-400 md:text-2xl"
 									>R$ {valorTotalFinal.toFixed(2)}</span
 								>
 							</div>
@@ -349,18 +349,18 @@
 					{#if status === 'Pago'}
 						<Card.Root class="border-emerald-800/50 bg-emerald-900/20 backdrop-blur-sm">
 							<Card.Header class="pb-4">
-								<Card.Title class="flex items-center gap-2 text-lg text-emerald-400">
-									<FileText class="h-5 w-5" />
+								<Card.Title class="flex items-center gap-2 text-base text-emerald-400 md:text-lg">
+									<FileText class="h-4 w-4 md:h-5 md:w-5" />
 									Comprovante do Pagamento
 								</Card.Title>
 							</Card.Header>
 							<Card.Content>
-								<div class="flex items-center justify-between gap-6">
-									<div class="text-z inc-400 text-sm">Baixar comprovante do pagamento do grupo</div>
+								<div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+									<div class="text-sm text-zinc-400">Baixar comprovante do pagamento do grupo</div>
 									<Button
 										on:click={baixarComprovante}
 										disabled={isDownloading}
-										class="bg-emerald-600 text-white hover:bg-emerald-700"
+										class="w-full bg-emerald-600 text-white hover:bg-emerald-700 md:w-auto"
 									>
 										{#if isDownloading}
 											<div
@@ -381,21 +381,23 @@
 					{#if status === 'Aguardando Pagamento' && cargo === 'Financeiro'}
 						<Card.Root class="border-zinc-800/50 bg-zinc-900/50 backdrop-blur-sm">
 							<Card.Header class="pb-2">
-								<Card.Title class="text-lg text-amber-400">Processar Pagamento</Card.Title>
+								<Card.Title class="text-base text-amber-400 md:text-lg"
+									>Processar Pagamento</Card.Title
+								>
 							</Card.Header>
 							<Card.Content>
-								<div class="space-y-2">
+								<div class="space-y-4">
 									<div class="space-y-2">
-										<Label for="status" class="font-medium text-zinc-300"
+										<Label for="status" class="text-sm font-medium text-zinc-300 md:text-base"
 											>Alterar Status do Grupo:</Label
 										>
 										<Select.Root required>
 											<Select.Trigger
-												class="w-full rounded-lg border border-zinc-700/50 bg-zinc-800/50 p-2 text-sm text-zinc-100 transition-colors focus:border-amber-400/50 focus:ring-1 focus:ring-amber-400/50"
+												class="w-full rounded-lg border border-zinc-700/50 bg-zinc-800/50 p-3 text-sm text-zinc-100 transition-colors focus:border-amber-400/50 focus:ring-1 focus:ring-amber-400/50 md:p-2 md:text-base"
 											>
 												<Select.Value placeholder="Selecione uma ação" />
 											</Select.Trigger>
-											<Select.Content class="border border-zinc-700/50 ">
+											<Select.Content class="border border-zinc-700/50">
 												<Select.Item
 													value="Pago"
 													class="flex items-center gap-2"
@@ -420,7 +422,10 @@
 									<!-- Campo de comprovante apenas para pagamento -->
 									{#if selectedStatus === 'Pago'}
 										<div class="space-y-2">
-											<Label for="comprovante" class="font-medium text-zinc-300">
+											<Label
+												for="comprovante"
+												class="text-sm font-medium text-zinc-300 md:text-base"
+											>
 												Comprovante do Pagamento: <span class="text-red-400">*</span>
 											</Label>
 											<input
@@ -431,7 +436,7 @@
 												class="block w-full rounded-lg border border-zinc-700/50 bg-zinc-800/50 px-3 py-3 text-sm text-zinc-200 transition-colors file:mr-4 file:rounded-full file:border-none file:bg-amber-500 file:px-4 file:py-2 file:text-sm file:text-white file:hover:bg-amber-600"
 												accept=".jpg,.jpeg,.png,.pdf,.webp"
 											/>
-											<p class="text-xs text-zinc-500">
+											<p class="text-xs text-zinc-500 md:text-sm">
 												Formatos aceitos: JPG, PNG, WEBP, PDF (máx. 5MB)
 											</p>
 										</div>
@@ -440,7 +445,7 @@
 									<!-- Campo de motivo apenas para cancelamento -->
 									{#if selectedStatus === 'Cancelado'}
 										<div class="space-y-2">
-											<Label for="motivo" class="font-medium text-zinc-300">
+											<Label for="motivo" class="text-sm font-medium text-zinc-300 md:text-base">
 												Motivo do Cancelamento: <span class="text-red-400">*</span>
 											</Label>
 											<Textarea
@@ -451,7 +456,7 @@
 												rows={4}
 												class="resize-none rounded-lg border border-zinc-700/50 bg-zinc-800/50 px-3 py-2 text-sm text-zinc-200 placeholder:text-zinc-500 focus:border-red-400/50 focus:ring-1 focus:ring-red-400/50"
 											/>
-											<p class="text-xs text-zinc-500">
+											<p class="text-xs text-zinc-500 md:text-sm">
 												Este motivo será aplicado a todos os leads do grupo
 											</p>
 										</div>
@@ -465,12 +470,12 @@
 		</div>
 
 		<Sheet.Footer class="border-t border-zinc-800/50 pt-6">
-			<div class="flex w-full justify-end gap-3">
+			<div class="flex w-full flex-col gap-3 md:flex-row md:justify-end">
 				<Sheet.Close asChild let:builder>
 					<Button
 						builders={[builder]}
 						variant="outline"
-						class="border-zinc-700/50 bg-zinc-800/50 text-zinc-300 hover:bg-zinc-700/50 hover:text-zinc-100"
+						class="order-2 border-zinc-700/50 bg-zinc-800/50 text-zinc-300 hover:bg-zinc-700/50 hover:text-zinc-100 md:order-1"
 					>
 						Fechar
 					</Button>
@@ -481,7 +486,7 @@
 						type="submit"
 						disabled={isSubmitting || !selectedStatus}
 						form="form-{grupo.promoCode}"
-						class="bg-gradient-to-r from-amber-500 to-amber-600 font-medium text-white shadow-lg transition-all duration-200 hover:from-amber-600 hover:to-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+						class="order-1 bg-gradient-to-r from-amber-500 to-amber-600 font-medium text-white shadow-lg transition-all duration-200 hover:from-amber-600 hover:to-amber-700 disabled:cursor-not-allowed disabled:opacity-50 md:order-2"
 					>
 						{isSubmitting ? 'Processando...' : 'Processar'}
 					</Button>
