@@ -86,8 +86,12 @@
 		{} as Record<string, any>
 	);
 
-	// Converte o objeto agrupado em array
-	$: groupedLeadsArray = Object.values(groupedLeads);
+	// Converte o objeto agrupado em array e ordena pelos mais novos primeiro
+	$: groupedLeadsArray = Object.values(groupedLeads).sort((a, b) => {
+		const dateA = new Date(a.criadoEm).getTime();
+		const dateB = new Date(b.criadoEm).getTime();
+		return dateB - dateA; // Ordem decrescente (mais novo primeiro)
+	});
 
 	// Calcula o número total de páginas baseado nos grupos
 	$: totalPages = Math.ceil(groupedLeadsArray.length / itemsPerPage);
@@ -246,14 +250,14 @@
 										</h3>
 										<div class="space-y-2">
 											{#if group.bonusIndicacaoResgatado > 0}
-												<div class="space-y-1 text-xs text-gray-300">
+												<div class="h-[3.3rem] space-y-1 text-xs text-gray-300">
 													<div class="flex justify-between">
 														<span>Planos:</span>
 														<span>R$ {group.valorTotal.toFixed(2)}</span>
 													</div>
 													<div class="flex justify-between text-amber-400">
 														<span>Resgatado:</span>
-														<span>R$ {group.bonusIndicacaoResgatado.toFixed(2)}</span>
+														<span>R$ {group.bonusIndicacaoResgatado}</span>
 													</div>
 													<div class="mt-1 pt-1">
 														<div class="flex justify-between font-semibold">
