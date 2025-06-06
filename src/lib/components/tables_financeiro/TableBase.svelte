@@ -147,7 +147,7 @@
 				>
 					{#each paginatedGroups as group, index}
 						<div
-							class="group relative h-[70%] rounded-2xl border border-gray-700/50 shadow-xl transition-all duration-300 hover:border-orange-500/30 hover:shadow-2xl"
+							class="group relative h-[75%] w-full rounded-2xl border border-gray-700/50 shadow-xl transition-all duration-300 hover:border-orange-500/30 hover:shadow-2xl md:h-[70%]"
 						>
 							<!-- Status Badge -->
 							<div class="absolute -right-2 -top-2 z-10">
@@ -300,9 +300,7 @@
 									<!-- Detalhamento (Tooltip) -->
 									<Tooltip.Root>
 										<Tooltip.Trigger>
-											<Button variant="link" class="text-orange-400">
-												Detalhamento dos valores
-											</Button>
+											<Button variant="link" class="text-orange-400">Detalhamento</Button>
 										</Tooltip.Trigger>
 										<Tooltip.Content
 											align="end"

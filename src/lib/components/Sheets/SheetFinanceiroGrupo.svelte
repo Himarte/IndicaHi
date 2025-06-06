@@ -181,7 +181,7 @@
 		<Button
 			builders={[builder]}
 			variant="outline"
-			class="w-full border border-zinc-700/50 bg-zinc-900/60 backdrop-blur-sm transition-all duration-200 hover:border-zinc-600/50 hover:bg-zinc-800/80 md:w-auto {status ===
+			class="w-full border border-zinc-700/50 bg-zinc-900/60 backdrop-blur-sm transition-all duration-200 hover:border-zinc-600/50 hover:bg-zinc-800/80  {status ===
 			'Aguardando Pagamento'
 				? 'text-orange-400 hover:text-orange-300'
 				: 'text-emerald-400 hover:text-emerald-300'}"
