@@ -147,7 +147,7 @@
 				>
 					{#each paginatedGroups as group, index}
 						<div
-							class="group relative rounded-2xl border border-gray-700/50 shadow-xl transition-all duration-300 hover:border-orange-500/30 hover:shadow-2xl"
+							class="group relative h-[70%] rounded-2xl border border-gray-700/50 shadow-xl transition-all duration-300 hover:border-orange-500/30 hover:shadow-2xl"
 						>
 							<!-- Status Badge -->
 							<div class="absolute -right-2 -top-2 z-10">
