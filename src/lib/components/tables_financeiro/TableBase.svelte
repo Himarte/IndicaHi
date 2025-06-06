@@ -5,7 +5,7 @@
 	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
 	import Button from '../ui/button/button.svelte';
 	import { Circle3 } from 'svelte-loading-spinners';
-	import SheetFinanceiro from '$lib/components/Sheets/SheetFinanceiro.svelte';
+	import SheetFinanceiroGrupo from '$lib/components/Sheets/SheetFinanceiroGrupo.svelte';
 	import type { LeadFinanceiro } from '$lib/types/financeiro';
 	import Time from '$lib/components/ui/time/index.svelte';
 	import { Tooltip } from 'bits-ui';
@@ -362,13 +362,9 @@
 								</div>
 								<!-- Botao - SheetFinanceiro -->
 								{#if status === 'Aguardando Pagamento'}
-									<SheetFinanceiro lead={group} {cargo} />
+									<SheetFinanceiroGrupo grupo={group} {cargo} {status} />
 								{:else if status === 'Pago'}
-									<Button
-										variant="ghost"
-										class="w-full border border-gray-700/30 bg-zinc-900/40 text-green-400  hover:bg-zinc-900"
-										>Visualizar Pagamento</Button
-									>
+									<SheetFinanceiroGrupo grupo={group} {cargo} {status} />
 								{/if}
 							</div>
 						</div>

@@ -2,7 +2,13 @@ import type { Actions, PageServerLoad } from './$types';
 import { SITE_CHAVE_API } from '$env/static/private';
 import { fail } from '@sveltejs/kit';
 import { db } from '$lib/server/database/db.server';
-import { leadsComprovanteTable, leadsTable, userTable } from '$lib/server/database/schema';
+import {
+	leadsComprovanteTable,
+	leadsTable,
+	userTable,
+	motivoCancelado,
+	grupoPagamentoTable
+} from '$lib/server/database/schema';
 import { eq } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({ fetch, locals }) => {
@@ -48,140 +54,221 @@ export const load: PageServerLoad = async ({ fetch, locals }) => {
 };
 
 export const actions: Actions = {
-	updateStatus: async ({ request, locals }) => {
+	updateStatusGrupo: async ({ request, locals }) => {
 		if (!locals.user) {
-			return fail(401, {
+			return fail(401, { success: false, message: 'Não autorizado' });
+		}
+
+		if (locals.user.job !== 'Financeiro') {
+			return fail(403, {
 				success: false,
-				message: 'Não autorizado'
+				message: 'Apenas usuários do Financeiro podem processar pagamentos em grupo'
 			});
 		}
 
 		try {
 			const formData = await request.formData();
-			const id = formData.get('id') as string;
+			const promoCode = formData.get('promoCode') as string;
 			const status = formData.get('status') as string;
 			const comprovante = formData.get('comprovante') as File | null;
+			const motivo = formData.get('motivo') as string | null;
 
-			// Validação do status
-			if (!['Aguardando Pagamento', 'Pago', 'Cancelado'].includes(status)) {
-				return fail(400, {
-					success: false,
-					message: 'Status inválido para operação financeira'
-				});
-			}
-
-			// Validação do comprovante apenas se não for cancelamento
-			if (status !== 'Cancelado') {
-				if (!comprovante) {
-					return fail(400, {
-						success: false,
-						message: 'Comprovante é obrigatório para pagamentos'
-					});
-				}
-
-				const validarComprovante = (arquivo: File) => {
-					const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
-					if (!tiposPermitidos.includes(arquivo.type)) return 'Formato de arquivo inválido';
-					const maxSize = 5 * 1024 * 1024; // 5MB
-					if (arquivo.size > maxSize) return 'Arquivo deve ter no máximo 5MB';
-					return null;
-				};
-
-				const erroComprovante = validarComprovante(comprovante);
-				if (erroComprovante) {
-					return fail(400, {
-						success: false,
-						message: erroComprovante
-					});
-				}
-			}
-
-			// Processamento do comprovante se existir
-			const processarComprovante = async (arquivo: File) => {
-				const buffer = await arquivo.arrayBuffer();
-				const base64 = Buffer.from(buffer).toString('base64');
-				return `data:${arquivo.type};base64,${base64}`;
+			// Capturar dados do formulário
+			const dadosGrupo = {
+				promoCode,
+				status,
+				valorTotal: formData.get('valorTotal'),
+				bonusIndicacaoResgatado: formData.get('bonusIndicacaoResgatado'),
+				valorTotalFinal: formData.get('valorTotalFinal'),
+				vendedorNome: formData.get('vendedorNome'),
+				vendedorTelefone: formData.get('vendedorTelefone'),
+				vendedorPixCode: formData.get('vendedorPixCode'),
+				vendedorPixType: formData.get('vendedorPixType'),
+				clientesData: formData.get('clientesData'),
+				quantidadeClientes: formData.get('quantidadeClientes')
 			};
 
-			// Busca o lead
-			const lead = await db.select().from(leadsTable).where(eq(leadsTable.id, id));
-			if (!lead || lead.length === 0) {
-				return fail(404, {
-					success: false,
-					message: 'Lead não encontrado'
-				});
+			// console.log('FORM DATA COMPLETO:', dadosGrupo);
+
+			// Validações básicas
+			if (!['Pago', 'Cancelado'].includes(status)) {
+				return fail(400, { success: false, message: 'Status inválido para operação de grupo' });
 			}
 
-			// Prepara os dados para atualização com os timestamps apropriados
+			// Buscar leads do grupo
+			const leadsDoGrupo = await db
+				.select()
+				.from(leadsTable)
+				.where(eq(leadsTable.promoCode, promoCode));
+
+			if (!leadsDoGrupo.length) {
+				return fail(404, { success: false, message: 'Nenhum lead encontrado para este grupo' });
+			}
+
+			// console.log(`=== PROCESSANDO ${status.toUpperCase()} - ${leadsDoGrupo.length} leads ===`);
+
+			// Validações específicas por status
+			const validacao = validarOperacao(status, motivo, comprovante);
+			if (validacao.erro) {
+				return fail(400, { success: false, message: validacao.erro });
+			}
+
+			// Processar comprovante se necessário
+			const comprovanteBase64 = comprovante ? await processarComprovante(comprovante) : null;
+
 			const now = new Date().toISOString();
-			const updateData: {
-				status: 'Aguardando Pagamento' | 'Pago' | 'Cancelado';
-				pagoPor?: string;
-				pagoEm?: string | null;
-				aguardandoPagamentoEm?: string | null;
-				canceladoEm?: string | null;
-			} = {
-				status: status as 'Aguardando Pagamento' | 'Pago' | 'Cancelado'
-			};
 
-			// Define o timestamp correspondente ao status
-			if (status === 'Pago') {
-				updateData.pagoPor = locals.user?.name;
-				updateData.pagoEm = now;
-			} else if (status === 'Aguardando Pagamento') {
-				updateData.aguardandoPagamentoEm = now;
-			} else if (status === 'Cancelado') {
-				updateData.canceladoEm = now;
-
-				// Decrementar o bônus de indicação do usuário indicador se o lead for cancelado
-				if (lead[0].userIdPromoCode) {
-					// Buscar o usuário indicador pelo ID
-					const usuarioIndicador = await db
-						.select()
-						.from(userTable)
-						.where(eq(userTable.id, lead[0].userIdPromoCode));
-
-					if (usuarioIndicador && usuarioIndicador.length > 0) {
-						// Decrementar o bônus de indicação, certificando que não fique negativo
-						const bonusAtual = usuarioIndicador[0].bonusIndicacao || 0;
-						const novoBonusIndicacao = Math.max(0, bonusAtual - 1);
-
-						await db
-							.update(userTable)
-							.set({
-								bonusIndicacao: novoBonusIndicacao
-							})
-							.where(eq(userTable.id, lead[0].userIdPromoCode));
-					}
-				}
-			}
-
-			// Atualiza o status do lead
+			// Executar transação
 			await db.transaction(async (tx) => {
-				await tx.update(leadsTable).set(updateData).where(eq(leadsTable.id, id));
+				// Atualizar todos os leads
+				await atualizarLeadsGrupo(
+					tx,
+					leadsDoGrupo,
+					status,
+					now,
+					locals.user?.name,
+					motivo,
+					comprovanteBase64
+				);
 
-				// Salva o comprovante em tabela separada apenas se for pago e tiver comprovante
-				if (status === 'Pago' && comprovante) {
-					const comprovanteBase64 = await processarComprovante(comprovante);
-					await tx.insert(leadsComprovanteTable).values({
-						id: crypto.randomUUID(),
-						leadsId: id,
-						comprovante: comprovanteBase64
-					});
-				}
+				// Criar registro do grupo
+				const grupoPagamentoData = criarDadosGrupoPagamento(
+					dadosGrupo,
+					leadsDoGrupo,
+					status,
+					now,
+					locals.user?.name,
+					motivo,
+					comprovanteBase64
+				);
+
+				await tx.insert(grupoPagamentoTable).values(grupoPagamentoData);
 			});
 
+			const acao = status === 'Pago' ? 'processado' : 'cancelado';
 			return {
 				success: true,
-				message: `Status atualizado para ${status} com sucesso`,
+				message: `Grupo "${promoCode}" ${acao} com sucesso! ${leadsDoGrupo.length} leads foram ${acao}s.`,
 				newStatus: status
 			};
 		} catch (error) {
-			console.error('Erro ao atualizar status:', error);
-			return fail(500, {
-				success: false,
-				message: 'Erro ao atualizar status'
-			});
+			console.error('Erro ao processar grupo:', error);
+			return fail(500, { success: false, message: 'Erro ao processar status do grupo' });
 		}
 	}
 };
+
+// Funções auxiliares
+function validarOperacao(status: string, motivo: string | null, comprovante: File | null) {
+	if (status === 'Cancelado' && (!motivo || motivo.trim() === '')) {
+		return { erro: 'Motivo é obrigatório para cancelamentos' };
+	}
+
+	if (status === 'Pago') {
+		if (!comprovante || comprovante.size === 0) {
+			return { erro: 'Comprovante é obrigatório para pagamentos' };
+		}
+
+		const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+		if (!tiposPermitidos.includes(comprovante.type)) {
+			return { erro: 'Formato de arquivo inválido. Use JPG, PNG, WEBP ou PDF' };
+		}
+
+		if (comprovante.size > 5 * 1024 * 1024) {
+			return { erro: 'Arquivo deve ter no máximo 5MB' };
+		}
+	}
+
+	return { erro: null };
+}
+
+async function processarComprovante(arquivo: File): Promise<string> {
+	const buffer = await arquivo.arrayBuffer();
+	const base64 = Buffer.from(buffer).toString('base64');
+	return `data:${arquivo.type};base64,${base64}`;
+}
+
+async function atualizarLeadsGrupo(
+	tx: any,
+	leads: any[],
+	status: string,
+	now: string,
+	userName: string | undefined,
+	motivo: string | null,
+	comprovanteBase64: string | null
+) {
+	for (const lead of leads) {
+		// Atualizar status do lead
+		const updateData: any = { status };
+
+		if (status === 'Pago') {
+			updateData.pagoEm = now;
+			updateData.pagoPor = userName;
+		} else {
+			updateData.canceladoEm = now;
+		}
+
+		await tx.update(leadsTable).set(updateData).where(eq(leadsTable.id, lead.id));
+
+		// Ações específicas por status
+		if (status === 'Cancelado') {
+			await tx.insert(motivoCancelado).values({
+				id: crypto.randomUUID(),
+				motivo: motivo!,
+				leadId: lead.id
+			});
+
+			// Decrementar bônus do indicador
+			if (lead.userIdPromoCode) {
+				const usuarioIndicador = await tx
+					.select()
+					.from(userTable)
+					.where(eq(userTable.id, lead.userIdPromoCode));
+				if (usuarioIndicador.length > 0) {
+					const novoBonusIndicacao = Math.max(0, (usuarioIndicador[0].bonusIndicacao || 0) - 1);
+					await tx
+						.update(userTable)
+						.set({ bonusIndicacao: novoBonusIndicacao })
+						.where(eq(userTable.id, lead.userIdPromoCode));
+				}
+			}
+		} else if (status === 'Pago' && comprovanteBase64) {
+			await tx.insert(leadsComprovanteTable).values({
+				id: crypto.randomUUID(),
+				leadsId: lead.id,
+				comprovante: comprovanteBase64
+			});
+		}
+	}
+}
+
+function criarDadosGrupoPagamento(
+	dadosGrupo: any,
+	leads: any[],
+	status: string,
+	now: string,
+	userName: string | undefined,
+	motivo: string | null,
+	comprovanteBase64: string | null
+) {
+	return {
+		id: crypto.randomUUID(),
+		promoCode: dadosGrupo.promoCode,
+		valorIndicacao: parseInt(dadosGrupo.valorTotal as string) || 0,
+		valorBonus: parseInt(dadosGrupo.bonusIndicacaoResgatado as string) || 0,
+		valorTotal: parseInt(dadosGrupo.valorTotalFinal as string) || 0,
+		status: status as 'Pago' | 'Cancelado',
+		motivo: status === 'Cancelado' ? motivo : null,
+		vendedorId: leads[0]?.userIdPromoCode || null,
+		vendedorNome: (dadosGrupo.vendedorNome as string) || null,
+		vendedorTelefone: (dadosGrupo.vendedorTelefone as string) || null,
+		vendedorPixCode: (dadosGrupo.vendedorPixCode as string) || null,
+		vendedorPixType: (dadosGrupo.vendedorPixType as 'cpf' | 'cnpj') || null,
+		leadsIds: JSON.stringify(leads.map((lead) => lead.id)),
+		quantidadeLeads: leads.length,
+		clientesData: dadosGrupo.clientesData as string,
+		processadoEm: now,
+		processadoPor: userName || null,
+		comprovante: comprovanteBase64
+	};
+}

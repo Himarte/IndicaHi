@@ -127,6 +127,44 @@ export const bonusResgateHistoricoTable = pgTable('bonus_resgate_historico', {
 		.defaultNow()
 });
 
+export const grupoPagamentoTable = pgTable('grupo_pagamento', {
+	id: varchar('id').primaryKey().notNull(),
+	promoCode: varchar('promo_code', { length: 15 }).notNull(),
+
+	// Dados financeiros
+	valorIndicacao: integer('valor_indicacao').notNull(), // valorTotal dos planos
+	valorBonus: integer('valor_bonus').default(0).notNull(), // bonus resgatado
+	valorTotal: integer('valor_total').notNull(), // soma dos dois acima
+
+	// Status do grupo
+	status: statusEnum('status').notNull(), // Pago ou Cancelado
+	motivo: text('motivo'), // motivo se cancelado
+
+	// Dados do vendedor
+	vendedorId: text('vendedor_id').references(() => userTable.id),
+	vendedorNome: varchar('vendedor_nome', { length: 256 }),
+	vendedorTelefone: varchar('vendedor_telefone', { length: 11 }),
+	vendedorPixCode: text('vendedor_pix_code'),
+	vendedorPixType: pixTypeEnum('vendedor_pix_type'),
+
+	// Lista de IDs dos leads (JSON array)
+	leadsIds: text('leads_ids').notNull(), // JSON stringified array de IDs
+	quantidadeLeads: integer('quantidade_leads').notNull(),
+
+	// Dados dos clientes (JSON)
+	clientesData: text('clientes_data').notNull(), // JSON stringified dos dados dos clientes
+
+	// Timestamps
+	criadoEm: timestamp('criado_em', { mode: 'string', precision: 6, withTimezone: true })
+		.notNull()
+		.defaultNow(),
+	processadoEm: timestamp('processado_em', { mode: 'string', precision: 6, withTimezone: true }),
+
+	// Dados do processamento
+	processadoPor: varchar('processado_por', { length: 256 }), // usuário que processou
+	comprovante: text('comprovante') // se pago, base64 do comprovante
+});
+
 // Define types for insert schemas
 export type UserInsertSchema = typeof userTable.$inferInsert;
 export type UserSchema = typeof userTable.$inferSelect;
@@ -135,3 +173,5 @@ export type MotivoCanceladoSchema = typeof motivoCancelado.$inferSelect;
 export type LeadsComprovanteSchema = typeof leadsComprovanteTable.$inferSelect;
 export type BonusResgateHistoricoSchema = typeof bonusResgateHistoricoTable.$inferSelect;
 export type BonusResgateHistoricoInsertSchema = typeof bonusResgateHistoricoTable.$inferInsert;
+export type GrupoPagamentoSchema = typeof grupoPagamentoTable.$inferSelect;
+export type GrupoPagamentoInsertSchema = typeof grupoPagamentoTable.$inferInsert;
