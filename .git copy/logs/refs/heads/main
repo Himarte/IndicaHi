@@ -1,0 +1,8 @@
+0000000000000000000000000000000000000000 57f732fc4cd9f08f1b4b521103a86276816785ad Othavio Quiliao <othavioaqa@gmail.com> 1749480281 -0300	commit (initial): chore: primeiro commit
+57f732fc4cd9f08f1b4b521103a86276816785ad 07ee6eb56c6b9ed38491e17223077f79a040ef3e Othavio Quiliao <othavioaqa@gmail.com> 1749488619 -0300	commit: chore: atualização de dependências, ajustes de configuração e melhorias na interface do usuário
+07ee6eb56c6b9ed38491e17223077f79a040ef3e 5eaab01d738eaf8901d2403a09ba2ff3b7457368 Othavio Quiliao <othavioaqa@gmail.com> 1749494031 -0300	commit: chore: autentificacao
+5eaab01d738eaf8901d2403a09ba2ff3b7457368 2b2984d7c6954351a4601d6324ca710eff30aeda Othavio Quiliao <othavioaqa@gmail.com> 1749496042 -0300	commit: refactor: ajuste na sintaxe de eventos e melhorias na classe do separador em diversos componentes
+2b2984d7c6954351a4601d6324ca710eff30aeda 292078b43b8d4dbca8ffd19fcde7b5b0db9023ed Othavio Quiliao <othavioaqa@gmail.com> 1749506579 -0300	commit: feat: adição de novas cores e ícones para status, melhorias na exibição de leads e ajustes na estrutura do layout
+292078b43b8d4dbca8ffd19fcde7b5b0db9023ed 19a821def18ecef0f9ca0a793ab973355dfff011 Othavio Quiliao <othavioaqa@gmail.com> 1749573752 -0300	commit: feat: implementação de validações e melhorias na interface de edição de dados pessoais e localização, além de ajustes na exibição de chaves PIX
+19a821def18ecef0f9ca0a793ab973355dfff011 2bd58cda82f8cf1f27e7a98e4309bbb4e17cae00 Othavio Quiliao <othavioaqa@gmail.com> 1749578877 -0300	commit: login page
+2bd58cda82f8cf1f27e7a98e4309bbb4e17cae00 911a7e034ac53dca1b17212c0043721808593be8 Othavio Quiliao <othavioaqa@gmail.com> 1749579735 -0300	commit: feat: melhorias na página de login com novos estilos, animações e efeitos de hover

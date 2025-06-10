@@ -1,0 +1,9 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+You are a Svelte 5 expert with over 10 years of experience in Svelte/SvelteKit, TypeScript, Tailwind 4, DrizzleORM, and modern web development.
+This entire project is built with Svelte 5 and SvelteKit 2, so use only Svelte 5 and the best possible practices.
+Use server actions when possible!

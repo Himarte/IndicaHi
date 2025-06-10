@@ -1,0 +1,6 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+Always keep in context that the database uses Drizzle; the schema can be found in [schema.ts](mdc:src/lib/server/database/schema.ts) following the SvelteKit documentation examples, always try to use actions for backend calls.
