@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 import { SITE_CHAVE_API } from '$env/static/private';
-import { generateId } from 'lucia';
+import { generateId } from '$lib/server/utils';
 import { db } from '$lib/server/database/db.server';
 import { leadsTable } from '$lib/server/database/schema';
 import { getUserIdByPromoCode } from '$lib/server/database/utils/user.server';
