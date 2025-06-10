@@ -58,9 +58,9 @@
 			<Button {...props} class="text-xs" variant="link">Ver Motivo</Button>
 		{/snippet}
 	</Popover.Trigger>
-	<Popover.Content class="w-80 pt-2">
+	<Popover.Content class="border-border w-80 bg-zinc-900 pt-2">
 		<div class="flex flex-col items-center justify-center gap-2">
-			<p class="text-sm font-bold text-orange-400">Motivo do Cancelamento</p>
+			<p class="text-sm font-bold text-amber-400">Motivo do Cancelamento</p>
 
 			<form
 				bind:this={formEl}
@@ -77,7 +77,7 @@
 					<p class="text-sm text-red-500">{error}</p>
 				{:else if motivo}
 					<Textarea
-						class="min-h-[100px] w-full resize-none border-orange-400 focus-visible:ring-0"
+						class="min-h-[100px] w-full resize-none border-amber-400 focus-visible:ring-0"
 						value={motivo}
 						readonly
 					/>
