@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { Download } from '@lucide/svelte';
+	import { Download, FileText } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import { onMount } from 'svelte';
 	import type { LeadsSchema } from '$lib/server/database/schema';
@@ -9,6 +9,7 @@
 	export let lead: LeadsSchema;
 	let isLoading = false;
 	let comprovante: string | null = null;
+	let hasComprovante = false;
 
 	onMount(async () => {
 		try {
@@ -19,11 +20,17 @@
 				}
 			});
 
-			if (!response.ok) throw new Error('Falha ao carregar comprovante');
+			if (!response.ok) {
+				console.warn('Comprovante não disponível para este lead');
+				return;
+			}
+
 			const data = await response.json();
 			comprovante = data.comprovante;
+			hasComprovante = !!comprovante;
 		} catch (error) {
 			console.error('Erro ao carregar comprovante:', error);
+			hasComprovante = false;
 		}
 	});
 
@@ -34,57 +41,73 @@
 			isLoading = true;
 
 			if (!comprovante) {
-				toast.error('Comprovante não disponível');
+				toast.error('Comprovante não disponível para download');
 				return;
 			}
 
-			const [, tipo, base64] = comprovante.match(/data:(.*);base64,(.*)/) || [];
+			const [, mimeType, base64Data] = comprovante.match(/data:(.*?);base64,(.*)/) || [];
 
-			if (!tipo || !base64) {
+			if (!mimeType || !base64Data) {
 				toast.error('Formato do comprovante inválido');
 				return;
 			}
 
-			const byteCharacters = atob(base64);
+			// Converter base64 para Blob
+			const byteCharacters = atob(base64Data);
 			const byteArray = new Uint8Array(byteCharacters.split('').map((char) => char.charCodeAt(0)));
-			const blob = new Blob([byteArray], { type: tipo });
+			const blob = new Blob([byteArray], { type: mimeType });
 
+			// Determinar extensão do arquivo
+			const extension = mimeType.includes('pdf')
+				? 'pdf'
+				: mimeType.includes('png')
+					? 'png'
+					: mimeType.includes('jpeg')
+						? 'jpg'
+						: mimeType.includes('webp')
+							? 'webp'
+							: 'jpg';
+
+			// Criar e acionar download
 			const url = URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = url;
-			a.download = `comprovante_${lead.id.replace(/\s+/g, '_')}.${tipo.split('/')[1]}`;
-			document.body.appendChild(a);
-			a.click();
-			document.body.removeChild(a);
+			const downloadElement = document.createElement('a');
+			downloadElement.href = url;
+			downloadElement.download = `comprovante_${lead.fullName?.replace(/\s+/g, '_') || lead.id}_${new Date().toISOString().split('T')[0]}.${extension}`;
+
+			document.body.appendChild(downloadElement);
+			downloadElement.click();
+			document.body.removeChild(downloadElement);
+
+			// Limpar URL do objeto
 			URL.revokeObjectURL(url);
 
-			toast.success('Download iniciado com sucesso!');
+			toast.success('Download realizado com sucesso!');
 		} catch (error) {
 			console.error('Erro ao baixar comprovante:', error);
-			toast.error('Erro ao baixar o comprovante');
+			toast.error('Erro ao realizar download do comprovante');
 		} finally {
 			isLoading = false;
 		}
 	}
 </script>
 
-<Tooltip.Provider>
-	<Tooltip.Root>
-		<Tooltip.Trigger>
-			{#snippet child({ props })}
-				<Button
-					{...props}
-					variant="ghost"
-					class="absolute right-2 bottom-16 flex items-center text-orange-400"
-					onclick={handleDownload}
-					disabled={isLoading || !comprovante}
-				>
-					<Download size={28} />
-				</Button>
-			{/snippet}
-		</Tooltip.Trigger>
-		<Tooltip.Content side="bottom">
-			<p>Baixar Comprovante</p>
-		</Tooltip.Content>
-	</Tooltip.Root>
-</Tooltip.Provider>
+<Button
+	variant="ghost"
+	size="sm"
+	class="group relative flex items-center gap-2 rounded-md border border-zinc-700/50 bg-zinc-800/50 px-3 py-2 text-xs font-medium text-zinc-300 transition-all duration-300 hover:border-amber-400/50 hover:bg-amber-500/10 hover:text-amber-400 hover:shadow-lg hover:shadow-amber-500/20 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-zinc-700/50 disabled:hover:bg-zinc-800/50 disabled:hover:text-zinc-300"
+	onclick={handleDownload}
+	disabled={isLoading || !hasComprovante}
+>
+	{#if isLoading}
+		<div class="animate-spin">
+			<Download size={16} />
+		</div>
+		<span>Baixando...</span>
+	{:else if hasComprovante}
+		<Download size={16} class="transition-transform duration-300 group-hover:scale-110" />
+		<span>Baixar Comprovante</span>
+	{:else}
+		<FileText size={16} class="text-zinc-500" />
+		<span class="text-zinc-500">Sem Comprovante</span>
+	{/if}
+</Button>
