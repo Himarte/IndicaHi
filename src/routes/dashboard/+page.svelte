@@ -3,7 +3,11 @@
 	import type { PageData } from './$types';
 	import * as Tabs from '$lib/components/ui/tabs';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 {#if data.message}
@@ -12,7 +16,9 @@
 	</div>
 {:else}
 	<Tabs.Root value="pendentes" class="relative flex h-full w-full justify-center pt-5 ">
-		<Tabs.List class="absolute top-3 flex w-min gap-1  border border-secondary bg-background">
+		<Tabs.List
+			class="bg-background border-border absolute top-2 left-1/2 flex w-min -translate-x-1/2 gap-2 border"
+		>
 			<Tabs.Trigger value="pendentes" class="data-[state=active]:bg-zinc-800"
 				>Pendentes</Tabs.Trigger
 			>

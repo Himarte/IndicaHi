@@ -16,14 +16,14 @@
 	function onPopoverOpen(open: boolean) {
 		if (open && !isOpen) {
 			isOpen = true;
-			
+
 			// Só carrega novamente se for um leadId diferente
 			if (loadedId !== leadId) {
 				loading = true;
 				motivo = '';
 				error = '';
 				loadedId = leadId;
-				
+
 				// Submete o formulário automaticamente quando o popover abre
 				setTimeout(() => {
 					if (formEl) {
@@ -39,10 +39,10 @@
 	// Essa função é executada ao submeter o formulário
 	const enhanceForm = () => {
 		loading = true;
-		
+
 		return async ({ result }: { result: { type: string; data?: Record<string, any> } }) => {
 			loading = false;
-			
+
 			if (result.type === 'success' && result.data) {
 				motivo = result.data.motivo || 'Nenhum motivo registrado';
 			} else {
@@ -52,9 +52,11 @@
 	};
 </script>
 
-<Popover.Root portal={null} onOpenChange={onPopoverOpen}>
-	<Popover.Trigger asChild let:builder>
-		<Button builders={[builder]} class="text-xs" variant="link">Ver Motivo</Button>
+<Popover.Root onOpenChange={onPopoverOpen}>
+	<Popover.Trigger>
+		{#snippet child({ props })}
+			<Button {...props} class="text-xs" variant="link">Ver Motivo</Button>
+		{/snippet}
 	</Popover.Trigger>
 	<Popover.Content class="w-80 pt-2">
 		<div class="flex flex-col items-center justify-center gap-2">

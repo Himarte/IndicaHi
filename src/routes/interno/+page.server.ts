@@ -61,6 +61,11 @@ export const actions: Actions = {
 			const status = formData.get('status') as string;
 			const motivo = formData.get('motivo') as string;
 
+			console.log('FormData: ------------------------------', formData);
+			console.log('ID: ------------------------------', id);
+			console.log('Status: ------------------------------', status);
+			console.log('Motivo: ------------------------------', motivo);
+
 			// Valida os campos recebidos
 			if (!id || !status) {
 				return fail(400, {

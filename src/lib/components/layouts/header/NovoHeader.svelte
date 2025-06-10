@@ -1,15 +1,16 @@
 <script lang="ts">
-	import PanelLeft from 'lucide-svelte/icons/panel-left';
+	import { PanelLeft } from '@lucide/svelte';
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import LogoHimarte from '$lib/img/logos/logo-nome.webp';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as Popover from '$lib/components/ui/popover';
-	import type { userDataFromCookies } from '$lib/server/lucia.server';
+	import type { User } from '$lib/server/auth';
 	import AvatarOpcoes from './AvatarOpcoes.svelte';
 	import { page } from '$app/stores';
+	import { ROUTES } from '$lib/uteis/routes';
 
-	export let userData: userDataFromCookies;
+	export let userData: User;
 	export let isLoggedIn: boolean;
 
 	$: isVendedorExterno = userData?.job === 'Vendedor Externo';
@@ -18,33 +19,37 @@
 
 {#if showHeader}
 	<header
-		class="z-2 static top-0 flex h-14 w-full items-center justify-between gap-4 border-b border-secondary px-3 md:pl-24 md:pr-10"
+		class="border-secondary static top-0 z-2 flex h-14 w-full items-center justify-between gap-4 border-b px-3 md:pr-10 md:pl-24"
 	>
 		<!-- Menu Mobile -->
 		<Sheet.Root>
-			<Sheet.Trigger asChild let:builder>
-				<Button builders={[builder]} size="icon" variant="outline" class="sm:hidden">
-					<PanelLeft class="h-5 w-5" />
-					<span class="sr-only">Toggle Menu</span>
-				</Button>
+			<Sheet.Trigger>
+				{#snippet child({ props })}
+					<Button {...props} size="icon" variant="outline" class="sm:hidden">
+						<PanelLeft class="h-5 w-5" />
+						<span class="sr-only">Toggle Menu</span>
+					</Button>
+				{/snippet}
 			</Sheet.Trigger>
 
 			<Sheet.Content side="left" class="sm:max-w-xs">
 				<nav class="flex w-2/3 flex-col items-center gap-5 rounded-xl">
-					<a href="/">
+					<a href={ROUTES.HOME}>
 						<img src={LogoHimarte} alt="Logo Himarte" class="w-36 py-5 pr-5" />
 					</a>
 					<Button
 						variant="ghost"
-						href="/"
-						class={$page.url.pathname === '/' ? 'bg-secondary text-accent-foreground' : ''}
+						href={ROUTES.HOME}
+						class={$page.url.pathname === ROUTES.HOME ? 'bg-secondary text-accent-foreground' : ''}
 					>
 						Home
 					</Button>
 					<Button
 						variant="ghost"
-						href="/dashboard"
-						class={$page.url.pathname === '/dashboard' ? 'bg-secondary text-accent-foreground' : ''}
+						href={ROUTES.DASHBOARD}
+						class={$page.url.pathname === ROUTES.DASHBOARD
+							? 'bg-secondary text-accent-foreground'
+							: ''}
 					>
 						Dashboard
 					</Button>
@@ -56,15 +61,15 @@
 		<nav class="hidden w-2/3 items-center gap-5 md:flex">
 			<Button
 				variant="ghost"
-				href="/"
-				class={$page.url.pathname === '/' ? 'bg-secondary text-accent-foreground' : ''}
+				href={ROUTES.HOME}
+				class={$page.url.pathname === ROUTES.HOME ? 'bg-secondary text-accent-foreground' : ''}
 			>
 				Home
 			</Button>
 			<Button
 				variant="ghost"
-				href="/dashboard"
-				class={$page.url.pathname === '/dashboard' ? 'bg-secondary text-accent-foreground' : ''}
+				href={ROUTES.DASHBOARD}
+				class={$page.url.pathname === ROUTES.DASHBOARD ? 'bg-secondary text-accent-foreground' : ''}
 			>
 				Dashboard
 			</Button>

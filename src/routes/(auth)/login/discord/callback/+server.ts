@@ -1,13 +1,10 @@
 import type { RequestHandler } from './$types';
 import { OAuth2RequestError } from 'arctic';
-import { generateId } from 'lucia';
 
-import {
-
-	createSessionCookie
-} from '$lib/server/authUtils.server';
+import * as auth from '$lib/server/auth';
+import { discord } from '$lib/server/oauth';
+import { generateId } from '$lib/server/utils';
 import { db } from '$lib/server/database/db.server';
-import { discord, lucia } from '$lib/server/lucia.server';
 import { userTable } from '$lib/server/database/schema';
 import { emailIsUsed } from '$lib/server/database/utils/user.server';
 import { and, eq } from 'drizzle-orm';
@@ -34,22 +31,21 @@ type DiscordUser = {
 export const GET: RequestHandler = async (event) => {
 	const code = event.url.searchParams.get('code');
 	const state = event.url.searchParams.get('state');
-
-
+	const storedState = event.cookies.get('discord_oauth_state');
 
 	// Validate OAuth state and code verifier
-	if (!code || !state ) {
+	if (!code || !state || !storedState || state !== storedState) {
 		return new Response('Invalid OAuth state or code verifier', {
 			status: 400
 		});
 	}
 
 	try {
-		const tokens = await discord.validateAuthorizationCode(code);
+		const tokens = await discord.validateAuthorizationCode(code, null);
 
 		const discordUserResponse = await fetch('https://discord.com/api/users/@me', {
 			headers: {
-				Authorization: `Bearer ${tokens.accessToken}`
+				Authorization: `Bearer ${tokens.accessToken()}`
 			}
 		});
 
@@ -92,7 +88,9 @@ export const GET: RequestHandler = async (event) => {
 					provider_user_id: discordUser.id,
 					name: discordUser.username,
 					email: discordUser.email,
-					avatarUrl: discordUser.avatar ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : null,
+					avatarUrl: discordUser.avatar
+						? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png`
+						: '',
 					job: 'Vendedor Externo',
 					promoCode: generateId(8)
 				});
@@ -102,7 +100,10 @@ export const GET: RequestHandler = async (event) => {
 						status: 500
 					});
 				}
-				await createSessionCookie(lucia, userId, event.cookies);
+
+				const sessionToken = auth.generateSessionToken();
+				const session = await auth.createSession(sessionToken, userId);
+				auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
 				return new Response(null, {
 					status: 302,
@@ -112,7 +113,9 @@ export const GET: RequestHandler = async (event) => {
 				});
 			}
 
-			await createSessionCookie(lucia, existingUser[0].id, event.cookies);
+			const sessionToken = auth.generateSessionToken();
+			const session = await auth.createSession(sessionToken, existingUser[0].id);
+			auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 		} else {
 			// Create a new user and their OAuth account
 			const userId = discordUser.email + generateId(10);
@@ -123,17 +126,22 @@ export const GET: RequestHandler = async (event) => {
 				provider_user_id: discordUser.id,
 				name: discordUser.username,
 				email: discordUser.email,
-				avatarUrl: discordUser.avatar ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : null,
+				avatarUrl: discordUser.avatar
+					? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png`
+					: '',
 				job: 'Vendedor Externo',
 				promoCode: generateId(15)
 			});
+
 			if (!newUser) {
 				return new Response('Error registering user', {
 					status: 500
 				});
 			}
 
-			await createSessionCookie(lucia, userId, event.cookies);
+			const sessionToken = auth.generateSessionToken();
+			const session = await auth.createSession(sessionToken, userId);
+			auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 		}
 
 		return new Response(null, {

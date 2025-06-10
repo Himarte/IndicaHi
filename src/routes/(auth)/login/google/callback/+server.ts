@@ -1,17 +1,18 @@
 import type { RequestHandler } from './$types';
 import { OAuth2RequestError } from 'arctic';
-import { generateId } from 'lucia';
 
 import {
 	GOOGLE_OAUTH_CODE_VERIFIER_COOKIE_NAME,
-	GOOGLE_OAUTH_STATE_COOKIE_NAME,
-	createSessionCookie
+	GOOGLE_OAUTH_STATE_COOKIE_NAME
 } from '$lib/server/authUtils.server';
+import * as auth from '$lib/server/auth';
+import { google } from '$lib/server/oauth';
+import { generateId } from '$lib/server/utils';
 import { db } from '$lib/server/database/db.server';
-import { google, lucia } from '$lib/server/lucia.server';
 import { userTable } from '$lib/server/database/schema';
 import { emailIsUsed } from '$lib/server/database/utils/user.server';
 import { and, eq } from 'drizzle-orm';
+
 type GoogleUser = {
 	sub: string;
 	name: string;
@@ -42,7 +43,7 @@ export const GET: RequestHandler = async (event) => {
 
 		const googleUserResponse = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
 			headers: {
-				Authorization: `Bearer ${tokens.accessToken}`
+				Authorization: `Bearer ${tokens.accessToken()}`
 			}
 		});
 
@@ -77,7 +78,7 @@ export const GET: RequestHandler = async (event) => {
 					)
 				);
 
-			if (!existeEmailEOauth) {
+			if (!existeEmailEOauth || existeEmailEOauth.length === 0) {
 				// Create a new user and their OAuth account
 				const userId = googleUser.email + generateId(10);
 
@@ -97,7 +98,10 @@ export const GET: RequestHandler = async (event) => {
 						status: 500
 					});
 				}
-				await createSessionCookie(lucia, userId, event.cookies);
+
+				const sessionToken = auth.generateSessionToken();
+				const session = await auth.createSession(sessionToken, userId);
+				auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
 				return new Response(null, {
 					status: 302,
@@ -107,7 +111,9 @@ export const GET: RequestHandler = async (event) => {
 				});
 			}
 
-			await createSessionCookie(lucia, existeEmailEOauth[0].id, event.cookies);
+			const sessionToken = auth.generateSessionToken();
+			const session = await auth.createSession(sessionToken, existeEmailEOauth[0].id);
+			auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 		} else {
 			// Create a new user and their OAuth account
 			const userId = googleUser.email + generateId(10);
@@ -122,13 +128,16 @@ export const GET: RequestHandler = async (event) => {
 				job: 'Vendedor Externo',
 				promoCode: generateId(15)
 			});
+
 			if (!newUser) {
 				return new Response('Erro ao registrar usuario', {
 					status: 500
 				});
 			}
 
-			await createSessionCookie(lucia, userId, event.cookies);
+			const sessionToken = auth.generateSessionToken();
+			const session = await auth.createSession(sessionToken, userId);
+			auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 		}
 
 		return new Response(null, {

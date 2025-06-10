@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { userDataFromCookies } from '$lib/server/lucia.server';
+	import type { User } from '$lib/server/auth';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '../ui/button';
 	import { Separator } from '$lib/components/ui/separator';
@@ -16,7 +16,7 @@
 	import * as RadioGroup from '$lib/components/ui/radio-group';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 
-	export let userData: userDataFromCookies;
+	export let userData: User;
 
 	// Constantes e tipos
 	const pixTypes = [
@@ -293,8 +293,8 @@
 </script>
 
 <form
-	on:submit={submitDadosCadastro}
-	class="absolute left-0 top-0 z-50 flex h-fit w-full items-center justify-center bg-background p-4 md:h-full"
+	onsubmit={submitDadosCadastro}
+	class="bg-background absolute top-0 left-0 z-50 flex h-fit w-full items-center justify-center p-4 md:h-full"
 >
 	<Card.Root class="flex h-fit w-full flex-col gap-4 md:w-2/5 md:p-6">
 		<Card.Header class="text-center">
@@ -317,7 +317,7 @@
 						placeholder="CPF"
 						maxlength={14}
 						bind:value={cpf}
-						on:input={() => (cpf = applyMask(cpf, 'cpf'))}
+						oninput={() => (cpf = applyMask(cpf, 'cpf'))}
 						required
 						class={erros.cpf ? 'border-red-500' : ''}
 						aria-invalid={!!erros.cpf}
@@ -326,7 +326,7 @@
 					{#if erros.cpf}
 						<p id="cpf-error" class="text-xs text-red-500">{erros.cpf}</p>
 					{:else}
-						<p id="cpf-hint" class="text-xs text-muted-foreground">Ex. 123.456.789-10</p>
+						<p id="cpf-hint" class="text-muted-foreground text-xs">Ex. 123.456.789-10</p>
 					{/if}
 				</div>
 				<div class="flex flex-1 flex-col gap-2">
@@ -338,7 +338,7 @@
 						placeholder="Celular"
 						maxlength={15}
 						bind:value={celular}
-						on:input={() => (celular = formatarTelefone(celular))}
+						oninput={() => (celular = formatarTelefone(celular))}
 						required
 						class={erros.celular ? 'border-red-500' : ''}
 						aria-invalid={!!erros.celular}
@@ -347,7 +347,7 @@
 					{#if erros.celular}
 						<p id="celular-error" class="text-xs text-red-500">{erros.celular}</p>
 					{:else}
-						<p id="celular-hint" class="text-xs text-muted-foreground">Ex. (DD) 99999-9999</p>
+						<p id="celular-hint" class="text-muted-foreground text-xs">Ex. (DD) 99999-9999</p>
 					{/if}
 				</div>
 			</div>
@@ -385,7 +385,7 @@
 							{#if erros.pixCode}
 								<p id="pix-error" class="text-xs text-red-500">{erros.pixCode}</p>
 							{:else}
-								<p id="pix-hint" class="text-xs text-muted-foreground">
+								<p id="pix-hint" class="text-muted-foreground text-xs">
 									{#if selectedPixType === 'cpf'}
 										Ex. 123.456.789-10
 									{:else}
@@ -406,7 +406,7 @@
 						maxlength={9}
 						autocomplete="postal-code"
 						bind:value={cep}
-						on:input={() => {
+						oninput={() => {
 							cep = formatarCep(cep);
 						}}
 						required
@@ -417,7 +417,7 @@
 					{#if erros.cep}
 						<p id="cep-error" class="text-xs text-red-500">{erros.cep}</p>
 					{:else}
-						<p id="cep-hint" class="text-xs text-muted-foreground">Ex. 12345-678</p>
+						<p id="cep-hint" class="text-muted-foreground text-xs">Ex. 12345-678</p>
 					{/if}
 				</div>
 			</div>
@@ -549,7 +549,7 @@
 			<!-- Código promocional -->
 			<div class="flex flex-col gap-4">
 				<div class="mt-4 flex items-center gap-2">
-					<p class="whitespace-nowrap font-medium">Código Promocional</p>
+					<p class="font-medium whitespace-nowrap">Código Promocional</p>
 					<Separator class="flex-1" />
 				</div>
 				<p class="text-xs text-gray-400">
@@ -569,7 +569,7 @@
 					/>
 					<Button
 						variant="secondary"
-						on:click={handlePromoCodeSubmission}
+						onclick={handlePromoCodeSubmission}
 						class="w-full md:w-auto"
 						type="button"
 						disabled={!promoCode || promoCode.length < 3}

@@ -85,7 +85,9 @@ export const actions: Actions = {
 			const lead = await db
 				.select()
 				.from(leadsTable)
-				.where(and(eq(leadsTable.id, id), eq(leadsTable.promoCode, locals.user.promoCode)));
+				.where(
+					and(eq(leadsTable.id, id), eq(leadsTable.promoCode, locals.user.promoCode as string))
+				);
 
 			if (!lead || lead.length === 0) {
 				return fail(404, {

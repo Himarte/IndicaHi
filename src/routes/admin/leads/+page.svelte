@@ -4,7 +4,11 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Circle3 } from 'svelte-loading-spinners';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <Tabs.Root value="pendentes" class="relative flex h-full w-full justify-center pt-5">

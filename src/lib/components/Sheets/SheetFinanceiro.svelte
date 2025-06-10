@@ -18,7 +18,7 @@
 	if (lead.status === 'Pago') {
 		// fazer um onmout para pegar o comprovante para colocar um #await no botaoBaixar e passar o comprovante para o botaoBaixar
 		onMount(async () => {
-			const response = await fetch(`/api/indicacoes/financeiro/${lead.id}`, {
+			await fetch(`/api/indicacoes/financeiro/${lead.id}`, {
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json'
@@ -31,11 +31,6 @@
 	let isSubmitting = false;
 	let formEl: HTMLFormElement;
 	let selectedStatus = '';
-
-	// Função para atualizar o status selecionado
-	function updateSelectedStatus(event: CustomEvent) {
-		selectedStatus = event.detail;
-	}
 
 	const handleSubmit = () => {
 		return async ({ formData, cancel }: { formData: FormData; cancel: () => void }) => {
@@ -77,19 +72,26 @@
 </script>
 
 <Sheet.Root bind:open={isOpen}>
-	<Sheet.Trigger asChild let:builder>
-		<Button
-			builders={[builder]}
-			variant="outline"
-			class="text-orange-400 hover:bg-stone-900 hover:text-orange-400"
-		>
-			Alterar Dados
-		</Button>
+	<Sheet.Trigger>
+		{#snippet child({ props })}
+			<Button
+				{...props}
+				variant="outline"
+				class="w-full border border-gray-700/30 bg-zinc-900/40 text-green-400  hover:bg-zinc-900 {cargo ===
+				'Financeiro'
+					? 'text-orange-400 '
+					: 'text-green-400 '}"
+			>
+				{cargo === 'Financeiro' ? 'Realizar Pagamento' : 'Visualizar Pagamento'}
+			</Button>
+		{/snippet}
 	</Sheet.Trigger>
 
 	<Sheet.Content side="right" class="border-border">
 		<Sheet.Header>
-			<Sheet.Title class="text-orange-400">Informações do Vendedor</Sheet.Title>
+			<Sheet.Title class="text-orange-400">
+				{cargo === 'Financeiro' ? 'Informações do Vendedor' : 'Informações do Cliente'}
+			</Sheet.Title>
 			<Sheet.Description>
 				Preencha os dados e anexe o comprovante para atualizar o status
 			</Sheet.Description>
@@ -169,10 +171,10 @@
 						readonly
 					/>
 				</div>
-				<Separator class="mb-3 mt-4" />
+				<Separator class="mt-4 mb-3" />
 				<div class="flex flex-col items-start gap-2">
 					<Label for="status" class="text-right text-orange-400		">Alterar status:</Label>
-					<Dropdown {lead} {cargo} on:statusChange={(e) => (selectedStatus = e.detail)} />
+					<Dropdown {lead} {cargo} onstatusChange={(value) => (selectedStatus = value)} />
 				</div>
 
 				<div class=" flex flex-col items-start gap-2">
@@ -185,7 +187,7 @@
 						type="file"
 						id="comprovante"
 						name="comprovante"
-						class=" block w-full rounded-lg bg-border px-3 py-2 text-sm text-gray-200 placeholder-gray-200 file:rounded-full file:border-none file:bg-gray-200 file:px-4 file:py-1 file:text-sm file:text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+						class=" bg-border focus:ring-opacity-40 block w-full rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-200 file:rounded-full file:border-none file:bg-gray-200 file:px-4 file:py-1 file:text-sm file:text-gray-700 focus:border-blue-400 focus:ring focus:ring-blue-300 focus:outline-none"
 						accept=".jpg,.jpeg,.png,.pdf,.webp"
 					/>
 				</div>
@@ -197,8 +199,10 @@
 			{/if}
 			<Sheet.Footer>
 				<div class="flex w-full justify-end gap-2">
-					<Sheet.Close asChild let:builder>
-						<Button builders={[builder]} variant="outline" type="button">Cancelar</Button>
+					<Sheet.Close>
+						{#snippet child({ props })}
+							<Button {...props} variant="outline" type="button">Cancelar</Button>
+						{/snippet}
 					</Sheet.Close>
 					<Button type="submit" disabled={isSubmitting}>
 						{isSubmitting ? 'Salvando...' : 'Salvar'}

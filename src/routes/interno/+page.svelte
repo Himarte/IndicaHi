@@ -3,37 +3,61 @@
 	import type { PageData } from './$types';
 	import * as Tabs from '$lib/components/ui/tabs';
 
-	export let data: PageData;
-	export let cargo = data.user?.job || '';
+	interface Props {
+		data: PageData;
+		cargo?: any;
+	}
+
+	let { data, cargo = data.user?.job || '' }: Props = $props();
 </script>
 
-<Tabs.Root value="pendentes" class="relative flex h-full w-full justify-center pt-5">
-	<Tabs.List class="absolute top-3 flex w-min gap-1 border border-secondary bg-background">
-		<Tabs.Trigger value="pendentes" class="data-[state=active]:bg-zinc-800">Pendentes</Tabs.Trigger>
-		<Tabs.Trigger value="atendimento" class="data-[state=active]:bg-zinc-800"
-			>Em Atendimento</Tabs.Trigger
+<Tabs.Root value="pendentes" class="relative flex h-full w-full justify-center pt-3 md:pt-5">
+	<Tabs.List
+		class="bg-background border-border absolute top-3 left-1/2 flex w-min -translate-x-1/2 gap-1 rounded-lg border px-1 py-1 md:top-2 md:gap-2"
+	>
+		<Tabs.Trigger
+			value="pendentes"
+			class="rounded-md px-2 py-1.5 text-xs data-[state=active]:bg-zinc-800 md:px-3 md:py-2 md:text-sm"
 		>
-		<Tabs.Trigger value="finalizados" class="data-[state=active]:bg-zinc-800"
-			>Finalizados</Tabs.Trigger
+			<span class="hidden sm:inline">Pendentes</span>
+			<span class="sm:hidden">Pend.</span>
+		</Tabs.Trigger>
+		<Tabs.Trigger
+			value="atendimento"
+			class="rounded-md px-2 py-1.5 text-xs data-[state=active]:bg-zinc-800 md:px-3 md:py-2 md:text-sm"
 		>
-		<Tabs.Trigger value="cancelados" class="data-[state=active]:bg-zinc-800"
-			>Cancelados</Tabs.Trigger
+			<span class="hidden sm:inline">Em Atendimento</span>
+			<span class="sm:hidden">Atend.</span>
+		</Tabs.Trigger>
+		<Tabs.Trigger
+			value="finalizados"
+			class="rounded-md px-2 py-1.5 text-xs data-[state=active]:bg-zinc-800 md:px-3 md:py-2 md:text-sm"
 		>
+			<span class="hidden sm:inline">Finalizados</span>
+			<span class="sm:hidden">Final.</span>
+		</Tabs.Trigger>
+		<Tabs.Trigger
+			value="cancelados"
+			class="rounded-md px-2 py-1.5 text-xs data-[state=active]:bg-zinc-800 md:px-3 md:py-2 md:text-sm"
+		>
+			<span class="hidden sm:inline">Cancelados</span>
+			<span class="sm:hidden">Canc.</span>
+		</Tabs.Trigger>
 	</Tabs.List>
 
-	<Tabs.Content class=" w-full pt-10" value="pendentes">
+	<Tabs.Content class="h-full w-full pt-8 md:pt-10" value="pendentes">
 		<TableBase leads={data.leads.pendentes} {cargo} status="Pendente" />
 	</Tabs.Content>
 
-	<Tabs.Content class="w-full pt-10" value="atendimento">
+	<Tabs.Content class="h-full w-full pt-8 md:pt-10" value="atendimento">
 		<TableBase leads={data.leads.emAtendimento} {cargo} status="Sendo Atendido" />
 	</Tabs.Content>
 
-	<Tabs.Content class="w-full pt-10" value="finalizados">
+	<Tabs.Content class="h-full w-full pt-8 md:pt-10" value="finalizados">
 		<TableBase leads={data.leads.finalizados} {cargo} status="Finalizado" />
 	</Tabs.Content>
 
-	<Tabs.Content class="w-full pt-10" value="cancelados">
+	<Tabs.Content class="h-full w-full pt-8 md:pt-10" value="cancelados">
 		<TableBase leads={data.leads.cancelados} {cargo} status="Cancelado" />
 	</Tabs.Content>
 </Tabs.Root>

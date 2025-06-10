@@ -3,12 +3,22 @@
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Textarea } from '../ui/textarea';
-	import { createEventDispatcher } from 'svelte';
 
-	export let motivo = '';
-	export let open = false;
-	export let leadId = ''; // O ID do lead que será atualizado
-	const dispatch = createEventDispatcher();
+	interface Props {
+		motivo?: string;
+		open?: boolean;
+		leadId?: string;
+		onsuccess?: (event: { message: string; newStatus: string }) => void;
+		onerror?: (event: { message: string }) => void;
+	}
+
+	let {
+		motivo = $bindable(''),
+		open = $bindable(false),
+		leadId = '',
+		onsuccess,
+		onerror
+	}: Props = $props();
 
 	// Enviar os dados diretamente ao servidor ao confirmar
 	const handleConfirm = async () => {
@@ -20,23 +30,23 @@
 
 			const response = await fetch('?/updateStatus', {
 				method: 'POST',
-				body: formData // Corrigido aqui
+				body: formData
 			});
 
 			if (response.ok) {
 				const result = await response.json();
-				dispatch('success', {
+				onsuccess?.({
 					message: 'Lead cancelado com sucesso',
 					newStatus: 'Cancelado'
 				});
 				await invalidateAll();
 			} else {
 				const error = await response.json();
-				dispatch('error', { message: error.message || 'Erro ao cancelar lead' });
+				onerror?.({ message: error.message || 'Erro ao cancelar lead' });
 			}
 		} catch (err) {
 			console.error('Erro ao confirmar o cancelamento:', err);
-			dispatch('error', { message: 'Erro ao confirmar o cancelamento' });
+			onerror?.({ message: 'Erro ao confirmar o cancelamento' });
 		} finally {
 			open = false;
 		}
@@ -55,7 +65,7 @@
 			>
 			<AlertDialog.Description>
 				<Textarea
-					class="resize-none border-border focus-visible:ring-0"
+					class="border-border resize-none focus-visible:ring-0"
 					rows={4}
 					id="motivo"
 					name="motivo"
@@ -66,9 +76,9 @@
 		</AlertDialog.Header>
 		<AlertDialog.Footer>
 			<AlertDialog.Cancel>
-				<Button variant="ghost" on:click={handleCancel}>Cancelar</Button>
+				<Button variant="ghost" onclick={handleCancel}>Cancelar</Button>
 			</AlertDialog.Cancel>
-			<Button variant="destructive" on:click={handleConfirm} disabled={!motivo}>Confirmar</Button>
+			<Button variant="destructive" onclick={handleConfirm} disabled={!motivo}>Confirmar</Button>
 		</AlertDialog.Footer>
 	</AlertDialog.Content>
 </AlertDialog.Root>

@@ -1,9 +1,13 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 
-	export let data: PageData;
-	export let user = data.user;
 	import emConstrucao from '$lib/img/UnderConstruction.gif';
+	interface Props {
+		data: PageData;
+		user?: any;
+	}
+
+	let { data, user = data.user }: Props = $props();
 </script>
 
 <div class="flex w-full flex-col items-center justify-center gap-10">

@@ -2,14 +2,18 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import type { PageData } from './$types';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 
 	let userJob = data.user?.job;
 </script>
 
 <div class="flex h-full w-full flex-col items-center justify-center gap-10 text-2xl">
 	<div
-		class="flex w-1/5 flex-col items-center justify-center rounded-xl border border-border py-5 text-2xl"
+		class="border-border flex w-1/5 flex-col items-center justify-center rounded-xl border py-5 text-2xl"
 	>
 		<span>Bem Vindo ao </span>
 		<span>Sistema de Indicações da</span>

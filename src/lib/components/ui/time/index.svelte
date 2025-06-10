@@ -7,10 +7,14 @@
 	dayjs.extend(relativeTime);
 	dayjs.locale('pt-br');
 
-	export let timestamp: string | Date;
-	export let format: string = '';
-	export let relative = false;
-	export let live = false;
+	interface Props {
+		timestamp: string | Date;
+		format?: string;
+		relative?: boolean;
+		live?: boolean;
+	}
+
+	let { timestamp, format = '', relative = false, live = false }: Props = $props();
 </script>
 
 {#if format}

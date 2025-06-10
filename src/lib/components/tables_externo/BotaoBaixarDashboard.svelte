@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { Download } from 'lucide-svelte';
+	import { Download } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import { onMount } from 'svelte';
 	import type { LeadsSchema } from '$lib/server/database/schema';
@@ -68,19 +68,23 @@
 	}
 </script>
 
-<Tooltip.Root>
-	<Tooltip.Trigger asChild let:builder>
-		<Button
-			builders={[builder]}
-			variant="ghost"
-			class="absolute bottom-16 right-2 flex items-center text-orange-400"
-			on:click={handleDownload}
-			disabled={isLoading || !comprovante}
-		>
-			<Download size={28} />
-		</Button>
-	</Tooltip.Trigger>
-	<Tooltip.Content side="bottom">
-		<p>Baixar Comprovante</p>
-	</Tooltip.Content>
-</Tooltip.Root>
+<Tooltip.Provider>
+	<Tooltip.Root>
+		<Tooltip.Trigger>
+			{#snippet child({ props })}
+				<Button
+					{...props}
+					variant="ghost"
+					class="absolute right-2 bottom-16 flex items-center text-orange-400"
+					onclick={handleDownload}
+					disabled={isLoading || !comprovante}
+				>
+					<Download size={28} />
+				</Button>
+			{/snippet}
+		</Tooltip.Trigger>
+		<Tooltip.Content side="bottom">
+			<p>Baixar Comprovante</p>
+		</Tooltip.Content>
+	</Tooltip.Root>
+</Tooltip.Provider>

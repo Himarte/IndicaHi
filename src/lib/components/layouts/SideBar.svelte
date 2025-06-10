@@ -9,183 +9,110 @@
 		UserRoundSearch,
 		FileSearch,
 		LogOut,
-		HelpCircle
-	} from 'lucide-svelte';
+		HelpCircle,
+		TrophyIcon
+	} from '@lucide/svelte';
 	import IconeHimarte from '$lib/img/logos/icon.webp';
 	import { page } from '$app/stores';
 	import { derived } from 'svelte/store';
-	import type { userDataFromCookies } from '$lib/server/lucia.server';
+	import type { User } from '$lib/server/auth';
+	import { NAV_ITEMS, CONFIG_ITEMS, routeHelpers, ROUTES } from '$lib/uteis/routes';
 
-	export let userData: userDataFromCookies;
+	export let userData: User;
 
-	interface NavItem {
-		icon: typeof Home;
-		label: string;
-		href: string;
-		roles: string[];
-		activePatterns: string[];
-	}
-
-	const navItems: NavItem[] = [
-		{
-			href: '/dashboard',
-			icon: LineChart,
-			label: 'Dashboard',
-			roles: ['Vendedor Externo'],
-			activePatterns: ['/dashboard']
-		},
-
-		{
-			href: '/financeiro',
-			icon: Table2,
-			label: 'Financeiro',
-			roles: ['Financeiro'],
-			activePatterns: ['/financeiro$']
-		},
-		{
-			href: '/financeiro/pagamentos',
-			icon: Banknote,
-			label: 'Pagamentos',
-			roles: ['Financeiro'],
-			activePatterns: ['/financeiro/pagamentos']
-		},
-		{
-			href: '/interno',
-			icon: Table2,
-			label: 'Estoque',
-			roles: ['Vendedor Interno'],
-			activePatterns: ['/interno']
-		},
-		{
-			href: '/admin/users',
-			icon: UserRoundSearch,
-			label: 'Lista de Users',
-			roles: ['Admin'],
-			activePatterns: ['/admin/users']
-		},
-		{
-			href: '/admin/leads',
-			icon: FileSearch,
-			label: 'Lista de Leads',
-			roles: ['Admin'],
-			activePatterns: ['/admin/leads']
-		}
-	];
-
-	const configItem = [
-		{
-			href: '/configuracoes',
-			icon: Settings,
-			label: 'Configurações',
-			roles: ['Vendedor Externo', 'Vendedor Interno', 'Financeiro', 'Admin'],
-			activePatterns: ['/configuracoes', '/configuracoes/privacidade']
-		},
-		{
-			href: '/suporte',
-			icon: HelpCircle,
-			label: 'Suporte',
-			roles: ['Vendedor Externo', 'Vendedor Interno', 'Financeiro', 'Admin'],
-			activePatterns: ['/suporte']
-		}
-	];
+	// Mapeamento de ícones
+	const iconMap: Record<string, any> = {
+		'/dashboard': LineChart,
+		'/dashboard/recompensa': TrophyIcon,
+		'/financeiro': Table2,
+		'/financeiro/pagamentos': Banknote,
+		'/interno': Table2,
+		'/admin/users': UserRoundSearch,
+		'/admin/leads': FileSearch,
+		'/configuracoes': Settings,
+		'/suporte': HelpCircle
+	};
 
 	$: userRole = userData.job;
-	$: filteredNavItems = navItems.filter((item) => item.roles.includes(userRole));
-
-	const isActiveRoute = (href: string, activePatterns: string[]) => {
-		return activePatterns.some((pattern) => {
-			if (pattern.endsWith('$')) {
-				return $page.url.pathname === pattern.slice(0, -1);
-			}
-			return $page.url.pathname.startsWith(pattern);
-		});
-	};
+	$: filteredNavItems = routeHelpers.filterNavItemsByRole(NAV_ITEMS, userRole);
+	$: filteredConfigItems = routeHelpers.filterNavItemsByRole(CONFIG_ITEMS, userRole);
 
 	// Store derivado para monitorar a rota ativa
 	const activeRoute = derived(page, ($page) => $page.url.pathname);
 </script>
 
 <aside
-	class="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r border-secondary bg-background sm:flex"
+	class="border-secondary bg-background fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r sm:flex"
 >
 	<nav class="flex flex-col items-center gap-4 px-2 py-4">
-		<a href="/" class="flex h-8 w-8">
+		<a href={ROUTES.HOME} class="flex h-8 w-8">
 			<img src={IconeHimarte} alt="Himarte" class="transition-all group-hover:scale-110" />
 		</a>
 
-		{#each filteredNavItems as { href, icon: Icon, label, activePatterns }}
-			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
-					<a
-						{href}
-						class="flex h-9 w-9 items-center justify-center rounded-lg text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8 {$activeRoute &&
-						isActiveRoute(href, activePatterns)
-							? 'bg-accent'
-							: ''}"
-						use:builder.action
-						{...builder}
-					>
-						<Icon class="h-5 w-5" />
-						<span class="sr-only">{label}</span>
-					</a>
-				</Tooltip.Trigger>
-				<Tooltip.Content side="right">{label}</Tooltip.Content>
-			</Tooltip.Root>
+		{#each filteredNavItems as { href, label, activePatterns }}
+			{@const Icon = iconMap[href] || Home}
+			<Tooltip.Provider>
+				<Tooltip.Root>
+					<Tooltip.Trigger>
+						{#snippet child({ props })}
+							<a
+								{href}
+								class="text-accent-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 {routeHelpers.isActiveRoute(
+									$activeRoute,
+									href,
+									activePatterns
+								)
+									? 'bg-accent'
+									: ''}"
+								{...props}
+							>
+								<Icon class="h-5 w-5" />
+								<span class="sr-only">{label}</span>
+							</a>
+						{/snippet}
+					</Tooltip.Trigger>
+					<Tooltip.Content side="right">{label}</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
 		{/each}
 	</nav>
 
 	<nav class="mt-auto flex flex-col items-center gap-4 px-2 py-4">
-		<Tooltip.Root>
-			<Tooltip.Trigger asChild let:builder>
-				<a
-					href={configItem[0].href}
-					class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8 {$activeRoute &&
-					isActiveRoute(configItem[0].href, configItem[0].activePatterns)
-						? 'bg-accent'
-						: ''}"
-					use:builder.action
-					{...builder}
-				>
-					<Settings class="h-5 w-5" />
-					<span class="sr-only">{configItem[0].label}</span>
-				</a>
-			</Tooltip.Trigger>
-			<Tooltip.Content side="right">{configItem[0].label}</Tooltip.Content>
-		</Tooltip.Root>
+		{#each filteredConfigItems as { href, label, activePatterns }}
+			{@const Icon = iconMap[href] || Settings}
+			<Tooltip.Provider>
+				<Tooltip.Root>
+					<Tooltip.Trigger>
+						{#snippet child({ props })}
+							<a
+								{href}
+								class="text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 {routeHelpers.isActiveRoute(
+									$activeRoute,
+									href,
+									activePatterns
+								)
+									? 'bg-accent'
+									: ''}"
+								{...props}
+							>
+								<Icon class="h-5 w-5" />
+								<span class="sr-only">{label}</span>
+							</a>
+						{/snippet}
+					</Tooltip.Trigger>
+					<Tooltip.Content side="right">{label}</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+		{/each}
 
-		<Tooltip.Root>
-			<Tooltip.Trigger asChild let:builder>
-				<a
-					href={configItem[1].href}
-					class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8 {$activeRoute &&
-					isActiveRoute(configItem[1].href, configItem[1].activePatterns)
-						? 'bg-accent'
-						: ''}"
-					use:builder.action
-					{...builder}
-				>
-					<HelpCircle class="h-5 w-5" />
-					<span class="sr-only">{configItem[1].label}</span>
-				</a>
-			</Tooltip.Trigger>
-			<Tooltip.Content side="right">{configItem[1].label}</Tooltip.Content>
-		</Tooltip.Root>
-
-		<Tooltip.Root>
-			<Tooltip.Trigger asChild let:builder>
-				<form action="/logout" method="POST">
-					<button
-						type="submit"
-						class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-						use:builder.action
-						{...builder}
-					>
-						<LogOut class="h-5 w-5" />
-						<span class="sr-only">Sair</span>
-					</button>
-				</form>
-			</Tooltip.Trigger>
-			<Tooltip.Content side="right">Sair</Tooltip.Content>
-		</Tooltip.Root>
+		<form action="/logout" method="POST">
+			<button
+				type="submit"
+				class="text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8"
+			>
+				<LogOut class="h-5 w-5" />
+				<span class="sr-only">Sair</span>
+			</button>
+		</form>
 	</nav>
 </aside>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui/badge';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
-	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
+	import { CircleArrowLeftIcon, CircleArrowRight, FlameKindlingIcon } from '@lucide/svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Time from '$lib/components/ui/time/index.svelte';
 	import BotaoBaixarDashboard from './BotaoBaixarDashboard.svelte';
@@ -94,7 +94,10 @@
 				</Badge>
 
 				<h1 class="py-2 text-xl font-semibold">{lead.fullName}</h1>
-				<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
+				<Separator
+					orientation="horizontal"
+					class="bg-zinc-600 data-[orientation=horizontal]:h-[3px] data-[orientation=horizontal]:w-full"
+				/>
 
 				<div class="flex w-full items-center justify-between">
 					<div class="flex w-1/2 flex-col items-start gap-2 p-4">
@@ -110,7 +113,10 @@
 						</h2>
 					</div>
 
-					<Separator orientation="vertical" class="bg-zinc-600 text-center" />
+					<Separator
+						orientation="vertical"
+						class="bg-zinc-600 data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px"
+					/>
 
 					<div class="flex w-1/2 flex-col items-start gap-2 p-4">
 						<h2>
@@ -123,7 +129,10 @@
 						</h2>
 					</div>
 				</div>
-				<Separator orientation="horizontal" class=" bg-zinc-600 text-center" />
+				<Separator
+					orientation="horizontal"
+					class="bg-zinc-600 data-[orientation=horizontal]:h-[3px] data-[orientation=horizontal]:w-full"
+				/>
 				<div class="flex w-full justify-between">
 					<h2 class="w-1/2 py-2 text-center">
 						<span class="font-bold text-orange-400"> Criado em: </span>
@@ -133,7 +142,10 @@
 							<span>Data não disponível</span>
 						{/if}
 					</h2>
-					<Separator orientation="vertical" class=" bg-zinc-600 text-center" />
+					<Separator
+						orientation="vertical"
+						class="bg-zinc-600 data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px"
+					/>
 					<h2 class="w-1/2 py-2 text-center">
 						<span class="font-bold text-orange-400">
 							{status === 'Sendo Atendido'
@@ -187,11 +199,11 @@
 </div>
 
 {#if paginatedLeads.length > 0}
-	<div class="fixed bottom-0 left-0 right-0 my-4 flex items-center justify-center gap-2">
+	<div class="fixed right-0 bottom-0 left-0 my-4 flex items-center justify-center gap-2">
 		<Button
 			variant="ghost"
 			class="hover:bg-transparent"
-			on:click={previousPage}
+			onclick={previousPage}
 			disabled={currentPage === 1}
 		>
 			<CircleArrowLeftIcon />
@@ -201,7 +213,7 @@
 			<Button
 				variant={currentPage === page ? 'default' : 'outline'}
 				class="h-8 w-8"
-				on:click={() => goToPage(page)}
+				onclick={() => goToPage(page)}
 			>
 				{page}
 			</Button>
@@ -210,7 +222,7 @@
 		<Button
 			variant="ghost"
 			class="hover:bg-transparent"
-			on:click={nextPage}
+			onclick={nextPage}
 			disabled={currentPage === totalPages}
 		>
 			<CircleArrowRight />

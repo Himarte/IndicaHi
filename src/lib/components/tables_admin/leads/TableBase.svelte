@@ -2,7 +2,7 @@
 	import { Badge } from '../../ui/badge';
 	import Separator from '../../ui/separator/separator.svelte';
 	import { formatarData, formatarTelefone, formatarCPF, formatarCNPJ } from '$lib/uteis/masks';
-	import { CircleArrowLeftIcon, CircleArrowRight } from 'lucide-svelte';
+	import { CircleArrowLeftIcon, CircleArrowRight, FlameKindlingIcon } from '@lucide/svelte';
 	import Button from '../../ui/button/button.svelte';
 	import type { LeadsSchema } from '$lib/server/database/schema';
 
@@ -161,11 +161,11 @@
 </div>
 
 {#if paginatedLeads.length > 0}
-	<div class=" fixed bottom-0 left-0 right-0 my-4 flex items-center justify-center">
+	<div class=" fixed right-0 bottom-0 left-0 my-4 flex items-center justify-center">
 		<Button
 			variant="ghost"
 			class="hover:bg-transparent"
-			on:click={previousPage}
+			onclick={previousPage}
 			disabled={currentPage === 1}
 		>
 			<CircleArrowLeftIcon />
@@ -175,7 +175,7 @@
 			<Button
 				variant={currentPage === page ? 'default' : 'outline'}
 				class="h-8 w-8"
-				on:click={() => goToPage(page)}
+				onclick={() => goToPage(page)}
 			>
 				{page}
 			</Button>
@@ -184,7 +184,7 @@
 		<Button
 			variant="ghost"
 			class="hover:bg-transparent"
-			on:click={nextPage}
+			onclick={nextPage}
 			disabled={currentPage === totalPages}
 		>
 			<CircleArrowRight />

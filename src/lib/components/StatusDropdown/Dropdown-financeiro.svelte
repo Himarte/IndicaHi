@@ -2,41 +2,43 @@
 	import * as Select from '$lib/components/ui/select';
 	import type { LeadFinanceiro } from '$lib/types/financeiro';
 	import { getStatusPorCargo } from '$lib/components/StatusDropdown/statusPorCargo';
-	import { createEventDispatcher } from 'svelte';
 
-	export let lead: LeadFinanceiro;
-	export let cargo: string;
+	interface Props {
+		lead: LeadFinanceiro;
+		cargo: string;
+		onstatusChange?: (value: string) => void;
+	}
 
-	const dispatch = createEventDispatcher<{ statusChange: string }>();
+	let { lead, cargo, onstatusChange }: Props = $props();
 
-	function handleStatusChange(value: any) {
-		if (value && value.value) {
-			dispatch('statusChange', value.value);
+	function handleStatusChange(value: string | string[] | undefined) {
+		if (value) {
+			const selectedValue = Array.isArray(value) ? value[0] : value;
+			onstatusChange?.(selectedValue);
 		}
 	}
 
-	$: status = getStatusPorCargo(cargo);
+	let status = $derived(getStatusPorCargo(cargo));
 </script>
 
 <div class="flex min-w-full gap-2">
 	<input type="hidden" name="id" value={lead.id} />
-	<Select.Root portal={null} onSelectedChange={handleStatusChange}>
+	<Select.Root type="single" onValueChange={handleStatusChange}>
 		<Select.Trigger class="w-full border border-stone-700">
-			<Select.Value placeholder="Alterar Status" />
+			<span data-slot="select-value">Alterar Status</span>
 		</Select.Trigger>
 		<Select.Content class="border border-stone-700">
 			<Select.Group>
 				<Select.Label>Selecione um status</Select.Label>
 				<Select.Separator />
-				{#each status as status}
-					{#if status.value !== lead.status}
-						<Select.Item value={status.value} label={status.label}>
-							{status.label}
+				{#each status as statusItem (statusItem.value)}
+					{#if statusItem.value !== lead.status}
+						<Select.Item value={statusItem.value}>
+							{statusItem.label}
 						</Select.Item>
 					{/if}
 				{/each}
 			</Select.Group>
 		</Select.Content>
-		<Select.Input name="status" />
 	</Select.Root>
 </div>
