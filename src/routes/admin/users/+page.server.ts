@@ -24,16 +24,22 @@ export const load: PageServerLoad = async ({ fetch, locals }) => {
 
 	const fetchUsuariosPorCargo = async (cargo: string) => {
 		try {
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
+
 			const response = await fetch(`/api/admin/usuarios/${cargo}`, {
 				method: 'GET',
 				headers: {
 					'API-KEY': SITE_CHAVE_API,
 					'Content-Type': 'application/json'
-				}
+				},
+				signal: controller.signal
 			});
 
+			clearTimeout(timeoutId);
+
 			if (!response.ok) {
-				throw new Error(`Erro ao buscar usuários ${cargo}`);
+				throw new Error(`Erro ao buscar usuários ${cargo}: ${response.status}`);
 			}
 
 			return await response.json();

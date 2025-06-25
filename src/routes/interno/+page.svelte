@@ -5,10 +5,12 @@
 
 	interface Props {
 		data: PageData;
-		cargo?: any;
 	}
 
-	let { data, cargo = data.user?.job || '' }: Props = $props();
+	let { data }: Props = $props();
+
+	// Derived values para melhor performance
+	let cargo = $derived(data.user?.job || '');
 </script>
 
 <Tabs.Root value="pendentes" class="relative flex h-full w-full justify-center pt-3 md:pt-5">

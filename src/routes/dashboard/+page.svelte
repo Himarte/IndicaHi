@@ -2,17 +2,25 @@
 	import TableBase from '$lib/components/tables_externo/TableBase.svelte';
 	import type { PageData } from './$types';
 	import * as Tabs from '$lib/components/ui/tabs';
+	import { AlertTriangle } from '@lucide/svelte';
 
 	interface Props {
 		data: PageData;
 	}
 
 	let { data }: Props = $props();
+
+	// Derived states para melhor performance
+	let hasError = $derived(!!data.message);
 </script>
 
-{#if data.message}
-	<div class="flex w-full justify-center p-8 text-lg text-red-500">
-		{data.message}
+{#if hasError}
+	<div class="flex w-full flex-col items-center justify-center gap-4 p-8">
+		<div class="flex items-center gap-3 text-red-500">
+			<AlertTriangle class="h-6 w-6" />
+			<span class="text-lg font-medium">{data.message}</span>
+		</div>
+		<p class="text-sm text-slate-400">Verifique sua conexão e tente novamente.</p>
 	</div>
 {:else}
 	<Tabs.Root value="pendentes" class="relative flex h-full w-full justify-center pt-5 ">

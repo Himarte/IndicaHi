@@ -30,10 +30,13 @@ export const load: PageServerLoad = async ({ fetch, locals }) => {
 			});
 
 			if (!response.ok) {
-				throw new Error(`Erro ao buscar leads ${status}`);
+				throw new Error(`Erro ao buscar leads ${status}: ${response.status}`);
 			}
 
-			return await response.json();
+			const result = await response.json();
+
+			// Retorna apenas os dados se a resposta foi bem-sucedida
+			return result.success ? result.data : [];
 		} catch (err) {
 			console.error(`Erro ao buscar leads ${status}:`, err);
 			return [];
@@ -55,14 +58,17 @@ export const load: PageServerLoad = async ({ fetch, locals }) => {
 
 export const actions: Actions = {
 	updateStatusGrupo: async ({ request, locals }) => {
+		// Validação de autenticação
 		if (!locals.user) {
-			return fail(401, { success: false, message: 'Não autorizado' });
+			return fail(401, { success: false, message: 'Usuário não autenticado' });
 		}
 
+		// Validação de permissão específica para financeiro
 		if (locals.user.job !== 'Financeiro') {
 			return fail(403, {
 				success: false,
-				message: 'Apenas usuários do Financeiro podem processar pagamentos em grupo'
+				message:
+					'Acesso negado. Apenas usuários do setor Financeiro podem processar pagamentos em grupo.'
 			});
 		}
 

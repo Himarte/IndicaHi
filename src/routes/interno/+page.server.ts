@@ -20,7 +20,10 @@ export const load: PageServerLoad = async ({ fetch }) => {
 				throw new Error(`Erro ao buscar leads ${status}`);
 			}
 
-			return await response.json();
+			const result = await response.json();
+
+			// Retorna apenas os dados se a resposta foi bem-sucedida
+			return result.success ? result.data : [];
 		} catch (err) {
 			console.error(`Erro ao buscar leads ${status}:`, err);
 			return [];
@@ -47,10 +50,21 @@ export const load: PageServerLoad = async ({ fetch }) => {
 
 export const actions: Actions = {
 	updateStatus: async ({ request, locals }) => {
+		// Validação de autenticação
 		if (!locals.user) {
 			return fail(401, {
 				success: false,
-				message: 'Não autorizado'
+				message: 'Usuário não autenticado'
+			});
+		}
+
+		// Verificar se o usuário tem permissão (interno ou admin)
+		const allowedJobs = ['Vendedor Interno', 'Admin'];
+		if (!allowedJobs.includes(locals.user.job || '')) {
+			return fail(403, {
+				success: false,
+				message:
+					'Acesso negado. Apenas vendedores internos ou administradores podem atualizar status.'
 			});
 		}
 
@@ -61,16 +75,19 @@ export const actions: Actions = {
 			const status = formData.get('status') as string;
 			const motivo = formData.get('motivo') as string;
 
-			console.log('FormData: ------------------------------', formData);
-			console.log('ID: ------------------------------', id);
-			console.log('Status: ------------------------------', status);
-			console.log('Motivo: ------------------------------', motivo);
-
-			// Valida os campos recebidos
+			// Validação de campos obrigatórios
 			if (!id || !status) {
 				return fail(400, {
 					success: false,
-					message: 'ID ou status ausente.'
+					message: 'ID e status são obrigatórios.'
+				});
+			}
+
+			// Validação de formato do ID
+			if (typeof id !== 'string' || id.trim().length === 0) {
+				return fail(400, {
+					success: false,
+					message: 'ID inválido.'
 				});
 			}
 
