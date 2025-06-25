@@ -9,7 +9,7 @@
 	class="border-border absolute top-2 right-2 z-50 flex justify-center rounded-xl border px-4 py-1 text-lg font-bold text-orange-500"
 >
 	<span class="mr-2 text-white select-none">Código de indicação: </span>
-	<a href={ROUTES.CONFIGURACOES} class="text-orange-500">
+	<a href={ROUTES.CONFIGURACOES} class="text-amber-500">
 		{userData?.promoCode || 'Não possui'}
 	</a>
 </div>

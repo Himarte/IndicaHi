@@ -11,7 +11,7 @@
 
 	interface Props {
 		data: LayoutData;
-		children?: import('svelte').Snippet<[any]>;
+		children?: import('svelte').Snippet<[any]>; // eslint-disable-line @typescript-eslint/no-explicit-any
 	}
 
 	let { data, children }: Props = $props();
@@ -22,7 +22,7 @@
 </script>
 
 <Toaster richColors closeButton />
-<ModeWatcher defaultMode={'dark'} />
+<ModeWatcher defaultMode="dark" />
 
 <main class="flex h-full w-full {isLoggedIn ? 'md:pl-[3.5rem]' : ''} relative">
 	{#if isLoggedIn && userData}

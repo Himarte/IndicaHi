@@ -60,7 +60,7 @@
 <AlertDialog.Root bind:open>
 	<AlertDialog.Content class="border-border">
 		<AlertDialog.Header>
-			<AlertDialog.Title class="text-lg font-bold text-orange-400"
+			<AlertDialog.Title class="text-lg font-bold text-amber-400"
 				>Informe o motivo do cancelamento</AlertDialog.Title
 			>
 			<AlertDialog.Description>

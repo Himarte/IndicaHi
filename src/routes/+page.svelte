@@ -27,6 +27,6 @@
 	{:else if userJob === 'Financeiro'}
 		<Button href="/financeiro" variant="default">Seu Dashboard</Button>
 	{:else if userJob === 'Admin'}
-		<Button href="/admin" variant="default">Seu Dashboard</Button>
+		<Button href="/admin/users" variant="default">Seu Dashboard</Button>
 	{/if}
 </div>
