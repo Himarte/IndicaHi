@@ -12,7 +12,7 @@
 </script>
 
 <Tabs.Root value="vendedores-internos" class="relative flex h-full w-full justify-center pt-5 ">
-	<Tabs.List class="absolute top-3 flex w-min gap-1  border border-secondary bg-background">
+	<Tabs.List class="border-secondary bg-background absolute top-3 flex  w-min gap-1 border">
 		<Tabs.Trigger value="vendedores-internos" class="data-[state=active]:bg-zinc-800"
 			>Vendedores Internos</Tabs.Trigger
 		>

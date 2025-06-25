@@ -1,8 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { SITE_CHAVE_API } from '$env/static/private';
-import type { AdminPageData } from '$lib/types/admin';
 
-export const load: PageServerLoad<AdminPageData> = async ({ fetch, locals }) => {
+export const load: PageServerLoad = async ({ fetch, locals }) => {
 	if (!locals.user?.job?.includes('Admin')) {
 		return {
 			usuarios: {
@@ -41,6 +40,11 @@ export const load: PageServerLoad<AdminPageData> = async ({ fetch, locals }) => 
 		fetchUsuariosPorCargo('administrador'),
 		fetchUsuariosPorCargo('financeiro')
 	]);
+
+	console.log('vendedoresInternos', vendedoresInternos);
+	console.log('vendedoresExternos', vendedoresExternos);
+	console.log('administradores', administradores);
+	console.log('financeiro', financeiro);
 
 	return {
 		usuarios: {

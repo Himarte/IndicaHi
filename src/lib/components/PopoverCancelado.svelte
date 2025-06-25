@@ -42,11 +42,11 @@
 	const enhanceForm = () => {
 		loading = true;
 
-		return async ({ result }: { result: { type: string; data?: Record<string, any> } }) => {
+		return async ({ result }: { result: { type: string; data?: Record<string, unknown> } }) => {
 			loading = false;
 
 			if (result.type === 'success' && result.data) {
-				motivo = result.data.motivo || 'Nenhum motivo registrado';
+				motivo = (result.data.motivo as string) || 'Nenhum motivo registrado';
 			} else {
 				error = 'Erro ao carregar o motivo';
 			}

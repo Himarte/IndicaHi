@@ -2,7 +2,7 @@
 	import { Badge } from '../../ui/badge';
 	import Separator from '../../ui/separator/separator.svelte';
 	import { formatarData, formatarTelefone } from '$lib/uteis/masks';
-	import { CircleArrowLeftIcon, CircleArrowRight, FlameKindlingIcon } from '@lucide/svelte';
+	import { CircleArrowLeftIcon, CircleArrowRight } from '@lucide/svelte';
 	import Button from '../../ui/button/button.svelte';
 	import type { UserSchema } from '$lib/server/database/schema';
 
@@ -69,7 +69,7 @@
 			{tipoConfig[tipo].emptyMessage}
 		</div>
 	{:else}
-		{#each paginatedUsers as usuario}
+		{#each paginatedUsers as usuario, index (index)}
 			<div
 				class="relative flex w-[40%] flex-col items-center justify-between rounded-lg bg-zinc-800 text-white"
 			>
@@ -123,7 +123,7 @@
 			<CircleArrowLeftIcon />
 		</Button>
 
-		{#each pages as page}
+		{#each pages as page, index (index)}
 			<Button
 				variant={currentPage === page ? 'default' : 'outline'}
 				class="h-8 w-8"
