@@ -2,7 +2,6 @@
 	import TableBase from '$lib/components/tables_admin/leads/TableBase.svelte';
 	import type { PageData } from './$types';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { Circle3 } from 'svelte-loading-spinners';
 
 	interface Props {
 		data: PageData;
@@ -30,14 +29,18 @@
 	</Tabs.List>
 
 	{#await data.leads}
-		<div class="flex h-[80vh] w-full items-center justify-center">
-			<Circle3
-				size="70"
-				ballBottomLeft="#F97316"
-				ballBottomRight="#FAFAFA"
-				ballTopLeft="#FAFAFA"
-				ballTopRight="#F97316"
-			/>
+		<div class="flex h-[60vh] w-full items-center justify-center">
+			<div class="flex flex-col items-center gap-4">
+				<div class="relative">
+					<div
+						class="h-12 w-12 animate-spin rounded-full border-4 border-transparent border-t-orange-500"
+					></div>
+					<div
+						class="absolute inset-0 h-12 w-12 animate-spin rounded-full border-4 border-transparent border-b-orange-400 [animation-direction:reverse] [animation-duration:1.5s]"
+					></div>
+				</div>
+				<p class="text-sm text-slate-400">Carregando leads...</p>
+			</div>
 		</div>
 	{:then leads}
 		<Tabs.Content class="w-full px-10 pt-10" value="pendentes">

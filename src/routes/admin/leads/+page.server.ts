@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ fetch, locals }) => {
 	const fetchLeadsByStatus = async (status: string) => {
 		try {
 			const controller = new AbortController();
-			const timeoutId = setTimeout(() => controller.abort(), 5000);
+			const timeoutId = setTimeout(() => controller.abort(), 8000); // Aumentei timeout
 
 			const response = await fetch(`/api/admin/leads/${status}`, {
 				method: 'GET',
@@ -42,7 +42,7 @@ export const load: PageServerLoad = async ({ fetch, locals }) => {
 			clearTimeout(timeoutId);
 
 			if (!response.ok) {
-				throw new Error(`Erro ao buscar leads ${status}`);
+				throw new Error(`Erro ao buscar leads ${status}: ${response.status}`);
 			}
 
 			const data = await response.json();

@@ -54,31 +54,57 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
 	updateStatus: async ({ request, locals }) => {
+		// Validação de autenticação
 		if (!locals.user) {
 			return fail(401, {
 				success: false,
-				message: 'Não autorizado'
+				message: 'Usuário não autenticado'
+			});
+		}
+
+		// Validação de promoCode
+		if (!locals.user.promoCode) {
+			return fail(403, {
+				success: false,
+				message: 'Usuário sem código promocional válido'
 			});
 		}
 
 		try {
 			const formData = await request.formData();
 			const id = formData.get('id') as string;
-			const status = formData.get('status') as
-				| 'Pendente'
-				| 'Sendo Atendido'
-				| 'Aguardando Pagamento'
-				| 'Pago'
-				| 'Cancelado';
+			const status = formData.get('status') as string;
 
-			if (
-				!['Pendente', 'Sendo Atendido', 'Aguardando Pagamento', 'Pago', 'Cancelado'].includes(
-					status
-				)
-			) {
+			// Validação de campos obrigatórios
+			if (!id || !status) {
 				return fail(400, {
 					success: false,
-					message: 'Status inválido'
+					message: 'ID e status são obrigatórios'
+				});
+			}
+
+			// Validação do formato do ID
+			if (typeof id !== 'string' || id.trim().length === 0) {
+				return fail(400, {
+					success: false,
+					message: 'ID inválido'
+				});
+			}
+
+			// Validação do status
+			const validStatuses = [
+				'Pendente',
+				'Sendo Atendido',
+				'Aguardando Pagamento',
+				'Pago',
+				'Cancelado'
+			] as const;
+			type ValidStatus = (typeof validStatuses)[number];
+
+			if (!validStatuses.includes(status as ValidStatus)) {
+				return fail(400, {
+					success: false,
+					message: `Status inválido. Status válidos: ${validStatuses.join(', ')}`
 				});
 			}
 
@@ -96,7 +122,10 @@ export const actions: Actions = {
 				});
 			}
 
-			await db.update(leadsTable).set({ status }).where(eq(leadsTable.id, id));
+			await db
+				.update(leadsTable)
+				.set({ status: status as ValidStatus })
+				.where(eq(leadsTable.id, id));
 
 			return {
 				success: true,
