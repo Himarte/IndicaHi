@@ -189,8 +189,8 @@ async function processarComprovante(arquivo: File): Promise<string> {
 }
 
 async function atualizarLeadsGrupo(
-	tx: any,
-	leads: any[],
+	tx: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+	leads: any[], // eslint-disable-line @typescript-eslint/no-explicit-any
 	status: string,
 	now: string,
 	userName: string | undefined,
@@ -199,7 +199,10 @@ async function atualizarLeadsGrupo(
 ) {
 	for (const lead of leads) {
 		// Atualizar status do lead
-		const updateData: any = { status };
+		const updateData: { status: string; pagoEm?: string; pagoPor?: string; canceladoEm?: string } =
+			{
+				status
+			};
 
 		if (status === 'Pago') {
 			updateData.pagoEm = now;
@@ -243,8 +246,8 @@ async function atualizarLeadsGrupo(
 }
 
 function criarDadosGrupoPagamento(
-	dadosGrupo: any,
-	leads: any[],
+	dadosGrupo: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+	leads: any[], // eslint-disable-line @typescript-eslint/no-explicit-any
 	status: string,
 	now: string,
 	userName: string | undefined,

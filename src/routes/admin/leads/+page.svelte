@@ -11,8 +11,8 @@
 	let { data }: Props = $props();
 </script>
 
-<Tabs.Root value="pendentes" class="relative flex h-full w-full justify-center pt-5">
-	<Tabs.List class="absolute top-3 flex w-min gap-1 border border-secondary bg-background">
+<Tabs.Root value="pendentes" class="relative flex h-full w-full items-center justify-center pt-5 ">
+	<Tabs.List class="border-secondary bg-background absolute top-3  flex  w-min gap-2 border">
 		<Tabs.Trigger value="pendentes" class="data-[state=active]:bg-zinc-800">Pendentes</Tabs.Trigger>
 		<Tabs.Trigger value="em-atendimento" class="data-[state=active]:bg-zinc-800"
 			>Em Atendimento</Tabs.Trigger
@@ -40,28 +40,28 @@
 			/>
 		</div>
 	{:then leads}
-		<Tabs.Content class="w-full pt-10" value="pendentes">
-			<TableBase leads={leads.pendentes} />
+		<Tabs.Content class="w-full px-10 pt-10" value="pendentes">
+			<TableBase leads={leads.pendentes} status="pendentes" />
 		</Tabs.Content>
 
-		<Tabs.Content class="w-full pt-10" value="em-atendimento">
-			<TableBase leads={leads.emAtendimento} />
+		<Tabs.Content class="w-full px-10 pt-10" value="em-atendimento">
+			<TableBase leads={leads.emAtendimento} status="em-atendimento" />
 		</Tabs.Content>
 
-		<Tabs.Content class="w-full pt-10" value="aguardando-pagamento">
-			<TableBase leads={leads.aguardandoPagamento} />
+		<Tabs.Content class="w-full px-10 pt-10" value="aguardando-pagamento">
+			<TableBase leads={leads.aguardandoPagamento} status="aguardando-pagamento" />
 		</Tabs.Content>
 
-		<Tabs.Content class="w-full pt-10" value="pagos">
-			<TableBase leads={leads.pagos} />
+		<Tabs.Content class="w-full px-10 pt-10" value="pagos">
+			<TableBase leads={leads.pagos} status="pagos" />
 		</Tabs.Content>
 
-		<Tabs.Content class="w-full pt-10" value="finalizados">
-			<TableBase leads={leads.finalizados} />
+		<Tabs.Content class="w-full px-10 pt-10" value="finalizados">
+			<TableBase leads={leads.finalizados} status="finalizados" />
 		</Tabs.Content>
 
-		<Tabs.Content class="w-full pt-10" value="cancelados">
-			<TableBase leads={leads.cancelados} />
+		<Tabs.Content class="w-full px-10 pt-10" value="cancelados">
+			<TableBase leads={leads.cancelados} status="cancelados" />
 		</Tabs.Content>
 	{:catch error}
 		<div class="flex w-full justify-center p-8 text-lg text-red-500">
